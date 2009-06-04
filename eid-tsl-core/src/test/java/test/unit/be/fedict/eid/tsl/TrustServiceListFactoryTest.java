@@ -41,7 +41,7 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testNewInstanceRequiresArgument() throws Exception {
 		try {
-			TrustServiceListFactory.newInstance(null);
+			TrustServiceListFactory.newInstance((Document) null);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// expected
@@ -61,6 +61,7 @@ public class TrustServiceListFactoryTest {
 		assertNotNull(result);
 		assertEquals("BE:Belgium Trust-service Status List - TEST VERSION",
 				result.getSchemeName());
+		assertEquals("FedICT", result.getSchemeOperatorName());
 	}
 
 	private Document loadDocumentFromResource(String resourceName)

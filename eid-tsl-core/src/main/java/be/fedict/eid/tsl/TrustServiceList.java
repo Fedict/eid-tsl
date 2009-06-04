@@ -54,20 +54,39 @@ public class TrustServiceList {
 				.getSchemeInformation();
 		InternationalNamesType i18nSchemeName = tslSchemeInformation
 				.getSchemeName();
-		List<MultiLangNormStringType> schemeNames = i18nSchemeName.getName();
+		String name = getValue(i18nSchemeName, locale);
+		return name;
+	}
+
+	public String getSchemeOperatorName() {
+		Locale locale = Locale.getDefault();
+		return getSchemeOperatorName(locale);
+	}
+
+	public String getSchemeOperatorName(Locale locale) {
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		InternationalNamesType i18nSchemeOperatorName = tslSchemeInformation
+				.getSchemeOperatorName();
+		String name = getValue(i18nSchemeOperatorName, locale);
+		return name;
+	}
+
+	private String getValue(InternationalNamesType i18nName, Locale locale) {
+		List<MultiLangNormStringType> names = i18nName.getName();
 		String enValue = null;
-		for (MultiLangNormStringType schemeName : schemeNames) {
-			String lang = schemeName.getLang().toUpperCase();
-			if ("EN".equals(lang)) {
-				enValue = schemeName.getValue();
+		for (MultiLangNormStringType name : names) {
+			String lang = name.getLang().toLowerCase();
+			if ("en".equals(lang)) {
+				enValue = name.getValue();
 			}
 			if (locale.getLanguage().equals(lang)) {
-				return schemeName.getValue();
+				return name.getValue();
 			}
 		}
 		if (null != enValue) {
 			return enValue;
 		}
-		return schemeNames.get(0).getValue();
+		return names.get(0).getValue();
 	}
 }
