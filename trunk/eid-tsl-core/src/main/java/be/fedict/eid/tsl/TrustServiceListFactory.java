@@ -18,6 +18,9 @@
 
 package be.fedict.eid.tsl;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -44,7 +47,21 @@ public class TrustServiceListFactory {
 		super();
 	}
 
-	public static TrustServiceList newInstance(Document tslDocument) {
+	public static TrustServiceList newInstance(File tslFile) throws IOException {
+		if (null == tslFile) {
+			throw new IllegalArgumentException();
+		}
+		TrustStatusListType trustServiceStatusList;
+		try {
+			trustServiceStatusList = parseTslDocument(tslFile);
+		} catch (JAXBException e) {
+			throw new IOException("TSL parse error: " + e.getMessage(), e);
+		}
+		return new TrustServiceList(trustServiceStatusList);
+	}
+
+	public static TrustServiceList newInstance(Document tslDocument)
+			throws IOException {
 		if (null == tslDocument) {
 			throw new IllegalArgumentException();
 		}
@@ -52,19 +69,32 @@ public class TrustServiceListFactory {
 		try {
 			trustServiceStatusList = parseTslDocument(tslDocument);
 		} catch (JAXBException e) {
-			throw new IllegalArgumentException("TSL parse error: "
-					+ e.getMessage(), e);
+			throw new IOException("TSL parse error: " + e.getMessage(), e);
 		}
 		return new TrustServiceList(trustServiceStatusList);
 	}
 
+	private static TrustStatusListType parseTslDocument(File tslFile)
+			throws JAXBException {
+		Unmarshaller unmarshaller = getUnmarshaller();
+		JAXBElement<TrustStatusListType> jaxbElement = (JAXBElement<TrustStatusListType>) unmarshaller
+				.unmarshal(tslFile);
+		TrustStatusListType trustServiceStatusList = jaxbElement.getValue();
+		return trustServiceStatusList;
+	}
+
 	private static TrustStatusListType parseTslDocument(Document tslDocument)
 			throws JAXBException {
-		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		Unmarshaller unmarshaller = getUnmarshaller();
 		JAXBElement<TrustStatusListType> jaxbElement = (JAXBElement<TrustStatusListType>) unmarshaller
 				.unmarshal(tslDocument);
 		TrustStatusListType trustServiceStatusList = jaxbElement.getValue();
 		return trustServiceStatusList;
+	}
+
+	private static Unmarshaller getUnmarshaller() throws JAXBException {
+		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		return unmarshaller;
 	}
 }
