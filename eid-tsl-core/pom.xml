@@ -25,6 +25,7 @@
 						<configuration>
 							<debug>true</debug>
 							<verbose>true</verbose>
+							<catalog>src/main/resources/catalog.cat</catalog>
 						</configuration>
 					</execution>
 				</executions>

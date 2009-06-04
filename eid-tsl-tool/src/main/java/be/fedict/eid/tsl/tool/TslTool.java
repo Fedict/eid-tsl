@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -50,13 +51,20 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private static final String LOAD_ACTION_COMMAND = "load";
 
+	private static final String ABOUT_ACTION_COMMAND = "about";
+
+	private final JDesktopPane desktopPane;
+
 	private TslTool() {
 		super("eID TSL Tool");
 
 		initMenuBar();
 
+		this.desktopPane = new JDesktopPane();
+		setContentPane(this.desktopPane);
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack();
+		setSize(600, 400);
 		setVisible(true);
 	}
 
@@ -70,6 +78,8 @@ public class TslTool extends JFrame implements ActionListener {
 	private void initHelpMenu(JMenuBar menuBar) {
 		JMenu helpMenu = new JMenu("Help");
 		menuBar.add(helpMenu);
+
+		addActionMenuItem("About", ABOUT_ACTION_COMMAND, helpMenu);
 	}
 
 	private void initFileMenu(JMenuBar menuBar) {
@@ -92,27 +102,32 @@ public class TslTool extends JFrame implements ActionListener {
 		String command = event.getActionCommand();
 		if (EXIT_ACTION_COMMAND.equals(command)) {
 			System.exit(0);
-		}
-		if (LOAD_ACTION_COMMAND.equals(command)) {
+		} else if (LOAD_ACTION_COMMAND.equals(command)) {
 			JFileChooser fileChooser = new JFileChooser();
 			int returnValue = fileChooser.showOpenDialog(this);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				displayTsl(fileChooser.getSelectedFile());
 			}
+		} else if (ABOUT_ACTION_COMMAND.equals(command)) {
+			JOptionPane.showMessageDialog(this, "eID TSL Tool\n"
+					+ "Copyright (C) 2009 FedICT\n"
+					+ "http://code.google.com/p/eid-tsl/", "About",
+					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
 	private void displayTsl(File tslFile) {
 		LOG.debug("display TSL: " + tslFile.getAbsolutePath());
+		TrustServiceList trustServiceList;
 		try {
-			TrustServiceList trustServiceList = TrustServiceListFactory
-					.newInstance(tslFile);
+			trustServiceList = TrustServiceListFactory.newInstance(tslFile);
 		} catch (IOException e) {
 			LOG.debug("IO exception: " + e.getMessage(), e);
 			JOptionPane.showMessageDialog(this, "Error loading TSL file.",
 					"Load Error", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
-
+		this.desktopPane.add(new TslInternalFrame(tslFile, trustServiceList));
 	}
 
 	public static void main(String[] args) {
