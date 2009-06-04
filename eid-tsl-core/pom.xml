@@ -23,6 +23,9 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
+							<schemaIncludes>
+								<schemaInclude>draft_ts102231v020101xsd.xsd</schemaInclude>
+							</schemaIncludes>
 							<debug>true</debug>
 							<verbose>true</verbose>
 							<catalog>src/main/resources/catalog.cat</catalog>
