@@ -18,15 +18,21 @@
 
 package be.fedict.eid.tsl;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.TSPInformationType;
+import org.etsi.uri._02231.v2_.TSPServiceType;
+import org.etsi.uri._02231.v2_.TSPServicesListType;
 import org.etsi.uri._02231.v2_.TSPType;
 
 public class TrustServiceProvider {
 
 	private final TSPType tsp;
+
+	private List<TrustService> trustServices;
 
 	TrustServiceProvider(TSPType tsp) {
 		this.tsp = tsp;
@@ -42,5 +48,19 @@ public class TrustServiceProvider {
 	public String getName() {
 		Locale locale = Locale.getDefault();
 		return getName(locale);
+	}
+
+	public List<TrustService> getTrustServices() {
+		if (null != this.trustServices) {
+			return this.trustServices;
+		}
+		this.trustServices = new LinkedList<TrustService>();
+		TSPServicesListType tspServices = this.tsp.getTSPServices();
+		List<TSPServiceType> tspServiceList = tspServices.getTSPService();
+		for (TSPServiceType tspService : tspServiceList) {
+			TrustService trustService = new TrustService(tspService);
+			this.trustServices.add(trustService);
+		}
+		return this.trustServices;
 	}
 }

@@ -18,9 +18,13 @@
 
 package be.fedict.eid.tsl;
 
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,5 +94,27 @@ public class TrustServiceList {
 			this.trustServiceProviders.add(trustServiceProvider);
 		}
 		return this.trustServiceProviders;
+	}
+
+	public String getType() {
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		String type = tslSchemeInformation.getTSLType();
+		return type;
+	}
+
+	public BigInteger getSequenceNumber() {
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		BigInteger sequenceNumber = tslSchemeInformation.getTSLSequenceNumber();
+		return sequenceNumber;
+	}
+
+	public Date getIssueDate() {
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		XMLGregorianCalendar xmlGregorianCalendar = tslSchemeInformation
+				.getListIssueDateTime();
+		return xmlGregorianCalendar.toGregorianCalendar().getTime();
 	}
 }
