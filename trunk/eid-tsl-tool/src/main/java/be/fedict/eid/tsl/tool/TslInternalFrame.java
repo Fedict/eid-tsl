@@ -19,6 +19,7 @@
 package be.fedict.eid.tsl.tool;
 
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -31,17 +32,28 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
+import be.fedict.eid.tsl.TrustService;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceProvider;
 
-class TslInternalFrame extends JInternalFrame {
+class TslInternalFrame extends JInternalFrame implements TreeSelectionListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private final TrustServiceList trustServiceList;
+
+	private JTree tree;
+
+	private JLabel serviceName;
+
+	private JLabel serviceType;
+
+	private JLabel serviceStatus;
 
 	TslInternalFrame(File tslFile, TrustServiceList trustServiceList) {
 		super(tslFile.getName(), true, true, true);
@@ -72,28 +84,71 @@ class TslInternalFrame extends JInternalFrame {
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		tabbedPane.add("Service Providers", splitPane);
 
-		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-		JTree tree = new JTree(rootNode);
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(
+				"Service Providers");
+		this.tree = new JTree(rootNode);
+		this.tree.addTreeSelectionListener(this);
 		for (TrustServiceProvider trustServiceProvider : this.trustServiceList
 				.getTrustServiceProviders()) {
-			MutableTreeNode node = new DefaultMutableTreeNode(
+			DefaultMutableTreeNode trustServiceProviderNode = new DefaultMutableTreeNode(
 					trustServiceProvider.getName());
-			rootNode.add(node);
+			rootNode.add(trustServiceProviderNode);
+			for (TrustService trustService : trustServiceProvider
+					.getTrustServices()) {
+				MutableTreeNode trustServiceNode = new DefaultMutableTreeNode(
+						trustService);
+				trustServiceProviderNode.add(trustServiceNode);
+			}
 		}
-		tree.expandRow(0);
+		this.tree.expandRow(0);
 
-		JScrollPane treeScrollPane = new JScrollPane(tree);
+		JScrollPane treeScrollPane = new JScrollPane(this.tree);
 		JPanel detailsPanel = new JPanel();
 		splitPane.setLeftComponent(treeScrollPane);
 		splitPane.setRightComponent(detailsPanel);
 
+		initDetailsPanel(detailsPanel);
+	}
+
+	private void initDetailsPanel(JPanel detailsPanel) {
 		detailsPanel.setBorder(new TitledBorder("Details"));
+		detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		JPanel dataPanel = new JPanel(gridBagLayout);
+		detailsPanel.add(dataPanel);
+
+		GridBagConstraints constraints = new GridBagConstraints();
+
+		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.ipadx = 10;
+		dataPanel.add(new JLabel("Service Name"), constraints);
+		this.serviceName = new JLabel();
+		constraints.gridx++;
+		dataPanel.add(this.serviceName, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Service Type"), constraints);
+
+		constraints.gridx++;
+		this.serviceType = new JLabel();
+		dataPanel.add(this.serviceType, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Service Status"), constraints);
+
+		constraints.gridx++;
+		this.serviceStatus = new JLabel();
+		dataPanel.add(this.serviceStatus, constraints);
 	}
 
 	private void addGenericTab(JTabbedPane tabbedPane) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		JPanel dataPanel = new JPanel(gridBagLayout);
-		JPanel genericPanel = new JPanel();
+		JPanel genericPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		tabbedPane.add("Generic", new JScrollPane(genericPanel));
 		genericPanel.add(dataPanel);
 
@@ -117,5 +172,41 @@ class TslInternalFrame extends JInternalFrame {
 				.getSchemeOperatorName());
 		constraints.gridx++;
 		dataPanel.add(schemeOperatorName, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Type"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(this.trustServiceList.getType()), constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Sequence number"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(this.trustServiceList.getSequenceNumber()
+				.toString()), constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Issue date"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(this.trustServiceList.getIssueDate()
+				.toString()), constraints);
+	}
+
+	@Override
+	public void valueChanged(TreeSelectionEvent event) {
+		DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) tree
+				.getLastSelectedPathComponent();
+		if (treeNode.isLeaf()) {
+			TrustService trustService = (TrustService) treeNode.getUserObject();
+			this.serviceName.setText(trustService.getName());
+			this.serviceType.setText(trustService.getType());
+			this.serviceStatus.setText(trustService.getStatus());
+		} else {
+			this.serviceName.setText("");
+			this.serviceType.setText("");
+			this.serviceStatus.setText("");
+		}
 	}
 }
