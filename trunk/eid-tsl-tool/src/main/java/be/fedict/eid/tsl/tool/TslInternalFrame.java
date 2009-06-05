@@ -26,8 +26,16 @@ import java.io.File;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTree;
+import javax.swing.border.TitledBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 
 import be.fedict.eid.tsl.TrustServiceList;
+import be.fedict.eid.tsl.TrustServiceProvider;
 
 class TslInternalFrame extends JInternalFrame {
 
@@ -46,10 +54,48 @@ class TslInternalFrame extends JInternalFrame {
 	}
 
 	private void init() {
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		JPanel panel = new JPanel(gridBagLayout);
+		JTabbedPane tabbedPane = new JTabbedPane();
 		Container contentPane = this.getContentPane();
-		contentPane.add(panel);
+		contentPane.add(tabbedPane);
+
+		addGenericTab(tabbedPane);
+		addServiceProviderTab(tabbedPane);
+		addSignatureTab(tabbedPane);
+	}
+
+	private void addSignatureTab(JTabbedPane tabbedPane) {
+		JPanel panel = new JPanel();
+		tabbedPane.add("Signature", panel);
+	}
+
+	private void addServiceProviderTab(JTabbedPane tabbedPane) {
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		tabbedPane.add("Service Providers", splitPane);
+
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+		JTree tree = new JTree(rootNode);
+		for (TrustServiceProvider trustServiceProvider : this.trustServiceList
+				.getTrustServiceProviders()) {
+			MutableTreeNode node = new DefaultMutableTreeNode(
+					trustServiceProvider.getName());
+			rootNode.add(node);
+		}
+		tree.expandRow(0);
+
+		JScrollPane treeScrollPane = new JScrollPane(tree);
+		JPanel detailsPanel = new JPanel();
+		splitPane.setLeftComponent(treeScrollPane);
+		splitPane.setRightComponent(detailsPanel);
+
+		detailsPanel.setBorder(new TitledBorder("Details"));
+	}
+
+	private void addGenericTab(JTabbedPane tabbedPane) {
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		JPanel dataPanel = new JPanel(gridBagLayout);
+		JPanel genericPanel = new JPanel();
+		tabbedPane.add("Generic", new JScrollPane(genericPanel));
+		genericPanel.add(dataPanel);
 
 		GridBagConstraints constraints = new GridBagConstraints();
 
@@ -57,18 +103,19 @@ class TslInternalFrame extends JInternalFrame {
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		panel.add(schemeNameLabel, constraints);
+		constraints.ipadx = 10;
+		dataPanel.add(schemeNameLabel, constraints);
 		JLabel schemeName = new JLabel(this.trustServiceList.getSchemeName());
 		constraints.gridx++;
-		panel.add(schemeName, constraints);
+		dataPanel.add(schemeName, constraints);
 
 		JLabel schemeOperatorNameLabel = new JLabel("Scheme Operator Name");
 		constraints.gridy++;
 		constraints.gridx = 0;
-		panel.add(schemeOperatorNameLabel, constraints);
+		dataPanel.add(schemeOperatorNameLabel, constraints);
 		JLabel schemeOperatorName = new JLabel(this.trustServiceList
 				.getSchemeOperatorName());
 		constraints.gridx++;
-		panel.add(schemeOperatorName, constraints);
+		dataPanel.add(schemeOperatorName, constraints);
 	}
 }
