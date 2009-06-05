@@ -23,9 +23,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.Box;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -44,6 +46,8 @@ import be.fedict.eid.tsl.TrustServiceListFactory;
  * 
  */
 public class TslTool extends JFrame implements ActionListener {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final Log LOG = LogFactory.getLog(TslTool.class);
 
@@ -71,6 +75,7 @@ public class TslTool extends JFrame implements ActionListener {
 	private void initMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 		initFileMenu(menuBar);
+		menuBar.add(Box.createHorizontalGlue());
 		initHelpMenu(menuBar);
 		this.setJMenuBar(menuBar);
 	}
@@ -127,7 +132,9 @@ public class TslTool extends JFrame implements ActionListener {
 					"Load Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		this.desktopPane.add(new TslInternalFrame(tslFile, trustServiceList));
+		JInternalFrame internalFrame = new TslInternalFrame(tslFile,
+				trustServiceList);
+		this.desktopPane.add(internalFrame);
 	}
 
 	public static void main(String[] args) {

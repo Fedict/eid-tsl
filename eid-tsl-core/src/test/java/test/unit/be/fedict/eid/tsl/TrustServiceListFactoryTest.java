@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
+import be.fedict.eid.tsl.TrustServiceProvider;
 
 public class TrustServiceListFactoryTest {
 
@@ -62,6 +63,11 @@ public class TrustServiceListFactoryTest {
 		assertEquals("BE:Belgium Trust-service Status List - TEST VERSION",
 				result.getSchemeName());
 		assertEquals("FedICT", result.getSchemeOperatorName());
+		assertNotNull(result.getTrustServiceProviders());
+		assertEquals(1, result.getTrustServiceProviders().size());
+		TrustServiceProvider trustServiceProvider = result
+				.getTrustServiceProviders().get(0);
+		assertEquals("Certipost", trustServiceProvider.getName());
 	}
 
 	private Document loadDocumentFromResource(String resourceName)

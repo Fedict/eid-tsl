@@ -18,14 +18,15 @@
 
 package be.fedict.eid.tsl;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
-import org.etsi.uri._02231.v2_.MultiLangNormStringType;
 import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
+import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
 
 /**
@@ -39,6 +40,8 @@ public class TrustServiceList {
 	private static final Log LOG = LogFactory.getLog(TrustServiceList.class);
 
 	private final TrustStatusListType trustStatusList;
+
+	private List<TrustServiceProvider> trustServiceProviders;
 
 	protected TrustServiceList(TrustStatusListType trustStatusList) {
 		this.trustStatusList = trustStatusList;
@@ -54,7 +57,7 @@ public class TrustServiceList {
 				.getSchemeInformation();
 		InternationalNamesType i18nSchemeName = tslSchemeInformation
 				.getSchemeName();
-		String name = getValue(i18nSchemeName, locale);
+		String name = TrustServiceListUtils.getValue(i18nSchemeName, locale);
 		return name;
 	}
 
@@ -68,25 +71,24 @@ public class TrustServiceList {
 				.getSchemeInformation();
 		InternationalNamesType i18nSchemeOperatorName = tslSchemeInformation
 				.getSchemeOperatorName();
-		String name = getValue(i18nSchemeOperatorName, locale);
+		String name = TrustServiceListUtils.getValue(i18nSchemeOperatorName,
+				locale);
 		return name;
 	}
 
-	private String getValue(InternationalNamesType i18nName, Locale locale) {
-		List<MultiLangNormStringType> names = i18nName.getName();
-		String enValue = null;
-		for (MultiLangNormStringType name : names) {
-			String lang = name.getLang().toLowerCase();
-			if ("en".equals(lang)) {
-				enValue = name.getValue();
-			}
-			if (locale.getLanguage().equals(lang)) {
-				return name.getValue();
-			}
+	public List<TrustServiceProvider> getTrustServiceProviders() {
+		if (null != this.trustServiceProviders) {
+			// only load once
+			return this.trustServiceProviders;
 		}
-		if (null != enValue) {
-			return enValue;
+		this.trustServiceProviders = new LinkedList<TrustServiceProvider>();
+		List<TSPType> tsps = this.trustStatusList.getTrustServiceProviderList()
+				.getTrustServiceProvider();
+		for (TSPType tsp : tsps) {
+			TrustServiceProvider trustServiceProvider = new TrustServiceProvider(
+					tsp);
+			this.trustServiceProviders.add(trustServiceProvider);
 		}
-		return names.get(0).getValue();
+		return this.trustServiceProviders;
 	}
 }
