@@ -23,6 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.security.cert.X509Certificate;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -32,18 +33,26 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import be.fedict.eid.tsl.TrustService;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceProvider;
 
-class TslInternalFrame extends JInternalFrame implements TreeSelectionListener {
+class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
+		InternalFrameListener {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Log LOG = LogFactory.getLog(TslInternalFrame.class);
 
 	private final TrustServiceList trustServiceList;
 
@@ -55,17 +64,22 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener {
 
 	private JLabel serviceStatus;
 
-	TslInternalFrame(File tslFile, TrustServiceList trustServiceList) {
+	private final TslTool tslTool;
+
+	TslInternalFrame(File tslFile, TrustServiceList trustServiceList,
+			TslTool tslTool) {
 		super(tslFile.getName(), true, true, true);
 		this.trustServiceList = trustServiceList;
+		this.tslTool = tslTool;
 
-		init();
+		initUI();
 
+		addInternalFrameListener(this);
 		setSize(500, 300);
 		setVisible(true);
 	}
 
-	private void init() {
+	private void initUI() {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		Container contentPane = this.getContentPane();
 		contentPane.add(tabbedPane);
@@ -76,8 +90,32 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener {
 	}
 
 	private void addSignatureTab(JTabbedPane tabbedPane) {
-		JPanel panel = new JPanel();
-		tabbedPane.add("Signature", panel);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		JPanel dataPanel = new JPanel(gridBagLayout);
+		JPanel signaturePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		tabbedPane.add("Signature", new JScrollPane(signaturePanel));
+		signaturePanel.add(dataPanel);
+
+		GridBagConstraints constraints = new GridBagConstraints();
+
+		JLabel signerLabel = new JLabel("Signer");
+		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.ipadx = 10;
+		dataPanel.add(signerLabel, constraints);
+		JLabel signer = new JLabel();
+		constraints.gridx++;
+		dataPanel.add(signer, constraints);
+
+		X509Certificate signerCertificate = this.trustServiceList
+				.verifySignature();
+		if (null != signerCertificate) {
+			signer.setText(signerCertificate.getSubjectX500Principal()
+					.toString());
+		} else {
+			signer.setText("[TSL is not signed]");
+		}
 	}
 
 	private void addServiceProviderTab(JTabbedPane tabbedPane) {
@@ -208,5 +246,42 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener {
 			this.serviceType.setText("");
 			this.serviceStatus.setText("");
 		}
+	}
+
+	@Override
+	public void internalFrameActivated(InternalFrameEvent e) {
+		LOG.debug("activated: " + e.getInternalFrame().getTitle());
+		this.tslTool.setActiveTslInternalFrame(this);
+	}
+
+	@Override
+	public void internalFrameClosed(InternalFrameEvent e) {
+		LOG.debug("closed");
+	}
+
+	@Override
+	public void internalFrameClosing(InternalFrameEvent e) {
+		LOG.debug("closing");
+	}
+
+	@Override
+	public void internalFrameDeactivated(InternalFrameEvent e) {
+		LOG.debug("deactivated: " + e.getInternalFrame().getTitle());
+		this.tslTool.setActiveTslInternalFrame(null);
+	}
+
+	@Override
+	public void internalFrameDeiconified(InternalFrameEvent e) {
+		LOG.debug("deiconified");
+	}
+
+	@Override
+	public void internalFrameIconified(InternalFrameEvent e) {
+		LOG.debug("iconified");
+	}
+
+	@Override
+	public void internalFrameOpened(InternalFrameEvent e) {
+		LOG.debug("opened");
 	}
 }

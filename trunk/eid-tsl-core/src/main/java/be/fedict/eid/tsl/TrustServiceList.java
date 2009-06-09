@@ -19,19 +19,31 @@
 package be.fedict.eid.tsl;
 
 import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xml.security.utils.Constants;
+import org.apache.xpath.XPathAPI;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Trust Service List.
@@ -45,10 +57,14 @@ public class TrustServiceList {
 
 	private final TrustStatusListType trustStatusList;
 
+	private final Document tslDocument;
+
 	private List<TrustServiceProvider> trustServiceProviders;
 
-	protected TrustServiceList(TrustStatusListType trustStatusList) {
+	protected TrustServiceList(TrustStatusListType trustStatusList,
+			Document tslDocument) {
 		this.trustStatusList = trustStatusList;
+		this.tslDocument = tslDocument;
 	}
 
 	public String getSchemeName() {
@@ -116,5 +132,57 @@ public class TrustServiceList {
 		XMLGregorianCalendar xmlGregorianCalendar = tslSchemeInformation
 				.getListIssueDateTime();
 		return xmlGregorianCalendar.toGregorianCalendar().getTime();
+	}
+
+	public X509Certificate verifySignature() {
+		if (null == this.tslDocument) {
+			throw new IllegalStateException("first save the document");
+		}
+
+		Element nsElement = tslDocument.createElement("ns");
+		nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:ds",
+				XMLSignature.XMLNS);
+		nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:tsl",
+				"http://uri.etsi.org/02231/v2#");
+
+		Node signatureNode;
+		try {
+			signatureNode = XPathAPI.selectSingleNode(this.tslDocument,
+					"tsl:TrustServiceStatusList/ds:Signature", nsElement);
+		} catch (TransformerException e) {
+			throw new RuntimeException("XPath error: " + e.getMessage(), e);
+		}
+		if (null == signatureNode) {
+			LOG.debug("no ds:Signature element present");
+			return null;
+		}
+
+		KeyInfoKeySelector keyInfoKeySelector = new KeyInfoKeySelector();
+		DOMValidateContext valContext = new DOMValidateContext(
+				keyInfoKeySelector, signatureNode);
+		XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
+				.getInstance("DOM");
+		XMLSignature signature;
+		try {
+			signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
+		} catch (MarshalException e) {
+			throw new RuntimeException("XML signature parse error: "
+					+ e.getMessage(), e);
+		}
+		boolean coreValidity;
+		try {
+			coreValidity = signature.validate(valContext);
+		} catch (XMLSignatureException e) {
+			throw new RuntimeException(
+					"XML signature error: " + e.getMessage(), e);
+		}
+
+		// TODO: check what has been signed
+
+		if (coreValidity) {
+			return keyInfoKeySelector.getCertificate();
+		}
+
+		return null;
 	}
 }

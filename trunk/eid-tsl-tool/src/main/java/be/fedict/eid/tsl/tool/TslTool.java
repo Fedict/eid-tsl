@@ -20,6 +20,8 @@ package be.fedict.eid.tsl.tool;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 
@@ -53,11 +55,17 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private static final String EXIT_ACTION_COMMAND = "exit";
 
-	private static final String LOAD_ACTION_COMMAND = "load";
+	private static final String OPEN_ACTION_COMMAND = "open";
+
+	private static final String CLOSE_ACTION_COMMAND = "close";
 
 	private static final String ABOUT_ACTION_COMMAND = "about";
 
 	private final JDesktopPane desktopPane;
+
+	private JMenuItem closeMenuItem;
+
+	private TslInternalFrame activeTslInternalFrame;
 
 	private TslTool() {
 		super("eID TSL Tool");
@@ -82,24 +90,40 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private void initHelpMenu(JMenuBar menuBar) {
 		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(helpMenu);
 
-		addActionMenuItem("About", ABOUT_ACTION_COMMAND, helpMenu);
+		addActionMenuItem("About", KeyEvent.VK_A, ABOUT_ACTION_COMMAND,
+				helpMenu);
 	}
 
 	private void initFileMenu(JMenuBar menuBar) {
 		JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
-		addActionMenuItem("Load", LOAD_ACTION_COMMAND, fileMenu);
-		addActionMenuItem("Exit", EXIT_ACTION_COMMAND, fileMenu);
+		addActionMenuItem("Open", KeyEvent.VK_O, OPEN_ACTION_COMMAND, fileMenu);
+		fileMenu.addSeparator();
+		this.closeMenuItem = addActionMenuItem("Close", KeyEvent.VK_C,
+				CLOSE_ACTION_COMMAND, fileMenu, false);
+		fileMenu.addSeparator();
+		addActionMenuItem("Exit", KeyEvent.VK_X, EXIT_ACTION_COMMAND, fileMenu);
 	}
 
-	private void addActionMenuItem(String text, String actionCommand, JMenu menu) {
+	private JMenuItem addActionMenuItem(String text, int mnemonic,
+			String actionCommand, JMenu menu) {
+		return addActionMenuItem(text, mnemonic, actionCommand, menu, true);
+	}
+
+	private JMenuItem addActionMenuItem(String text, int mnemonic,
+			String actionCommand, JMenu menu, boolean enabled) {
 		JMenuItem menuItem = new JMenuItem(text);
+		menuItem.setMnemonic(mnemonic);
 		menuItem.setActionCommand(actionCommand);
 		menuItem.addActionListener(this);
+		menuItem.setEnabled(enabled);
 		menu.add(menuItem);
+		return menuItem;
 	}
 
 	@Override
@@ -107,8 +131,9 @@ public class TslTool extends JFrame implements ActionListener {
 		String command = event.getActionCommand();
 		if (EXIT_ACTION_COMMAND.equals(command)) {
 			System.exit(0);
-		} else if (LOAD_ACTION_COMMAND.equals(command)) {
+		} else if (OPEN_ACTION_COMMAND.equals(command)) {
 			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Open TSL");
 			int returnValue = fileChooser.showOpenDialog(this);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				displayTsl(fileChooser.getSelectedFile());
@@ -118,6 +143,12 @@ public class TslTool extends JFrame implements ActionListener {
 					+ "Copyright (C) 2009 FedICT\n"
 					+ "http://code.google.com/p/eid-tsl/", "About",
 					JOptionPane.INFORMATION_MESSAGE);
+		} else if (CLOSE_ACTION_COMMAND.equals(command)) {
+			try {
+				this.activeTslInternalFrame.setClosed(true);
+			} catch (PropertyVetoException e) {
+				LOG.warn("property veto error: " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -133,8 +164,27 @@ public class TslTool extends JFrame implements ActionListener {
 			return;
 		}
 		JInternalFrame internalFrame = new TslInternalFrame(tslFile,
-				trustServiceList);
+				trustServiceList, this);
 		this.desktopPane.add(internalFrame);
+
+		/*
+		 * Bring new internal frame to top and focus on it.
+		 */
+		this.desktopPane.getDesktopManager().activateFrame(internalFrame);
+		try {
+			internalFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			LOG.error("veto exception");
+		}
+	}
+
+	void setActiveTslInternalFrame(TslInternalFrame tslInternalFrame) {
+		if (null == tslInternalFrame) {
+			this.closeMenuItem.setEnabled(false);
+		} else {
+			this.closeMenuItem.setEnabled(true);
+		}
+		this.activeTslInternalFrame = tslInternalFrame;
 	}
 
 	public static void main(String[] args) {

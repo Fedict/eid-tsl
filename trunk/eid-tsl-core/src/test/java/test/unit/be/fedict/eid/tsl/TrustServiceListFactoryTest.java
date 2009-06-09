@@ -20,6 +20,7 @@ package test.unit.be.fedict.eid.tsl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -38,6 +41,9 @@ import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
 
 public class TrustServiceListFactoryTest {
+
+	private static final Log LOG = LogFactory
+			.getLog(TrustServiceListFactoryTest.class);
 
 	@Test
 	public void testNewInstanceRequiresArgument() throws Exception {
@@ -68,6 +74,23 @@ public class TrustServiceListFactoryTest {
 		TrustServiceProvider trustServiceProvider = result
 				.getTrustServiceProviders().get(0);
 		assertEquals("Certipost", trustServiceProvider.getName());
+		assertNull(result.verifySignature());
+	}
+
+	@Test
+	public void testVerifySignature() throws Exception {
+		// setup
+		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+
+		// operate
+		TrustServiceList result = TrustServiceListFactory
+				.newInstance(tslDocument);
+
+		// verify
+		assertNotNull(result);
+		assertNotNull(result.verifySignature());
+		LOG.debug("signer: "
+				+ result.verifySignature().getSubjectX500Principal());
 	}
 
 	private Document loadDocumentFromResource(String resourceName)
