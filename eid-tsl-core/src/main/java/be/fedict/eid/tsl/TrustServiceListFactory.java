@@ -25,12 +25,16 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Factory for Trust Service Lists.
@@ -51,13 +55,14 @@ public class TrustServiceListFactory {
 		if (null == tslFile) {
 			throw new IllegalArgumentException();
 		}
-		TrustStatusListType trustServiceStatusList;
+		Document tslDocument;
 		try {
-			trustServiceStatusList = parseTslDocument(tslFile);
-		} catch (JAXBException e) {
-			throw new IOException("TSL parse error: " + e.getMessage(), e);
+			tslDocument = parseDocument(tslFile);
+		} catch (Exception e) {
+			throw new IOException("DOM parse error: " + e.getMessage(), e);
 		}
-		return new TrustServiceList(trustServiceStatusList);
+		TrustServiceList trustServiceList = newInstance(tslDocument);
+		return trustServiceList;
 	}
 
 	public static TrustServiceList newInstance(Document tslDocument)
@@ -71,16 +76,18 @@ public class TrustServiceListFactory {
 		} catch (JAXBException e) {
 			throw new IOException("TSL parse error: " + e.getMessage(), e);
 		}
-		return new TrustServiceList(trustServiceStatusList);
+		return new TrustServiceList(trustServiceStatusList, tslDocument);
 	}
 
-	private static TrustStatusListType parseTslDocument(File tslFile)
-			throws JAXBException {
-		Unmarshaller unmarshaller = getUnmarshaller();
-		JAXBElement<TrustStatusListType> jaxbElement = (JAXBElement<TrustStatusListType>) unmarshaller
-				.unmarshal(tslFile);
-		TrustStatusListType trustServiceStatusList = jaxbElement.getValue();
-		return trustServiceStatusList;
+	private static Document parseDocument(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		DocumentBuilder documentBuilder = documentBuilderFactory
+				.newDocumentBuilder();
+		Document document = documentBuilder.parse(file);
+		return document;
 	}
 
 	private static TrustStatusListType parseTslDocument(Document tslDocument)
