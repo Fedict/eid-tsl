@@ -114,6 +114,31 @@
 				<artifactId>xmlsec</artifactId>
 				<version>1.4.2</version>
 			</dependency>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>1.6</version>
+			</dependency>
+			<dependency>
+				<groupId>bouncycastle</groupId>
+				<artifactId>bcprov-jdk16</artifactId>
+				<version>140</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.netbeans.api</groupId>
+				<artifactId>org-openide-dialogs</artifactId>
+				<version>RELEASE65</version>
+			</dependency>
+			<dependency>
+				<groupId>org.netbeans.api</groupId>
+				<artifactId>org-openide-util</artifactId>
+				<version>RELEASE65</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<pluginRepositories>
@@ -122,4 +147,10 @@
 			<url>http://download.java.net/maven/2</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<repositories>
+		<repository>
+			<id>netbeans-repository</id>
+			<url>http://bits.nbextras.org/maven2/</url>
+		</repository>
+	</repositories>
 </project>

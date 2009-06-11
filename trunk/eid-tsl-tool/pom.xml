@@ -40,6 +40,15 @@
 			<artifactId>commons-logging-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-openide-dialogs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.netbeans.api</groupId>
+			<artifactId>org-openide-util</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>

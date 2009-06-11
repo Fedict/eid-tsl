@@ -232,6 +232,10 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 				.toString()), constraints);
 	}
 
+	public TrustServiceList getTrustServiceList() {
+		return this.trustServiceList;
+	}
+
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
 		DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) tree

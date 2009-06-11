@@ -51,6 +51,13 @@ public class TrustServiceListFactory {
 		super();
 	}
 
+	/**
+	 * Creates a new trust service list from the given file.
+	 * 
+	 * @param tslFile
+	 * @return
+	 * @throws IOException
+	 */
 	public static TrustServiceList newInstance(File tslFile) throws IOException {
 		if (null == tslFile) {
 			throw new IllegalArgumentException();
@@ -65,6 +72,15 @@ public class TrustServiceListFactory {
 		return trustServiceList;
 	}
 
+	/**
+	 * Creates a trust service list from a given DOM document.
+	 * 
+	 * @param tslDocument
+	 *            the DOM TSL document.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
 	public static TrustServiceList newInstance(Document tslDocument)
 			throws IOException {
 		if (null == tslDocument) {
@@ -103,5 +119,14 @@ public class TrustServiceListFactory {
 		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		return unmarshaller;
+	}
+
+	/**
+	 * Creates a new empty trust service list.
+	 * 
+	 * @return
+	 */
+	public static TrustServiceList newInstance() {
+		return new TrustServiceList();
 	}
 }

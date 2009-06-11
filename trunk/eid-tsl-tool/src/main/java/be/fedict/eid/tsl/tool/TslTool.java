@@ -18,6 +18,7 @@
 
 package be.fedict.eid.tsl.tool;
 
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -37,6 +38,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openide.DialogDisplayer;
+import org.openide.WizardDescriptor;
 
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
@@ -59,11 +62,15 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private static final String CLOSE_ACTION_COMMAND = "close";
 
+	private static final String SIGN_ACTION_COMMAND = "sign";
+
 	private static final String ABOUT_ACTION_COMMAND = "about";
 
 	private final JDesktopPane desktopPane;
 
 	private JMenuItem closeMenuItem;
+
+	private JMenuItem signMenuItem;
 
 	private TslInternalFrame activeTslInternalFrame;
 
@@ -104,6 +111,8 @@ public class TslTool extends JFrame implements ActionListener {
 
 		addActionMenuItem("Open", KeyEvent.VK_O, OPEN_ACTION_COMMAND, fileMenu);
 		fileMenu.addSeparator();
+		this.signMenuItem = addActionMenuItem("Sign", KeyEvent.VK_S,
+				SIGN_ACTION_COMMAND, fileMenu, false);
 		this.closeMenuItem = addActionMenuItem("Close", KeyEvent.VK_C,
 				CLOSE_ACTION_COMMAND, fileMenu, false);
 		fileMenu.addSeparator();
@@ -149,6 +158,30 @@ public class TslTool extends JFrame implements ActionListener {
 			} catch (PropertyVetoException e) {
 				LOG.warn("property veto error: " + e.getMessage(), e);
 			}
+		} else if (SIGN_ACTION_COMMAND.equals(command)) {
+			LOG.debug("sign");
+			TrustServiceList trustServiceList = this.activeTslInternalFrame
+					.getTrustServiceList();
+			if (trustServiceList.hasSignature()) {
+				int confirmResult = JOptionPane.showConfirmDialog(this,
+						"TSL is already signed.\n" + "Resign the TSL?",
+						"Resign", JOptionPane.OK_CANCEL_OPTION);
+				if (JOptionPane.CANCEL_OPTION == confirmResult) {
+					return;
+				}
+			}
+			WizardDescriptor wizardDescriptor = new WizardDescriptor(
+					new WizardDescriptor.Panel[] {
+							new SignInitFinishablePanel(),
+							new SignSelectPkcs11FinishablePanel(),
+							new SignFinishFinishablePanel() });
+			wizardDescriptor.setTitle("Sign TSL");
+			wizardDescriptor.putProperty("WizardPanel_autoWizardStyle",
+					Boolean.TRUE);
+			DialogDisplayer dialogDisplayer = DialogDisplayer.getDefault();
+			Dialog wizardDialog = dialogDisplayer
+					.createDialog(wizardDescriptor);
+			wizardDialog.setVisible(true);
 		}
 	}
 
@@ -180,8 +213,10 @@ public class TslTool extends JFrame implements ActionListener {
 
 	void setActiveTslInternalFrame(TslInternalFrame tslInternalFrame) {
 		if (null == tslInternalFrame) {
+			this.signMenuItem.setEnabled(false);
 			this.closeMenuItem.setEnabled(false);
 		} else {
+			this.signMenuItem.setEnabled(true);
 			this.closeMenuItem.setEnabled(true);
 		}
 		this.activeTslInternalFrame = tslInternalFrame;
