@@ -24,7 +24,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.html.StyleSheet.BoxPainter;
 
 import org.openide.WizardDescriptor.FinishablePanel;
 import org.openide.util.HelpCtx;
