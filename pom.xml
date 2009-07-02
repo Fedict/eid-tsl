@@ -152,6 +152,11 @@
 				<artifactId>org-openide-util</artifactId>
 				<version>RELEASE67</version>
 			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>2.1.11</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<pluginRepositories>
@@ -164,6 +169,14 @@
 		<repository>
 			<id>netbeans-repository</id>
 			<url>http://bits.nbextras.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>maven-java.net</id>
+			<url>https://maven-repository.dev.java.net/repository/</url>
+			<layout>legacy</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 	</repositories>
 </project>

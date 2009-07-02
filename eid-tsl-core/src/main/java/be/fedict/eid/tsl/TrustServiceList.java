@@ -103,10 +103,13 @@ public class TrustServiceList {
 
 	private final List<ChangeListener> changeListeners;
 
+	private final ObjectFactory objectFactory;
+
 	protected TrustServiceList() {
 		super();
 		this.changed = true;
 		this.changeListeners = new LinkedList<ChangeListener>();
+		this.objectFactory = new ObjectFactory();
 	}
 
 	protected TrustServiceList(TrustStatusListType trustStatusList,
@@ -114,6 +117,7 @@ public class TrustServiceList {
 		this.trustStatusList = trustStatusList;
 		this.tslDocument = tslDocument;
 		this.changeListeners = new LinkedList<ChangeListener>();
+		this.objectFactory = new ObjectFactory();
 	}
 
 	public void addChangeListener(ChangeListener changeListener) {
@@ -154,27 +158,32 @@ public class TrustServiceList {
 		notifyChangeListeners();
 	}
 
+	private TrustStatusListType getTrustStatusList() {
+		if (null == this.trustStatusList) {
+			this.trustStatusList = this.objectFactory
+					.createTrustStatusListType();
+		}
+		return this.trustStatusList;
+	}
+
 	public void setSchemeName(String schemeName, Locale locale) {
 		/*
 		 * The XML signature should be regenerated anyway, so clear the TSL DOM
 		 * object.
 		 */
 		this.tslDocument = null;
-		ObjectFactory objectFactory = new ObjectFactory();
-		if (null == this.trustStatusList) {
-			this.trustStatusList = objectFactory.createTrustStatusListType();
-		}
-		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+		TrustStatusListType trustStatusList = getTrustStatusList();
+		TSLSchemeInformationType tslSchemeInformation = trustStatusList
 				.getSchemeInformation();
 		if (null == tslSchemeInformation) {
-			tslSchemeInformation = objectFactory
+			tslSchemeInformation = this.objectFactory
 					.createTSLSchemeInformationType();
-			this.trustStatusList.setSchemeInformation(tslSchemeInformation);
+			trustStatusList.setSchemeInformation(tslSchemeInformation);
 		}
 		InternationalNamesType i18nSchemeName = tslSchemeInformation
 				.getSchemeName();
 		if (null == i18nSchemeName) {
-			i18nSchemeName = objectFactory.createInternationalNamesType();
+			i18nSchemeName = this.objectFactory.createInternationalNamesType();
 			tslSchemeInformation.setSchemeName(i18nSchemeName);
 		}
 		TrustServiceListUtils.setValue(schemeName, locale, i18nSchemeName);
@@ -342,7 +351,8 @@ public class TrustServiceList {
 		 * Assign a unique XML Id to the TSL for signing purposes.
 		 */
 		String tslId = "tsl-" + UUID.randomUUID().toString();
-		this.trustStatusList.setId(tslId);
+		TrustStatusListType trustStatusList = getTrustStatusList();
+		trustStatusList.setId(tslId);
 
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
@@ -353,9 +363,12 @@ public class TrustServiceList {
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
+		LOG.debug("marshaller type: " + marshaller.getClass().getName());
+		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+				new TSLNamespacePrefixMapper());
 		ObjectFactory objectFactory = new ObjectFactory();
 		JAXBElement<TrustStatusListType> trustStatusListElement = objectFactory
-				.createTrustServiceStatusList(this.trustStatusList);
+				.createTrustServiceStatusList(trustStatusList);
 		marshaller.marshal(trustStatusListElement, document);
 
 		this.tslDocument = document;

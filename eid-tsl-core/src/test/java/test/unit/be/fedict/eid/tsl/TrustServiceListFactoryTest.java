@@ -189,6 +189,22 @@ public class TrustServiceListFactoryTest {
 	}
 
 	@Test
+	public void testSaveNewTsl() throws Exception {
+		TrustServiceList trustServiceList = TrustServiceListFactory
+				.newInstance();
+		File tmpTslFile = File.createTempFile("tsl-", ".xml");
+		//tmpTslFile.deleteOnExit();
+
+		// operate
+		assertTrue(trustServiceList.hasChanged());
+		trustServiceList.save(tmpTslFile);
+
+		// verify
+		assertFalse(trustServiceList.hasChanged());
+		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
+	}
+
+	@Test
 	public void testSaveChangedTsl() throws Exception {
 		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
 		TrustServiceList trustServiceList = TrustServiceListFactory
