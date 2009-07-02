@@ -23,6 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.io.IOException;
 import java.security.cert.X509Certificate;
 
 import javax.swing.JInternalFrame;
@@ -43,12 +44,13 @@ import javax.swing.tree.MutableTreeNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.tsl.ChangeListener;
 import be.fedict.eid.tsl.TrustService;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceProvider;
 
 class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
-		InternalFrameListener {
+		InternalFrameListener, ChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -66,13 +68,23 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 	private final TslTool tslTool;
 
+	private JLabel signer;
+
+	private File tslFile;
+
 	TslInternalFrame(File tslFile, TrustServiceList trustServiceList,
 			TslTool tslTool) {
 		super(tslFile.getName(), true, true, true);
+		this.tslFile = tslFile;
 		this.trustServiceList = trustServiceList;
 		this.tslTool = tslTool;
 
 		initUI();
+
+		/*
+		 * Keep us up-to-date on the changes on the TSL document.
+		 */
+		this.trustServiceList.addChangeListener(this);
 
 		addInternalFrameListener(this);
 		setSize(500, 300);
@@ -104,17 +116,21 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridy = 0;
 		constraints.ipadx = 10;
 		dataPanel.add(signerLabel, constraints);
-		JLabel signer = new JLabel();
+		this.signer = new JLabel();
 		constraints.gridx++;
-		dataPanel.add(signer, constraints);
+		dataPanel.add(this.signer, constraints);
 
+		updateView();
+	}
+
+	private void updateView() {
 		X509Certificate signerCertificate = this.trustServiceList
 				.verifySignature();
 		if (null != signerCertificate) {
-			signer.setText(signerCertificate.getSubjectX500Principal()
+			this.signer.setText(signerCertificate.getSubjectX500Principal()
 					.toString());
 		} else {
-			signer.setText("[TSL is not signed]");
+			this.signer.setText("[TSL is not signed]");
 		}
 	}
 
@@ -287,5 +303,22 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	@Override
 	public void internalFrameOpened(InternalFrameEvent e) {
 		LOG.debug("opened");
+	}
+
+	@Override
+	public void changed() {
+		LOG.debug("TSL changed");
+		setTitle("*" + this.tslFile.getAbsolutePath());
+		this.tslTool.setChanged(true);
+		updateView();
+	}
+
+	public File getFile() {
+		return this.tslFile;
+	}
+
+	public void save() throws IOException {
+		this.trustServiceList.save(this.tslFile);
+		setTitle(this.tslFile.getAbsolutePath());
 	}
 }

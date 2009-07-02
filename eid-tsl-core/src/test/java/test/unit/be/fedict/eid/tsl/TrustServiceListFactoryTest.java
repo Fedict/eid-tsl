@@ -85,6 +85,7 @@ public class TrustServiceListFactoryTest {
 
 		// verify
 		assertNotNull(result);
+		assertFalse(result.hasChanged());
 		assertEquals("BE:Belgium Trust-service Status List - TEST VERSION",
 				result.getSchemeName());
 		assertEquals("FedICT", result.getSchemeOperatorName());
@@ -108,6 +109,7 @@ public class TrustServiceListFactoryTest {
 		// verify
 		assertNotNull(result);
 		assertNotNull(result.verifySignature());
+		assertFalse(result.hasChanged());
 		LOG.debug("signer: "
 				+ result.verifySignature().getSubjectX500Principal());
 	}
@@ -120,6 +122,7 @@ public class TrustServiceListFactoryTest {
 		// verify
 		assertNotNull(result);
 
+		assertTrue(result.hasChanged());
 		assertNull(result.getSchemeName());
 		assertNull(result.getIssueDate());
 		assertNull(result.getSchemeOperatorName());
@@ -138,10 +141,12 @@ public class TrustServiceListFactoryTest {
 				.newInstance();
 
 		// operate
+		assertTrue(trustServiceList.hasChanged());
 		trustServiceList.setSchemeName(schemeName);
 
 		// verify
 		assertEquals(schemeName, trustServiceList.getSchemeName());
+		assertTrue(trustServiceList.hasChanged());
 	}
 
 	@Test
@@ -172,9 +177,11 @@ public class TrustServiceListFactoryTest {
 		tmpTslFile.deleteOnExit();
 
 		// operate
+		assertFalse(trustServiceList.hasChanged());
 		trustServiceList.save(tmpTslFile);
 
 		// verify
+		assertFalse(trustServiceList.hasChanged());
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
 		assertEquals("BE:Belgium Trust-service Status List - TEST VERSION",
 				trustServiceList.getSchemeName());
@@ -191,8 +198,11 @@ public class TrustServiceListFactoryTest {
 		tmpTslFile.deleteOnExit();
 
 		// operate
+		assertFalse(trustServiceList.hasChanged());
 		trustServiceList.setSchemeName(schemeName);
+		assertTrue(trustServiceList.hasChanged());
 		trustServiceList.save(tmpTslFile);
+		assertFalse(trustServiceList.hasChanged());
 
 		// verify
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
@@ -232,10 +242,12 @@ public class TrustServiceListFactoryTest {
 						notAfter);
 
 		// operate
+		assertFalse(trustServiceList.hasChanged());
 		trustServiceList.sign(privateKey, certificate);
 
 		// verify
 		assertEquals(certificate, trustServiceList.verifySignature());
+		assertTrue(trustServiceList.hasChanged());
 	}
 
 	@Test
@@ -255,8 +267,11 @@ public class TrustServiceListFactoryTest {
 						notAfter);
 
 		// operate
+		assertFalse(trustServiceList.hasChanged());
 		trustServiceList.setSchemeName(schemeName);
+		assertTrue(trustServiceList.hasChanged());
 		trustServiceList.sign(privateKey, certificate);
+		assertTrue(trustServiceList.hasChanged());
 
 		// verify
 		assertEquals(certificate, trustServiceList.verifySignature());
@@ -308,7 +323,7 @@ public class TrustServiceListFactoryTest {
 		return tslDocument;
 	}
 
-	public String toString(Node dom) throws TransformerException {
+	private String toString(Node dom) throws TransformerException {
 		Source source = new DOMSource(dom);
 		StringWriter stringWriter = new StringWriter();
 		Result result = new StreamResult(stringWriter);

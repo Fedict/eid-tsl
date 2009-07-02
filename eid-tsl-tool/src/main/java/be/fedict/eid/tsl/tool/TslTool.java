@@ -64,6 +64,8 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private static final String SIGN_ACTION_COMMAND = "sign";
 
+	private static final String SAVE_ACTION_COMMAND = "save";
+
 	private static final String ABOUT_ACTION_COMMAND = "about";
 
 	private final JDesktopPane desktopPane;
@@ -71,6 +73,8 @@ public class TslTool extends JFrame implements ActionListener {
 	private JMenuItem closeMenuItem;
 
 	private JMenuItem signMenuItem;
+
+	private JMenuItem saveMenuItem;
 
 	private TslInternalFrame activeTslInternalFrame;
 
@@ -113,6 +117,8 @@ public class TslTool extends JFrame implements ActionListener {
 		fileMenu.addSeparator();
 		this.signMenuItem = addActionMenuItem("Sign", KeyEvent.VK_S,
 				SIGN_ACTION_COMMAND, fileMenu, false);
+		this.saveMenuItem = addActionMenuItem("Save", KeyEvent.VK_A,
+				SAVE_ACTION_COMMAND, fileMenu, false);
 		this.closeMenuItem = addActionMenuItem("Close", KeyEvent.VK_C,
 				CLOSE_ACTION_COMMAND, fileMenu, false);
 		fileMenu.addSeparator();
@@ -173,8 +179,10 @@ public class TslTool extends JFrame implements ActionListener {
 			SignSelectPkcs11FinishablePanel pkcs11Panel = new SignSelectPkcs11FinishablePanel();
 			WizardDescriptor wizardDescriptor = new WizardDescriptor(
 					new WizardDescriptor.Panel[] {
-							new SignInitFinishablePanel(), pkcs11Panel,
-							new SignSelectCertificatePanel(pkcs11Panel),
+							new SignInitFinishablePanel(),
+							pkcs11Panel,
+							new SignSelectCertificatePanel(pkcs11Panel,
+									trustServiceList),
 							new SignFinishFinishablePanel() });
 			wizardDescriptor.setTitle("Sign TSL");
 			wizardDescriptor.putProperty("WizardPanel_autoWizardStyle",
@@ -183,6 +191,14 @@ public class TslTool extends JFrame implements ActionListener {
 			Dialog wizardDialog = dialogDisplayer
 					.createDialog(wizardDescriptor);
 			wizardDialog.setVisible(true);
+		} else if (SAVE_ACTION_COMMAND.equals(command)) {
+			LOG.debug("save");
+			try {
+				this.activeTslInternalFrame.save();
+				this.saveMenuItem.setEnabled(false);
+			} catch (IOException e) {
+				LOG.debug("IO error: " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -216,14 +232,22 @@ public class TslTool extends JFrame implements ActionListener {
 		if (null == tslInternalFrame) {
 			this.signMenuItem.setEnabled(false);
 			this.closeMenuItem.setEnabled(false);
+			this.saveMenuItem.setEnabled(false);
 		} else {
 			this.signMenuItem.setEnabled(true);
 			this.closeMenuItem.setEnabled(true);
+			boolean changed = tslInternalFrame.getTrustServiceList()
+					.hasChanged();
+			this.saveMenuItem.setEnabled(changed);
 		}
 		this.activeTslInternalFrame = tslInternalFrame;
 	}
 
 	public static void main(String[] args) {
 		new TslTool();
+	}
+
+	public void setChanged(boolean changed) {
+		this.saveMenuItem.setEnabled(changed);
 	}
 }
