@@ -99,14 +99,39 @@ public class TrustServiceList {
 
 	private List<TrustServiceProvider> trustServiceProviders;
 
+	private boolean changed;
+
+	private final List<ChangeListener> changeListeners;
+
 	protected TrustServiceList() {
 		super();
+		this.changed = true;
+		this.changeListeners = new LinkedList<ChangeListener>();
 	}
 
 	protected TrustServiceList(TrustStatusListType trustStatusList,
 			Document tslDocument) {
 		this.trustStatusList = trustStatusList;
 		this.tslDocument = tslDocument;
+		this.changeListeners = new LinkedList<ChangeListener>();
+	}
+
+	public void addChangeListener(ChangeListener changeListener) {
+		this.changeListeners.add(changeListener);
+	}
+
+	public void removeChangeListener(ChangeListener changeListener) {
+		this.changeListeners.remove(changeListener);
+	}
+
+	private void notifyChangeListeners() {
+		for (ChangeListener changeListener : changeListeners) {
+			changeListener.changed();
+		}
+	}
+
+	public boolean hasChanged() {
+		return this.changed;
 	}
 
 	public String getSchemeName() {
@@ -122,6 +147,11 @@ public class TrustServiceList {
 	public void setSchemeName(String schemeName) {
 		Locale locale = Locale.getDefault();
 		setSchemeName(schemeName, locale);
+	}
+
+	private void setChanged() {
+		this.changed = true;
+		notifyChangeListeners();
 	}
 
 	public void setSchemeName(String schemeName, Locale locale) {
@@ -148,6 +178,7 @@ public class TrustServiceList {
 			tslSchemeInformation.setSchemeName(i18nSchemeName);
 		}
 		TrustServiceListUtils.setValue(schemeName, locale, i18nSchemeName);
+		setChanged();
 	}
 
 	public String getSchemeName(Locale locale) {
@@ -362,6 +393,7 @@ public class TrustServiceList {
 		} catch (Exception e) {
 			throw new IOException("XML sign error: " + e.getMessage(), e);
 		}
+		setChanged();
 	}
 
 	private void xmlSign(PrivateKey privateKey, X509Certificate certificate,
@@ -405,6 +437,10 @@ public class TrustServiceList {
 		xmlSignature.sign(signContext);
 	}
 
+	private void clearChanged() {
+		this.changed = false;
+	}
+
 	public void save(File tslFile) throws IOException {
 		LOG.debug("save to: " + tslFile.getAbsolutePath());
 		if (null == this.tslDocument) {
@@ -428,6 +464,7 @@ public class TrustServiceList {
 			throw new IOException(
 					"DOM transformation error: " + e.getMessage(), e);
 		}
+		clearChanged();
 	}
 
 	private void toFile(File tslFile)

@@ -19,6 +19,10 @@
 package be.fedict.eid.tsl.tool;
 
 import java.awt.Component;
+import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -36,6 +40,7 @@ import org.openide.WizardDescriptor.ValidatingPanel;
 import org.openide.util.HelpCtx;
 
 import be.fedict.eid.tsl.Pkcs11Token;
+import be.fedict.eid.tsl.TrustServiceList;
 
 public class SignSelectCertificatePanel implements ValidatingPanel<Object> {
 
@@ -48,11 +53,15 @@ public class SignSelectCertificatePanel implements ValidatingPanel<Object> {
 
 	private final SignSelectPkcs11FinishablePanel pkcs11Panel;
 
+	private final TrustServiceList trustServiceList;
+
 	private Pkcs11Token pkcs11Token;
 
 	public SignSelectCertificatePanel(
-			SignSelectPkcs11FinishablePanel pkcs11Panel) {
+			SignSelectPkcs11FinishablePanel pkcs11Panel,
+			TrustServiceList trustServiceList) {
 		this.pkcs11Panel = pkcs11Panel;
+		this.trustServiceList = trustServiceList;
 
 		this.component = new JPanel();
 		BoxLayout boxLayout = new BoxLayout(this.component, BoxLayout.PAGE_AXIS);
@@ -68,10 +77,30 @@ public class SignSelectCertificatePanel implements ValidatingPanel<Object> {
 
 	@Override
 	public void validate() throws WizardValidationException {
-		if (null == this.certificateList.getSelectedValue()) {
+		String selectedAlias = (String) this.certificateList.getSelectedValue();
+		if (null == selectedAlias) {
 			throw new WizardValidationException(null,
 					"No certificate selected.", null);
 		}
+		LOG.debug("selected alias: " + selectedAlias);
+		PrivateKeyEntry privateKeyEntry;
+		try {
+			privateKeyEntry = this.pkcs11Token
+					.getPrivateKeyEntry(selectedAlias);
+		} catch (Exception e) {
+			throw new WizardValidationException(null, "PKCS#11 error: "
+					+ e.getMessage(), null);
+		}
+		PrivateKey privateKey = privateKeyEntry.getPrivateKey();
+		X509Certificate certificate = (X509Certificate) privateKeyEntry
+				.getCertificate();
+		try {
+			this.trustServiceList.sign(privateKey, certificate);
+		} catch (IOException e) {
+			throw new WizardValidationException(null, "sign error: "
+					+ e.getMessage(), null);
+		}
+		this.pkcs11Token.close();
 	}
 
 	@Override

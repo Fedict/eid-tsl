@@ -89,6 +89,17 @@ public class Pkcs11Token {
 		return aliases;
 	}
 
+	public PrivateKeyEntry getPrivateKeyEntry(String alias)
+			throws NoSuchAlgorithmException, UnrecoverableEntryException,
+			KeyStoreException {
+		Entry entry = this.keyStore.getEntry(alias, null);
+		if (false == entry instanceof PrivateKeyEntry) {
+			throw new RuntimeException("not a private key entry: " + alias);
+		}
+		PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) entry;
+		return privateKeyEntry;
+	}
+
 	private String createPkcs11ProviderConfigFile() throws IOException {
 		File tmpConfigFile = File.createTempFile("pkcs11-", "conf");
 		tmpConfigFile.deleteOnExit();
