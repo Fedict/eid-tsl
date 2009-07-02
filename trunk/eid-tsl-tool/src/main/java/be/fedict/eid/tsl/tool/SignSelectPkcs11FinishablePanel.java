@@ -20,10 +20,13 @@ package be.fedict.eid.tsl.tool;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -35,7 +38,8 @@ import org.openide.WizardValidationException;
 import org.openide.WizardDescriptor.ValidatingPanel;
 import org.openide.util.HelpCtx;
 
-public class SignSelectPkcs11FinishablePanel implements ValidatingPanel<Object> {
+public class SignSelectPkcs11FinishablePanel implements
+		ValidatingPanel<Object>, ActionListener {
 
 	private static final Log LOG = LogFactory
 			.getLog(SignSelectPkcs11FinishablePanel.class);
@@ -55,14 +59,18 @@ public class SignSelectPkcs11FinishablePanel implements ValidatingPanel<Object> 
 			JPanel panel = new JPanel();
 			BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
 			panel.setLayout(boxLayout);
-			panel.add(new JLabel("Please select a PKCS#11 library."));
+			JPanel infoPanel = new JPanel();
+			infoPanel.add(new JLabel("Please select a PKCS#11 library."));
+			panel.add(infoPanel);
 
 			JPanel browsePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			panel.add(browsePanel);
 			browsePanel.add(new JLabel("PKCS#11 library:"));
 			this.pkcs11TextField = new JTextField(30);
 			browsePanel.add(this.pkcs11TextField);
-			browsePanel.add(new JButton("Browse..."));
+			JButton browseButton = new JButton("Browse...");
+			browseButton.addActionListener(this);
+			browsePanel.add(browseButton);
 			this.component = panel;
 		}
 		return this.component;
@@ -107,5 +115,21 @@ public class SignSelectPkcs11FinishablePanel implements ValidatingPanel<Object> 
 			throw new WizardValidationException(null,
 					"PKCS#11 library is a directory", null);
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select PKCS#11 library");
+		int returnValue = fileChooser.showOpenDialog(null);
+		if (JFileChooser.APPROVE_OPTION == returnValue) {
+			String pkcs11Library = fileChooser.getSelectedFile()
+					.getAbsolutePath();
+			this.pkcs11TextField.setText(pkcs11Library);
+		}
+	}
+
+	public String getPkcs11Library() {
+		return this.pkcs11TextField.getText();
 	}
 }

@@ -170,10 +170,11 @@ public class TslTool extends JFrame implements ActionListener {
 					return;
 				}
 			}
+			SignSelectPkcs11FinishablePanel pkcs11Panel = new SignSelectPkcs11FinishablePanel();
 			WizardDescriptor wizardDescriptor = new WizardDescriptor(
 					new WizardDescriptor.Panel[] {
-							new SignInitFinishablePanel(),
-							new SignSelectPkcs11FinishablePanel(),
+							new SignInitFinishablePanel(), pkcs11Panel,
+							new SignSelectCertificatePanel(pkcs11Panel),
 							new SignFinishFinishablePanel() });
 			wizardDescriptor.setTitle("Sign TSL");
 			wizardDescriptor.putProperty("WizardPanel_autoWizardStyle",

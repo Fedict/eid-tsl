@@ -47,7 +47,7 @@ public class SignInitFinishablePanel implements FinishablePanel<Object> {
 		panel.add(new JLabel("Welcome to the TSL Signing Wizard."));
 		panel
 				.add(new JLabel(
-						"This wizard will help with the creation of the XML signature."));
+						"This wizard will help with the creation of the signature on the Trust List."));
 		return panel;
 	}
 
