@@ -165,6 +165,21 @@ public class TslTool extends JFrame implements ActionListener {
 					+ "http://code.google.com/p/eid-tsl/", "About",
 					JOptionPane.INFORMATION_MESSAGE);
 		} else if (CLOSE_ACTION_COMMAND.equals(command)) {
+			if (this.activeTslInternalFrame.getTrustServiceList().hasChanged()) {
+				int result = JOptionPane.showConfirmDialog(this,
+						"TSL has been changed.\n" + "Save the TSL?", "Save",
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if (JOptionPane.CANCEL_OPTION == result) {
+					return;
+				}
+				if (JOptionPane.YES_OPTION == result) {
+					try {
+						this.activeTslInternalFrame.save();
+					} catch (IOException e) {
+						LOG.error("IO error: " + e.getMessage(), e);
+					}
+				}
+			}
 			try {
 				this.activeTslInternalFrame.setClosed(true);
 			} catch (PropertyVetoException e) {
