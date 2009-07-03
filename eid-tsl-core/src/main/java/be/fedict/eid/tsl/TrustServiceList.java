@@ -74,6 +74,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
 import org.etsi.uri._02231.v2_.AddressType;
+import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
@@ -228,8 +229,7 @@ public class TrustServiceList {
 		clearDocumentCacheAndSetChanged();
 	}
 
-	public void setSchemeOperatorPostalAddress(PostalAddressType postalAddress,
-			Locale locale) {
+	private AddressType getSchemeOperatorAddress() {
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
 		AddressType schemeOperatorAddress = schemeInformation
 				.getSchemeOperatorAddress();
@@ -237,6 +237,12 @@ public class TrustServiceList {
 			schemeOperatorAddress = this.objectFactory.createAddressType();
 			schemeInformation.setSchemeOperatorAddress(schemeOperatorAddress);
 		}
+		return schemeOperatorAddress;
+	}
+
+	public void setSchemeOperatorPostalAddress(PostalAddressType postalAddress,
+			Locale locale) {
+		AddressType schemeOperatorAddress = getSchemeOperatorAddress();
 		PostalAddressListType postalAddresses = schemeOperatorAddress
 				.getPostalAddresses();
 		if (null == postalAddresses) {
@@ -285,6 +291,43 @@ public class TrustServiceList {
 					.getStateOrProvince());
 			newPostalAddress.setCountryName(postalAddress.getCountryName());
 			postalAddresses.getPostalAddress().add(newPostalAddress);
+		}
+	}
+
+	public List<String> getSchemeOperatorElectronicAddresses() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == tslSchemeInformation) {
+			return null;
+		}
+		AddressType address = tslSchemeInformation.getSchemeOperatorAddress();
+		if (null == address) {
+			return null;
+		}
+		ElectronicAddressType electronicAddress = address
+				.getElectronicAddress();
+		if (null == electronicAddress) {
+			return null;
+		}
+		return electronicAddress.getURI();
+	}
+
+	public void setSchemeOperatorElectronicAddresses(List<String> addresses) {
+		AddressType schemeOperatorAddress = getSchemeOperatorAddress();
+		ElectronicAddressType electronicAddress = schemeOperatorAddress
+				.getElectronicAddress();
+		if (null == electronicAddress) {
+			electronicAddress = this.objectFactory
+					.createElectronicAddressType();
+			schemeOperatorAddress.setElectronicAddress(electronicAddress);
+		}
+		List<String> electronicAddresses = electronicAddress.getURI();
+		electronicAddresses.clear();
+		for (String address : addresses) {
+			electronicAddresses.add(address);
 		}
 	}
 

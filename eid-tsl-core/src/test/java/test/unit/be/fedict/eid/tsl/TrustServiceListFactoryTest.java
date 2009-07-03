@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -371,6 +372,19 @@ public class TrustServiceListFactoryTest {
 		trustServiceList.setSchemeOperatorPostalAddress(
 				schemeOperatorPostalAddress, new Locale("nl"));
 
+		// scheme operator electronic address
+		List<String> electronicAddresses = new LinkedList<String>();
+		electronicAddresses.add("http://www.fedict.belgium.be/");
+		electronicAddresses.add("mailto://eid@belgium.be");
+		trustServiceList
+				.setSchemeOperatorElectronicAddresses(electronicAddresses);
+
+		// scheme name
+		trustServiceList
+				.setSchemeName(
+						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator Member State for compliance with the relevant provisions laid down in  Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures",
+						Locale.ENGLISH);
+
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
 		tmpTslFile.deleteOnExit();
@@ -405,6 +419,16 @@ public class TrustServiceListFactoryTest {
 		assertEquals("Brussels", resultPostalAddress.getLocality());
 		assertEquals("Brussel", trustServiceList
 				.getSchemeOperatorPostalAddress(new Locale("nl")).getLocality());
+
+		// scheme operator electronic address
+		assertEquals(2, trustServiceList.getSchemeOperatorElectronicAddresses()
+				.size());
+		LOG.debug("electronic addresses: "
+				+ trustServiceList.getSchemeOperatorElectronicAddresses());
+
+		// scheme name
+		assertTrue(trustServiceList.getSchemeName(Locale.ENGLISH).startsWith(
+				"BE:"));
 	}
 
 	@Test
