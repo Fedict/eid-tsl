@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -47,8 +48,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xpath.XPathAPI;
+import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -188,12 +192,18 @@ public class TrustServiceListFactoryTest {
 		assertNotNull(trustServiceList.verifySignature());
 	}
 
+	/**
+	 * This unit test saves an empty trust list and verifies whether all
+	 * required elements are present.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testSaveNewTsl() throws Exception {
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance();
 		File tmpTslFile = File.createTempFile("tsl-", ".xml");
-		//tmpTslFile.deleteOnExit();
+		tmpTslFile.deleteOnExit();
 
 		// operate
 		assertTrue(trustServiceList.hasChanged());
@@ -202,6 +212,41 @@ public class TrustServiceListFactoryTest {
 		// verify
 		assertFalse(trustServiceList.hasChanged());
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
+		LOG.debug(FileUtils.readFileToString(tmpTslFile));
+		Document document = loadDocument(tmpTslFile);
+
+		// verify: TSLTag
+		Node tslTagNode = XPathAPI.selectSingleNode(document,
+				"tsl:TrustServiceStatusList/@TSLTag");
+		assertNotNull(tslTagNode);
+		LOG.debug("tsl tag node: " + tslTagNode.getNodeValue());
+		assertEquals("http://uri.etsi.org/02231/TSLtag", tslTagNode
+				.getNodeValue());
+
+		// verify: version
+		Node versionNode = XPathAPI
+				.selectSingleNode(document,
+						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLVersionIdentifier");
+		assertNotNull(versionNode);
+		assertEquals("3", versionNode.getTextContent());
+
+		// verify: sequence number
+		Node sequenceNumberNode = XPathAPI
+				.selectSingleNode(document,
+						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLSequenceNumber");
+		assertNotNull(sequenceNumberNode);
+		new BigInteger(sequenceNumberNode.getTextContent());
+		LOG
+				.debug("TSL sequence number: "
+						+ sequenceNumberNode.getTextContent());
+
+		// verify: TSL type
+		Node typeNode = XPathAPI.selectSingleNode(document,
+				"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLType");
+		assertNotNull(typeNode);
+		assertEquals(
+				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLtype/generic",
+				typeNode.getTextContent());
 	}
 
 	@Test
@@ -295,6 +340,74 @@ public class TrustServiceListFactoryTest {
 	}
 
 	@Test
+	public void testBelgianTrustList() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = TrustServiceListFactory
+				.newInstance();
+
+		// scheme operator name
+		trustServiceList.setSchemeOperatorName("Fedict", Locale.ENGLISH);
+		trustServiceList.setSchemeOperatorName("Fedict", new Locale("nl"));
+		trustServiceList.setSchemeOperatorName("Fedict", Locale.FRENCH);
+		trustServiceList.setSchemeOperatorName("Fedict", Locale.GERMAN);
+
+		// scheme operator postal address
+		PostalAddressType schemeOperatorPostalAddress = new PostalAddressType();
+		schemeOperatorPostalAddress
+				.setStreetAddress("Maria-Theresiastraat 1/3");
+		schemeOperatorPostalAddress.setLocality("Brussels");
+		schemeOperatorPostalAddress.setStateOrProvince("Brussels");
+		schemeOperatorPostalAddress.setPostalCode("1000");
+		schemeOperatorPostalAddress.setCountryName("Belgium");
+		trustServiceList.setSchemeOperatorPostalAddress(
+				schemeOperatorPostalAddress, Locale.ENGLISH);
+
+		schemeOperatorPostalAddress
+				.setStreetAddress("Maria-Theresiastraat 1/3");
+		schemeOperatorPostalAddress.setLocality("Brussel");
+		schemeOperatorPostalAddress.setStateOrProvince("Brussel");
+		schemeOperatorPostalAddress.setPostalCode("1000");
+		schemeOperatorPostalAddress.setCountryName("België");
+		trustServiceList.setSchemeOperatorPostalAddress(
+				schemeOperatorPostalAddress, new Locale("nl"));
+
+		// operate
+		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
+		tmpTslFile.deleteOnExit();
+		trustServiceList.save(tmpTslFile);
+
+		// verify
+		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
+		Document document = loadDocument(tmpTslFile);
+
+		// scheme operator name
+		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
+		String schemeOperatorNameEn = trustServiceList
+				.getSchemeOperatorName(Locale.ENGLISH);
+		assertEquals("Fedict", schemeOperatorNameEn);
+		LOG.debug("Locale.ENGLISH: " + Locale.ENGLISH.getLanguage());
+		assertEquals("Fedict", trustServiceList
+				.getSchemeOperatorName(Locale.FRENCH));
+
+		Node schemeOperatorNameEnNode = XPathAPI
+				.selectSingleNode(
+						document,
+						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='EN']");
+		assertNotNull(schemeOperatorNameEnNode);
+		assertEquals("Fedict", schemeOperatorNameEnNode.getTextContent());
+
+		// scheme operator postal address
+		PostalAddressType resultPostalAddress = trustServiceList
+				.getSchemeOperatorPostalAddress(Locale.ENGLISH);
+		assertNotNull(resultPostalAddress);
+		assertEquals("Maria-Theresiastraat 1/3", resultPostalAddress
+				.getStreetAddress());
+		assertEquals("Brussels", resultPostalAddress.getLocality());
+		assertEquals("Brussel", trustServiceList
+				.getSchemeOperatorPostalAddress(new Locale("nl")).getLocality());
+	}
+
+	@Test
 	public void testSignNewTsl() throws Exception {
 		// setup
 		KeyPair keyPair = TrustTestUtils.generateKeyPair();
@@ -337,6 +450,17 @@ public class TrustServiceListFactoryTest {
 				.newDocumentBuilder();
 		Document tslDocument = documentBuilder.parse(documentInputStream);
 		return tslDocument;
+	}
+
+	private Document loadDocument(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		DocumentBuilder documentBuilder = documentBuilderFactory
+				.newDocumentBuilder();
+		Document document = documentBuilder.parse(file);
+		return document;
 	}
 
 	private String toString(Node dom) throws TransformerException {

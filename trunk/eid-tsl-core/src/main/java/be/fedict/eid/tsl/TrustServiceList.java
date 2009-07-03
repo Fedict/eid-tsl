@@ -73,8 +73,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
+import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
+import org.etsi.uri._02231.v2_.PostalAddressListType;
+import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
@@ -92,6 +95,10 @@ import org.w3c.dom.Node;
 public class TrustServiceList {
 
 	private static final Log LOG = LogFactory.getLog(TrustServiceList.class);
+
+	public static final String TSL_TAG = "http://uri.etsi.org/02231/TSLtag";
+
+	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLtype/generic";
 
 	private TrustStatusListType trustStatusList;
 
@@ -153,6 +160,20 @@ public class TrustServiceList {
 		setSchemeName(schemeName, locale);
 	}
 
+	public void setSchemeOperatorName(String schemeOperatorName) {
+		Locale locale = Locale.getDefault();
+		setSchemeOperatorName(schemeOperatorName, locale);
+	}
+
+	private void clearDocumentCacheAndSetChanged() {
+		/*
+		 * The XML signature should be regenerated anyway, so clear the TSL DOM
+		 * object.
+		 */
+		this.tslDocument = null;
+		setChanged();
+	}
+
 	private void setChanged() {
 		this.changed = true;
 		notifyChangeListeners();
@@ -166,12 +187,7 @@ public class TrustServiceList {
 		return this.trustStatusList;
 	}
 
-	public void setSchemeName(String schemeName, Locale locale) {
-		/*
-		 * The XML signature should be regenerated anyway, so clear the TSL DOM
-		 * object.
-		 */
-		this.tslDocument = null;
+	private TSLSchemeInformationType getSchemeInformation() {
 		TrustStatusListType trustStatusList = getTrustStatusList();
 		TSLSchemeInformationType tslSchemeInformation = trustStatusList
 				.getSchemeInformation();
@@ -180,6 +196,11 @@ public class TrustServiceList {
 					.createTSLSchemeInformationType();
 			trustStatusList.setSchemeInformation(tslSchemeInformation);
 		}
+		return tslSchemeInformation;
+	}
+
+	public void setSchemeName(String schemeName, Locale locale) {
+		TSLSchemeInformationType tslSchemeInformation = getSchemeInformation();
 		InternationalNamesType i18nSchemeName = tslSchemeInformation
 				.getSchemeName();
 		if (null == i18nSchemeName) {
@@ -187,7 +208,84 @@ public class TrustServiceList {
 			tslSchemeInformation.setSchemeName(i18nSchemeName);
 		}
 		TrustServiceListUtils.setValue(schemeName, locale, i18nSchemeName);
-		setChanged();
+		/*
+		 * Also notify the listeners that we've changed content.
+		 */
+		clearDocumentCacheAndSetChanged();
+	}
+
+	public void setSchemeOperatorName(String schemeOperatorName, Locale locale) {
+		TSLSchemeInformationType tslSchemeInformation = getSchemeInformation();
+		InternationalNamesType i18nSchemeOperatorName = tslSchemeInformation
+				.getSchemeOperatorName();
+		if (null == i18nSchemeOperatorName) {
+			i18nSchemeOperatorName = this.objectFactory
+					.createInternationalNamesType();
+			tslSchemeInformation.setSchemeOperatorName(i18nSchemeOperatorName);
+		}
+		TrustServiceListUtils.setValue(schemeOperatorName, locale,
+				i18nSchemeOperatorName);
+		clearDocumentCacheAndSetChanged();
+	}
+
+	public void setSchemeOperatorPostalAddress(PostalAddressType postalAddress,
+			Locale locale) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		AddressType schemeOperatorAddress = schemeInformation
+				.getSchemeOperatorAddress();
+		if (null == schemeOperatorAddress) {
+			schemeOperatorAddress = this.objectFactory.createAddressType();
+			schemeInformation.setSchemeOperatorAddress(schemeOperatorAddress);
+		}
+		PostalAddressListType postalAddresses = schemeOperatorAddress
+				.getPostalAddresses();
+		if (null == postalAddresses) {
+			postalAddresses = this.objectFactory.createPostalAddressListType();
+			schemeOperatorAddress.setPostalAddresses(postalAddresses);
+		}
+		/*
+		 * First try to locate an existing address for the given locale.
+		 */
+		PostalAddressType existingPostalAddress = null;
+		for (PostalAddressType currentPostalAddress : postalAddresses
+				.getPostalAddress()) {
+			if (currentPostalAddress.getLang().toLowerCase().equals(
+					locale.getLanguage())) {
+				existingPostalAddress = currentPostalAddress;
+				break;
+			}
+		}
+		if (null != existingPostalAddress) {
+			/*
+			 * Update the existing postal address.
+			 */
+			existingPostalAddress.setStreetAddress(postalAddress
+					.getStreetAddress());
+			existingPostalAddress.setPostalCode(postalAddress.getPostalCode());
+			existingPostalAddress.setLocality(postalAddress.getLocality());
+			existingPostalAddress.setStateOrProvince(postalAddress
+					.getStateOrProvince());
+			existingPostalAddress
+					.setCountryName(postalAddress.getCountryName());
+		} else {
+			LOG.debug("add postal address: " + locale.getLanguage());
+			/*
+			 * Add the new postal address. We really have to create a copy into
+			 * a new JAXB object. This allows a caller to reuse a postal address
+			 * JAXB data structure without running into trouble with the JAXB
+			 * marshaller.
+			 */
+			PostalAddressType newPostalAddress = this.objectFactory
+					.createPostalAddressType();
+			newPostalAddress.setLang(locale.getLanguage().toUpperCase());
+			newPostalAddress.setStreetAddress(postalAddress.getStreetAddress());
+			newPostalAddress.setPostalCode(postalAddress.getPostalCode());
+			newPostalAddress.setLocality(postalAddress.getLocality());
+			newPostalAddress.setStateOrProvince(postalAddress
+					.getStateOrProvince());
+			newPostalAddress.setCountryName(postalAddress.getCountryName());
+			postalAddresses.getPostalAddress().add(newPostalAddress);
+		}
 	}
 
 	public String getSchemeName(Locale locale) {
@@ -354,6 +452,33 @@ public class TrustServiceList {
 		TrustStatusListType trustStatusList = getTrustStatusList();
 		trustStatusList.setId(tslId);
 
+		/*
+		 * TSLTag
+		 */
+		trustStatusList.setTSLTag(TSL_TAG);
+
+		/*
+		 * Scheme Information - TSL version identifier.
+		 */
+		TSLSchemeInformationType schemeInformation = trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			schemeInformation = this.objectFactory
+					.createTSLSchemeInformationType();
+			trustStatusList.setSchemeInformation(schemeInformation);
+		}
+		schemeInformation.setTSLVersionIdentifier(BigInteger.valueOf(3));
+
+		/*
+		 * Scheme Information - TSL sequence number
+		 */
+		schemeInformation.setTSLSequenceNumber(BigInteger.valueOf(1));
+
+		/*
+		 * Scheme Information - TSL Type
+		 */
+		schemeInformation.setTSLType(TSL_TYPE);
+
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
@@ -494,5 +619,34 @@ public class TrustServiceList {
 		 */
 		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(source, result);
+	}
+
+	public PostalAddressType getSchemeOperatorPostalAddress(Locale locale) {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		AddressType schemeOperatorAddress = schemeInformation
+				.getSchemeOperatorAddress();
+		if (null == schemeOperatorAddress) {
+			return null;
+		}
+		PostalAddressListType postalAddresses = schemeOperatorAddress
+				.getPostalAddresses();
+		if (null == postalAddresses) {
+			return null;
+		}
+		for (PostalAddressType postalAddress : postalAddresses
+				.getPostalAddress()) {
+			if (postalAddress.getLang().toLowerCase().equals(
+					locale.getLanguage())) {
+				return postalAddress;
+			}
+		}
+		return null;
 	}
 }

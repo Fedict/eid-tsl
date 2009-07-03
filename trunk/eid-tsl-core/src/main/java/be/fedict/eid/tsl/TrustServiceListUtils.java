@@ -50,6 +50,9 @@ class TrustServiceListUtils {
 	 * @return
 	 */
 	static String getValue(InternationalNamesType i18nName, Locale locale) {
+		if (null == i18nName) {
+			return null;
+		}
 		List<MultiLangNormStringType> names = i18nName.getName();
 		String enValue = null;
 		for (MultiLangNormStringType name : names) {
@@ -95,7 +98,7 @@ class TrustServiceListUtils {
 			 */
 			ObjectFactory objectFactory = new ObjectFactory();
 			localeName = objectFactory.createMultiLangNormStringType();
-			localeName.setLang(locale.getLanguage());
+			localeName.setLang(locale.getLanguage().toUpperCase());
 			names.add(localeName);
 		}
 		localeName.setValue(value);
