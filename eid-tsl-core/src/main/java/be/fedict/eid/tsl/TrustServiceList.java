@@ -76,6 +76,9 @@ import org.apache.xpath.XPathAPI;
 import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
+import org.etsi.uri._02231.v2_.NonEmptyURIListType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
@@ -359,6 +362,65 @@ public class TrustServiceList {
 		String name = TrustServiceListUtils.getValue(i18nSchemeOperatorName,
 				locale);
 		return name;
+	}
+
+	public void addSchemeInformationUri(String uri, Locale locale) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		NonEmptyMultiLangURIListType schemeInformationUriList = schemeInformation
+				.getSchemeInformationURI();
+		if (null == schemeInformationUriList) {
+			schemeInformationUriList = this.objectFactory
+					.createNonEmptyMultiLangURIListType();
+			schemeInformation.setSchemeInformationURI(schemeInformationUriList);
+		}
+		NonEmptyMultiLangURIType i18nUri = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		i18nUri.setLang(locale.getLanguage().toUpperCase());
+		i18nUri.setValue(uri);
+		schemeInformationUriList.getURI().add(i18nUri);
+	}
+
+	public List<String> getSchemeInformationUris() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		NonEmptyMultiLangURIListType schemeInformationUriList = schemeInformation
+				.getSchemeInformationURI();
+		if (null == schemeInformationUriList) {
+			return null;
+		}
+		List<NonEmptyMultiLangURIType> uris = schemeInformationUriList.getURI();
+		List<String> results = new LinkedList<String>();
+		for (NonEmptyMultiLangURIType uri : uris) {
+			results.add(uri.getValue());
+		}
+		return results;
+	}
+
+	public void setStatusDeterminationApproach(
+			String statusDeterminationApproach) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		schemeInformation
+				.setStatusDeterminationApproach(statusDeterminationApproach);
+	}
+
+	public String getStatusDeterminationApproach() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		String statusDeterminationApproach = schemeInformation
+				.getStatusDeterminationApproach();
+		return statusDeterminationApproach;
 	}
 
 	public List<TrustServiceProvider> getTrustServiceProviders() {
@@ -691,5 +753,52 @@ public class TrustServiceList {
 			}
 		}
 		return null;
+	}
+
+	public void addSchemeType(String schemeType) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		NonEmptyURIListType schemeTypeList = schemeInformation
+				.getSchemeTypeCommunityRules();
+		if (null == schemeTypeList) {
+			schemeTypeList = this.objectFactory.createNonEmptyURIListType();
+			schemeInformation.setSchemeTypeCommunityRules(schemeTypeList);
+		}
+		schemeTypeList.getURI().add(schemeType);
+	}
+
+	public List<String> getSchemeTypes() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		NonEmptyURIListType schemeTypeList = schemeInformation
+				.getSchemeTypeCommunityRules();
+		if (null == schemeTypeList) {
+			return null;
+		}
+		List<String> schemeTypes = schemeTypeList.getURI();
+		return schemeTypes;
+	}
+
+	public void setSchemeTerritory(String schemeTerritory) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		schemeInformation.setSchemeTerritory(schemeTerritory);
+	}
+
+	public String getSchemeTerritory() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		String schemeTerritory = schemeInformation.getSchemeTerritory();
+		return schemeTerritory;
 	}
 }

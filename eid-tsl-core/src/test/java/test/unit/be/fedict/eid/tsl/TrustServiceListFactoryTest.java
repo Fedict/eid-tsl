@@ -385,9 +385,26 @@ public class TrustServiceListFactoryTest {
 						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator Member State for compliance with the relevant provisions laid down in  Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures",
 						Locale.ENGLISH);
 
+		// scheme information URIs
+		trustServiceList.addSchemeInformationUri(
+				"http://tsl.fedict.belgium.be/", Locale.ENGLISH);
+
+		// status determination approach
+		trustServiceList
+				.setStatusDeterminationApproach("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ");
+
+		// scheme type
+		trustServiceList
+				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common");
+		trustServiceList
+				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
+
+		// scheme territory
+		trustServiceList.setSchemeTerritory("BE");
+
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
-		tmpTslFile.deleteOnExit();
+		// tmpTslFile.deleteOnExit();
 		trustServiceList.save(tmpTslFile);
 
 		// verify
@@ -429,6 +446,29 @@ public class TrustServiceListFactoryTest {
 		// scheme name
 		assertTrue(trustServiceList.getSchemeName(Locale.ENGLISH).startsWith(
 				"BE:"));
+
+		// scheme information uri
+		List<String> schemeInformationUris = trustServiceList
+				.getSchemeInformationUris();
+		assertNotNull(schemeInformationUris);
+		assertEquals(1, schemeInformationUris.size());
+		assertEquals("http://tsl.fedict.belgium.be/", schemeInformationUris
+				.get(0));
+
+		// status determination approach
+		assertEquals(
+				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ",
+				trustServiceList.getStatusDeterminationApproach());
+
+		// scheme types
+		List<String> schemeTypes = trustServiceList.getSchemeTypes();
+		assertNotNull(schemeTypes);
+		assertEquals(2, schemeTypes.size());
+
+		// scheme territory
+		assertEquals("BE", trustServiceList.getSchemeTerritory());
+
+		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}
 
 	@Test
