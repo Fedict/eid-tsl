@@ -402,12 +402,21 @@ public class TrustServiceListFactoryTest {
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
 
+		// legal notice
+		trustServiceList
+				.addLegalNotice(
+						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgium laws.",
+						Locale.ENGLISH);
+
+		// historical information period
+		trustServiceList.setHistoricalInformationPeriod(3653);
+
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
 		// tmpTslFile.deleteOnExit();
 		trustServiceList.save(tmpTslFile);
 
-		// verify
+		// VERIFY TRUST LIST
 		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
 		Document document = loadDocument(tmpTslFile);
 
@@ -467,6 +476,17 @@ public class TrustServiceListFactoryTest {
 
 		// scheme territory
 		assertEquals("BE", trustServiceList.getSchemeTerritory());
+
+		// legal notice
+		String resultLegalNotice = trustServiceList
+				.getLegalNotice(Locale.ENGLISH);
+		assertNotNull(resultLegalNotice);
+		assertTrue(resultLegalNotice.indexOf("1999/93/EC") != -1);
+		assertTrue(resultLegalNotice.indexOf("Belgium") != -1);
+
+		// historical information period
+		assertEquals(new Integer(3653), trustServiceList
+				.getHistoricalInformationPeriod());
 
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}

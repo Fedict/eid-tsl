@@ -76,10 +76,12 @@ import org.apache.xpath.XPathAPI;
 import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
+import org.etsi.uri._02231.v2_.MultiLangStringType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.NonEmptyURIListType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
+import org.etsi.uri._02231.v2_.PolicyOrLegalnoticeType;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
@@ -800,5 +802,73 @@ public class TrustServiceList {
 		}
 		String schemeTerritory = schemeInformation.getSchemeTerritory();
 		return schemeTerritory;
+	}
+
+	public void addLegalNotice(String legalNotice, Locale locale) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		PolicyOrLegalnoticeType policyOrLegalnotice = schemeInformation
+				.getPolicyOrLegalNotice();
+		if (null == policyOrLegalnotice) {
+			policyOrLegalnotice = this.objectFactory
+					.createPolicyOrLegalnoticeType();
+			schemeInformation.setPolicyOrLegalNotice(policyOrLegalnotice);
+		}
+		List<MultiLangStringType> tslLegalNotices = policyOrLegalnotice
+				.getTSLLegalNotice();
+
+		MultiLangStringType tslLegalNotice = this.objectFactory
+				.createMultiLangStringType();
+		tslLegalNotice.setLang(locale.getLanguage().toUpperCase());
+		tslLegalNotice.setValue(legalNotice);
+
+		tslLegalNotices.add(tslLegalNotice);
+	}
+
+	public String getLegalNotice(Locale locale) {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		PolicyOrLegalnoticeType policyOrLegalnotice = schemeInformation
+				.getPolicyOrLegalNotice();
+		if (null == policyOrLegalnotice) {
+			return null;
+		}
+		List<MultiLangStringType> tslLegalNotices = policyOrLegalnotice
+				.getTSLLegalNotice();
+		for (MultiLangStringType tslLegalNotice : tslLegalNotices) {
+			String lang = tslLegalNotice.getLang();
+			if (locale.getLanguage().toUpperCase().equals(lang)) {
+				return tslLegalNotice.getValue();
+			}
+		}
+		return null;
+	}
+
+	public void setHistoricalInformationPeriod(int historicalInformationPeriod) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		schemeInformation.setHistoricalInformationPeriod(BigInteger
+				.valueOf(historicalInformationPeriod));
+	}
+
+	public Integer getHistoricalInformationPeriod() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		BigInteger historicalInformationPeriod = schemeInformation
+				.getHistoricalInformationPeriod();
+		if (null == historicalInformationPeriod) {
+			return null;
+		}
+		return historicalInformationPeriod.intValue();
 	}
 }
