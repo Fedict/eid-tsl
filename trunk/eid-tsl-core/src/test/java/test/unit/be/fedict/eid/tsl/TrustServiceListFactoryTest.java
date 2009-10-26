@@ -411,6 +411,14 @@ public class TrustServiceListFactoryTest {
 		// historical information period
 		trustServiceList.setHistoricalInformationPeriod(3653);
 
+		// list issue date time
+		DateTime listIssueDateTime = new DateTime();
+		trustServiceList.setListIssueDateTime(listIssueDateTime);
+
+		// next update
+		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
+		trustServiceList.setNextUpdate(nextUpdateDateTime);
+
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
 		// tmpTslFile.deleteOnExit();
@@ -487,6 +495,15 @@ public class TrustServiceListFactoryTest {
 		// historical information period
 		assertEquals(new Integer(3653), trustServiceList
 				.getHistoricalInformationPeriod());
+
+		// list issue date time
+		DateTime resultListIssueDateTime = trustServiceList
+				.getListIssueDateTime();
+		assertNotNull(resultListIssueDateTime);
+
+		// next update
+		DateTime resultNextUpdateDateTime = trustServiceList.getNextUpdate();
+		assertNotNull(resultNextUpdateDateTime);
 
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}
