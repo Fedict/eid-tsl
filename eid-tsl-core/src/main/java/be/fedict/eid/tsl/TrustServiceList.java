@@ -27,9 +27,11 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -54,6 +56,8 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -77,6 +81,7 @@ import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.MultiLangStringType;
+import org.etsi.uri._02231.v2_.NextUpdateType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.NonEmptyURIListType;
@@ -88,6 +93,7 @@ import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
+import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -118,11 +124,19 @@ public class TrustServiceList {
 
 	private final ObjectFactory objectFactory;
 
+	private final DatatypeFactory datatypeFactory;
+
 	protected TrustServiceList() {
 		super();
 		this.changed = true;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
+		try {
+			this.datatypeFactory = DatatypeFactory.newInstance();
+		} catch (DatatypeConfigurationException e) {
+			throw new RuntimeException("datatype config error: "
+					+ e.getMessage(), e);
+		}
 	}
 
 	protected TrustServiceList(TrustStatusListType trustStatusList,
@@ -131,6 +145,12 @@ public class TrustServiceList {
 		this.tslDocument = tslDocument;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
+		try {
+			this.datatypeFactory = DatatypeFactory.newInstance();
+		} catch (DatatypeConfigurationException e) {
+			throw new RuntimeException("datatype config error: "
+					+ e.getMessage(), e);
+		}
 	}
 
 	public void addChangeListener(ChangeListener changeListener) {
@@ -870,5 +890,69 @@ public class TrustServiceList {
 			return null;
 		}
 		return historicalInformationPeriod.intValue();
+	}
+
+	public void setListIssueDateTime(DateTime listIssueDateTime) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		GregorianCalendar listIssueCalendar = listIssueDateTime
+				.toGregorianCalendar();
+		listIssueCalendar.setTimeZone(TimeZone.getTimeZone("Z"));
+		schemeInformation.setListIssueDateTime(this.datatypeFactory
+				.newXMLGregorianCalendar(listIssueCalendar));
+	}
+
+	public DateTime getListIssueDateTime() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+		XMLGregorianCalendar listIssueDateTime = schemeInformation
+				.getListIssueDateTime();
+		if (null == listIssueDateTime) {
+			return null;
+		}
+		GregorianCalendar listIssueCalendar = listIssueDateTime
+				.toGregorianCalendar();
+		DateTime dateTime = new DateTime(listIssueCalendar);
+		return dateTime;
+	}
+
+	public void setNextUpdate(DateTime nextUpdateDateTime) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		GregorianCalendar nextUpdateCalendar = nextUpdateDateTime
+				.toGregorianCalendar();
+		nextUpdateCalendar.setTimeZone(TimeZone.getTimeZone("Z"));
+
+		NextUpdateType nextUpdate = schemeInformation.getNextUpdate();
+		if (null == nextUpdate) {
+			nextUpdate = this.objectFactory.createNextUpdateType();
+			schemeInformation.setNextUpdate(nextUpdate);
+		}
+		nextUpdate.setDateTime(this.datatypeFactory
+				.newXMLGregorianCalendar(nextUpdateCalendar));
+	}
+
+	public DateTime getNextUpdate() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType schemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == schemeInformation) {
+			return null;
+		}
+
+		NextUpdateType nextUpdate = schemeInformation.getNextUpdate();
+		if (null == nextUpdate) {
+			return null;
+		}
+		XMLGregorianCalendar nextUpdateXmlCalendar = nextUpdate.getDateTime();
+		DateTime nextUpdateDateTime = new DateTime(nextUpdateXmlCalendar
+				.toGregorianCalendar());
+		return nextUpdateDateTime;
 	}
 }
