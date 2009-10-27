@@ -23,7 +23,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.etsi.uri._02231.v2_.AddressType;
+import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
@@ -114,6 +117,48 @@ public class TrustServiceProvider {
 		return null;
 	}
 
+	public void addElectronicAddress(String... electronicAddressUris) {
+		TSPInformationType tspInformation = getTSPInformation();
+		AddressType address = tspInformation.getTSPAddress();
+		if (null == address) {
+			address = this.objectFactory.createAddressType();
+			tspInformation.setTSPAddress(address);
+		}
+		ElectronicAddressType electronicAddress = address
+				.getElectronicAddress();
+		if (null == electronicAddress) {
+			electronicAddress = this.objectFactory
+					.createElectronicAddressType();
+			address.setElectronicAddress(electronicAddress);
+		}
+		List<String> uris = electronicAddress.getURI();
+		for (String electronicAddressUri : electronicAddressUris) {
+			uris.add(electronicAddressUri);
+		}
+	}
+
+	public List<String> getElectronicAddress() {
+		List<String> resultElectronicAddress = new LinkedList<String>();
+		TSPInformationType tspInformation = this.tsp.getTSPInformation();
+		if (null == tspInformation) {
+			return resultElectronicAddress;
+		}
+		AddressType address = tspInformation.getTSPAddress();
+		if (null == address) {
+			return resultElectronicAddress;
+		}
+		ElectronicAddressType electronicAddress = address
+				.getElectronicAddress();
+		if (null == electronicAddress) {
+			return resultElectronicAddress;
+		}
+		List<String> uris = electronicAddress.getURI();
+		for (String uri : uris) {
+			resultElectronicAddress.add(uri);
+		}
+		return resultElectronicAddress;
+	}
+
 	private TSPInformationType getTSPInformation() {
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
 		if (null == tspInformation) {
@@ -121,6 +166,44 @@ public class TrustServiceProvider {
 			this.tsp.setTSPInformation(tspInformation);
 		}
 		return tspInformation;
+	}
+
+	public void addInformationUri(Locale locale, String informationUri) {
+		TSPInformationType tspInformation = getTSPInformation();
+		NonEmptyMultiLangURIListType tspInformationURI = tspInformation
+				.getTSPInformationURI();
+		if (null == tspInformationURI) {
+			tspInformationURI = this.objectFactory
+					.createNonEmptyMultiLangURIListType();
+			tspInformation.setTSPInformationURI(tspInformationURI);
+		}
+		List<NonEmptyMultiLangURIType> uris = tspInformationURI.getURI();
+		NonEmptyMultiLangURIType uri = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		uri.setLang(locale.getLanguage().toUpperCase());
+		uri.setValue(informationUri);
+		uris.add(uri);
+	}
+
+	public String getInformationUri(Locale locale) {
+		TSPInformationType tspInformation = this.tsp.getTSPInformation();
+		if (null == tspInformation) {
+			return null;
+		}
+		NonEmptyMultiLangURIListType tspInformationURI = tspInformation
+				.getTSPInformationURI();
+		if (null == tspInformationURI) {
+			return null;
+		}
+		List<NonEmptyMultiLangURIType> uris = tspInformationURI.getURI();
+		for (NonEmptyMultiLangURIType uri : uris) {
+			String lang = uri.getLang();
+			if (0 != locale.getLanguage().compareToIgnoreCase(lang)) {
+				continue;
+			}
+			return uri.getValue();
+		}
+		return null;
 	}
 
 	public String getName(Locale locale) {

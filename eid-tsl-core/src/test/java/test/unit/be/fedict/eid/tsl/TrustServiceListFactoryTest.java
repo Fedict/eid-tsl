@@ -426,6 +426,22 @@ public class TrustServiceListFactoryTest {
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
 				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",
 				"BE");
+		certipostTrustServiceProvider
+				.addElectronicAddress("http://www.certipost.be/",
+						"mailto:eid.csp@staff.certipost.be");
+
+		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				"http://www.certipost.be");
+
+		// sign trust list
+		KeyPair keyPair = TrustTestUtils.generateKeyPair();
+		PrivateKey privateKey = keyPair.getPrivate();
+		DateTime notBefore = new DateTime();
+		DateTime notAfter = notBefore.plusYears(1);
+		X509Certificate certificate = TrustTestUtils
+				.generateSelfSignedCertificate(keyPair, "CN=Test", notBefore,
+						notAfter);
+		trustServiceList.sign(privateKey, certificate);
 
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
@@ -436,8 +452,12 @@ public class TrustServiceListFactoryTest {
 		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
 		Document document = loadDocument(tmpTslFile);
 
-		// scheme operator name
+		// signature
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
+		X509Certificate resultCertificate = trustServiceList.verifySignature();
+		assertEquals(certificate, resultCertificate);
+
+		// scheme operator name
 		String schemeOperatorNameEn = trustServiceList
 				.getSchemeOperatorName(Locale.ENGLISH);
 		assertEquals("Fedict", schemeOperatorNameEn);
@@ -528,6 +548,16 @@ public class TrustServiceListFactoryTest {
 		assertEquals("Ninovesteenweg 196", certipostPostalAddress
 				.getStreetAddress());
 		assertEquals("BE", certipostPostalAddress.getCountryName());
+
+		// electronic address
+		List<String> resultElectronicAddress = certipostTrustServiceProvider
+				.getElectronicAddress();
+		assertEquals(2, resultElectronicAddress.size());
+
+		// information uri
+		String resultInformationUri = certipostTrustServiceProvider
+				.getInformationUri(Locale.ENGLISH);
+		assertEquals("http://www.certipost.be", resultInformationUri);
 
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}
