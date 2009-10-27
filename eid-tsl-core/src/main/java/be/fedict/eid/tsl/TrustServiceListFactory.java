@@ -20,6 +20,7 @@ package be.fedict.eid.tsl;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -134,5 +135,10 @@ public class TrustServiceListFactory {
 		TrustServiceProvider trustServiceProvider = new TrustServiceProvider(
 				name);
 		return trustServiceProvider;
+	}
+
+	public static TrustService createTrustService(X509Certificate certificate) {
+		TrustService trustService = new TrustService(certificate);
+		return trustService;
 	}
 }

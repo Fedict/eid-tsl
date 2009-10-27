@@ -231,4 +231,16 @@ public class TrustServiceProvider {
 		}
 		return this.trustServices;
 	}
+
+	public void addTrustService(TrustService trustService) {
+		TSPServicesListType tspServicesList = this.tsp.getTSPServices();
+		if (null == tspServicesList) {
+			tspServicesList = this.objectFactory.createTSPServicesListType();
+			this.tsp.setTSPServices(tspServicesList);
+		}
+		List<TSPServiceType> tspServices = tspServicesList.getTSPService();
+		tspServices.add(trustService.getTSPService());
+		// reset java model cache
+		this.trustServices = null;
+	}
 }
