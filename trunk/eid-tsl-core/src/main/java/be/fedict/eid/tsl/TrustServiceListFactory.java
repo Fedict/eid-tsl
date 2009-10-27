@@ -129,4 +129,10 @@ public class TrustServiceListFactory {
 	public static TrustServiceList newInstance() {
 		return new TrustServiceList();
 	}
+
+	public static TrustServiceProvider createTrustServiceProvider(String name) {
+		TrustServiceProvider trustServiceProvider = new TrustServiceProvider(
+				name);
+		return trustServiceProvider;
+	}
 }
