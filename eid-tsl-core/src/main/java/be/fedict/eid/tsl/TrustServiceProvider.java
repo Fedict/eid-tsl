@@ -22,7 +22,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
+import org.etsi.uri._02231.v2_.ObjectFactory;
+import org.etsi.uri._02231.v2_.PostalAddressListType;
+import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.etsi.uri._02231.v2_.TSPInformationType;
 import org.etsi.uri._02231.v2_.TSPServiceType;
 import org.etsi.uri._02231.v2_.TSPServicesListType;
@@ -34,8 +38,89 @@ public class TrustServiceProvider {
 
 	private List<TrustService> trustServices;
 
+	private final ObjectFactory objectFactory;
+
 	TrustServiceProvider(TSPType tsp) {
 		this.tsp = tsp;
+		this.objectFactory = new ObjectFactory();
+	}
+
+	public TrustServiceProvider(String name) {
+		this.objectFactory = new ObjectFactory();
+		this.tsp = this.objectFactory.createTSPType();
+		TSPInformationType tspInformation = this.objectFactory
+				.createTSPInformationType();
+		InternationalNamesType tspNames = this.objectFactory
+				.createInternationalNamesType();
+		TrustServiceListUtils.setValue(name, Locale.ENGLISH, tspNames);
+		tspInformation.setTSPName(tspNames);
+		this.tsp.setTSPInformation(tspInformation);
+	}
+
+	TSPType getTSP() {
+		return this.tsp;
+	}
+
+	public void addPostalAddress(Locale locale, String streetAddress,
+			String locality, String stateOrProvince, String postalCode,
+			String countryName) {
+		TSPInformationType tspInformation = getTSPInformation();
+		AddressType address = tspInformation.getTSPAddress();
+		if (null == address) {
+			address = this.objectFactory.createAddressType();
+			tspInformation.setTSPAddress(address);
+		}
+		PostalAddressListType postalAddresses = address.getPostalAddresses();
+		if (null == postalAddresses) {
+			postalAddresses = this.objectFactory.createPostalAddressListType();
+			address.setPostalAddresses(postalAddresses);
+		}
+		List<PostalAddressType> postalAddressList = postalAddresses
+				.getPostalAddress();
+		PostalAddressType postalAddress = this.objectFactory
+				.createPostalAddressType();
+		postalAddressList.add(postalAddress);
+
+		postalAddress.setLang(locale.getLanguage().toUpperCase());
+		postalAddress.setStreetAddress(streetAddress);
+		postalAddress.setLocality(locality);
+		postalAddress.setStateOrProvince(stateOrProvince);
+		postalAddress.setPostalCode(postalCode);
+		postalAddress.setCountryName(countryName);
+	}
+
+	public PostalAddressType getPostalAddress(Locale locale) {
+		TSPInformationType tspInformation = this.tsp.getTSPInformation();
+		if (null == tspInformation) {
+			return null;
+		}
+		AddressType address = tspInformation.getTSPAddress();
+		if (null == address) {
+			return null;
+		}
+		PostalAddressListType postalAddresses = address.getPostalAddresses();
+		if (null == postalAddresses) {
+			return null;
+		}
+		List<PostalAddressType> postalAddressList = postalAddresses
+				.getPostalAddress();
+		for (PostalAddressType postalAddress : postalAddressList) {
+			String lang = postalAddress.getLang();
+			if (0 != locale.getLanguage().compareToIgnoreCase(lang)) {
+				continue;
+			}
+			return postalAddress;
+		}
+		return null;
+	}
+
+	private TSPInformationType getTSPInformation() {
+		TSPInformationType tspInformation = this.tsp.getTSPInformation();
+		if (null == tspInformation) {
+			tspInformation = this.objectFactory.createTSPInformationType();
+			this.tsp.setTSPInformation(tspInformation);
+		}
+		return tspInformation;
 	}
 
 	public String getName(Locale locale) {

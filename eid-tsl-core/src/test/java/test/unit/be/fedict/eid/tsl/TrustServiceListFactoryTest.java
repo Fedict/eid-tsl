@@ -419,12 +419,20 @@ public class TrustServiceListFactoryTest {
 		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
 		trustServiceList.setNextUpdate(nextUpdateDateTime);
 
+		// trust service provider list
+		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
+				.createTrustServiceProvider("Certipost");
+		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
+		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",
+				"BE");
+
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
 		// tmpTslFile.deleteOnExit();
 		trustServiceList.save(tmpTslFile);
 
-		// VERIFY TRUST LIST
+		// --------------- VERIFY TRUST LIST --------------------
 		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
 		Document document = loadDocument(tmpTslFile);
 
@@ -504,6 +512,22 @@ public class TrustServiceListFactoryTest {
 		// next update
 		DateTime resultNextUpdateDateTime = trustServiceList.getNextUpdate();
 		assertNotNull(resultNextUpdateDateTime);
+
+		// trust service provider list
+		List<TrustServiceProvider> trustServiceProviders = trustServiceList
+				.getTrustServiceProviders();
+		assertEquals(1, trustServiceProviders.size());
+		certipostTrustServiceProvider = trustServiceProviders.get(0);
+		assertEquals("Certipost", certipostTrustServiceProvider
+				.getName(Locale.ENGLISH));
+
+		// postal address
+		PostalAddressType certipostPostalAddress = certipostTrustServiceProvider
+				.getPostalAddress(Locale.ENGLISH);
+		assertNotNull(certipostPostalAddress);
+		assertEquals("Ninovesteenweg 196", certipostPostalAddress
+				.getStreetAddress());
+		assertEquals("BE", certipostPostalAddress.getCountryName());
 
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}

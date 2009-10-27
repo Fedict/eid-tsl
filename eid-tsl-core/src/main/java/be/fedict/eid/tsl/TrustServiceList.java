@@ -955,4 +955,20 @@ public class TrustServiceList {
 				.toGregorianCalendar());
 		return nextUpdateDateTime;
 	}
+
+	public void addTrustServiceProvider(
+			TrustServiceProvider trustServiceProvider) {
+		TrustStatusListType trustStatusList = getTrustStatusList();
+		TrustServiceProviderListType trustServiceProviderList = trustStatusList
+				.getTrustServiceProviderList();
+		if (null == trustServiceProviderList) {
+			trustServiceProviderList = this.objectFactory
+					.createTrustServiceProviderListType();
+			trustStatusList
+					.setTrustServiceProviderList(trustServiceProviderList);
+		}
+		List<TSPType> tspList = trustServiceProviderList
+				.getTrustServiceProvider();
+		tspList.add(trustServiceProvider.getTSP());
+	}
 }
