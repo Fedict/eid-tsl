@@ -20,6 +20,7 @@ package test.unit.be.fedict.eid.tsl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -76,6 +77,28 @@ import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.joda.time.DateTime;
 
 public class TrustTestUtils {
+
+	public static X509Certificate loadCertificateFromResource(
+			String resourceName) {
+		Thread currentThread = Thread.currentThread();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+		InputStream certificateInputStream = classLoader
+				.getResourceAsStream(resourceName);
+		if (null == certificateInputStream) {
+			throw new IllegalArgumentException(
+					"could not load certificate resource: " + resourceName);
+		}
+		try {
+			CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			X509Certificate certificate = (X509Certificate) certificateFactory
+					.generateCertificate(certificateInputStream);
+			return certificate;
+		} catch (CertificateException e) {
+			throw new RuntimeException("certificate factory error: "
+					+ e.getMessage(), e);
+		}
+	}
 
 	public static X509Certificate generateCertificate(
 			PublicKey subjectPublicKey, String subjectDn, DateTime notBefore,

@@ -60,6 +60,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import be.fedict.eid.tsl.TrustService;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
@@ -419,7 +420,7 @@ public class TrustServiceListFactoryTest {
 		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
 		trustServiceList.setNextUpdate(nextUpdateDateTime);
 
-		// trust service provider list
+		// trust service provider list: certipost
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
 				.createTrustServiceProvider("Certipost");
 		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
@@ -433,14 +434,28 @@ public class TrustServiceListFactoryTest {
 		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
 				"http://www.certipost.be");
 
+		// certipost trust services: Root CA and Root CA2
+		X509Certificate rootCaCertificate = TrustTestUtils
+				.loadCertificateFromResource("belgiumrca.crt");
+		TrustService rootCaTrustService = TrustServiceListFactory
+				.createTrustService(rootCaCertificate);
+		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
+
+		X509Certificate rootCa2Certificate = TrustTestUtils
+				.loadCertificateFromResource("belgiumrca2.crt");
+		TrustService rootCa2TrustService = TrustServiceListFactory
+				.createTrustService(rootCa2Certificate);
+		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
+
 		// sign trust list
 		KeyPair keyPair = TrustTestUtils.generateKeyPair();
 		PrivateKey privateKey = keyPair.getPrivate();
 		DateTime notBefore = new DateTime();
 		DateTime notAfter = notBefore.plusYears(1);
 		X509Certificate certificate = TrustTestUtils
-				.generateSelfSignedCertificate(keyPair, "CN=Test", notBefore,
-						notAfter);
+				.generateSelfSignedCertificate(keyPair,
+						"C=BE, CN=Belgium Trust List Scheme Operator",
+						notBefore, notAfter);
 		trustServiceList.sign(privateKey, certificate);
 
 		// operate

@@ -970,5 +970,7 @@ public class TrustServiceList {
 		List<TSPType> tspList = trustServiceProviderList
 				.getTrustServiceProvider();
 		tspList.add(trustServiceProvider.getTSP());
+		// reset Java model cache
+		this.trustServiceProviders = null;
 	}
 }
