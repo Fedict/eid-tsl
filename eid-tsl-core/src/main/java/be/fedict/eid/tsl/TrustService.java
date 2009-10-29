@@ -71,7 +71,7 @@ public class TrustService {
 				.createTSPServiceInformationType();
 		this.tspService.setServiceInformation(tspServiceInformation);
 		tspServiceInformation
-				.setServiceTypeIdentifier("http://uri.etsi.org/TrstSvc/Svctype/CA/QC");
+				.setServiceTypeIdentifier("http://uri.etsi.org/TrstSvc/Svctype/CA/PKC");
 		InternationalNamesType i18nServiceName = this.objectFactory
 				.createInternationalNamesType();
 		List<MultiLangNormStringType> serviceNames = i18nServiceName.getName();
