@@ -22,10 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -53,6 +53,7 @@ import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
@@ -613,7 +614,10 @@ public class TrustServiceList {
 				.newDocumentBuilder();
 		Document document = documentBuilder.newDocument();
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance(
+						ObjectFactory.class,
+						org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		LOG.debug("marshaller type: " + marshaller.getClass().getName());
 		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
@@ -672,11 +676,15 @@ public class TrustServiceList {
 		signContext.putNamespacePrefix(XMLSignature.XMLNS, "ds");
 
 		DigestMethod digestMethod = signatureFactory.newDigestMethod(
-				DigestMethod.SHA1, null);
+				DigestMethod.SHA256, null);
 		List<Reference> references = new LinkedList<Reference>();
 		List<Transform> transforms = new LinkedList<Transform>();
 		transforms.add(signatureFactory.newTransform(Transform.ENVELOPED,
 				(TransformParameterSpec) null));
+		Transform exclusiveTransform = signatureFactory
+				.newTransform(CanonicalizationMethod.EXCLUSIVE,
+						(TransformParameterSpec) null);
+		transforms.add(exclusiveTransform);
 
 		Reference reference = signatureFactory.newReference("#" + tslId,
 				digestMethod, transforms, null, null);
@@ -685,17 +693,31 @@ public class TrustServiceList {
 		SignatureMethod signatureMethod = signatureFactory.newSignatureMethod(
 				SignatureMethod.RSA_SHA1, null);
 		CanonicalizationMethod canonicalizationMethod = signatureFactory
-				.newCanonicalizationMethod(
-						CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS,
+				.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE,
 						(C14NMethodParameterSpec) null);
 		SignedInfo signedInfo = signatureFactory.newSignedInfo(
 				canonicalizationMethod, signatureMethod, references);
 
+		List<Object> keyInfoContent = new LinkedList<Object>();
+
 		KeyInfoFactory keyInfoFactory = KeyInfoFactory.getInstance();
-		X509Data x509Data = keyInfoFactory.newX509Data(Collections
-				.singletonList(certificate));
-		KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Collections
-				.singletonList(x509Data));
+		List<Object> x509DataObjects = new LinkedList<Object>();
+		x509DataObjects.add(certificate);
+		x509DataObjects.add(keyInfoFactory.newX509IssuerSerial(certificate
+				.getIssuerX500Principal().toString(), certificate
+				.getSerialNumber()));
+		X509Data x509Data = keyInfoFactory.newX509Data(x509DataObjects);
+		keyInfoContent.add(x509Data);
+
+		KeyValue keyValue;
+		try {
+			keyValue = keyInfoFactory.newKeyValue(certificate.getPublicKey());
+		} catch (KeyException e) {
+			throw new RuntimeException("key exception: " + e.getMessage(), e);
+		}
+		keyInfoContent.add(keyValue);
+
+		KeyInfo keyInfo = keyInfoFactory.newKeyInfo(keyInfoContent);
 
 		XMLSignature xmlSignature = signatureFactory.newXMLSignature(
 				signedInfo, keyInfo);

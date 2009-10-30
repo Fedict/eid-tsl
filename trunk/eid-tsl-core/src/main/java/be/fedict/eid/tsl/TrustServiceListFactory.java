@@ -141,4 +141,10 @@ public class TrustServiceListFactory {
 		TrustService trustService = new TrustService(certificate);
 		return trustService;
 	}
+
+	public static TrustService createTrustService(X509Certificate certificate,
+			String... oids) {
+		TrustService trustService = new TrustService(certificate, oids);
+		return trustService;
+	}
 }

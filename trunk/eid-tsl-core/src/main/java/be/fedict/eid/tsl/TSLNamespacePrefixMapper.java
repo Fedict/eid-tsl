@@ -36,6 +36,10 @@ public class TSLNamespacePrefixMapper extends NamespacePrefixMapper {
 	static {
 		prefixes.put("http://uri.etsi.org/02231/v2#", "tsl");
 		prefixes.put("http://www.w3.org/2000/09/xmldsig#", "ds");
+		prefixes
+				.put(
+						"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
+						"ecc");
 	}
 
 	@Override
