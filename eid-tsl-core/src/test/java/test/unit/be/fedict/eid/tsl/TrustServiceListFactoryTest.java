@@ -438,17 +438,19 @@ public class TrustServiceListFactoryTest {
 		X509Certificate rootCaCertificate = TrustTestUtils
 				.loadCertificateFromResource("belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate);
+				.createTrustService(rootCaCertificate, "2.16.56.1.1.1.2.1",
+						"2.16.56.1.1.1.7.1");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
 		X509Certificate rootCa2Certificate = TrustTestUtils
 				.loadCertificateFromResource("belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate);
+				.createTrustService(rootCa2Certificate, "2.16.56.9.1.1.2.1",
+						"2.16.56.9.1.1.7.1");
 		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		// sign trust list
-		KeyPair keyPair = TrustTestUtils.generateKeyPair();
+		KeyPair keyPair = TrustTestUtils.generateKeyPair(2048);
 		PrivateKey privateKey = keyPair.getPrivate();
 		DateTime notBefore = new DateTime();
 		DateTime notAfter = notBefore.plusYears(1);

@@ -247,9 +247,14 @@ public class TrustTestUtils {
 	}
 
 	public static KeyPair generateKeyPair() throws Exception {
+		KeyPair keyPair = generateKeyPair(1024);
+		return keyPair;
+	}
+
+	public static KeyPair generateKeyPair(int keySize) throws Exception {
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		SecureRandom random = new SecureRandom();
-		keyPairGenerator.initialize(new RSAKeyGenParameterSpec(1024,
+		keyPairGenerator.initialize(new RSAKeyGenParameterSpec(keySize,
 				RSAKeyGenParameterSpec.F4), random);
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
 		return keyPair;
