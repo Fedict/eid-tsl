@@ -31,7 +31,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bouncycastle.asn1.x509.X509Extensions;
-import org.etsi.uri._01903.v1_3.AnyType;
+import org.etsi.uri._01903.v1_3.IdentifierType;
+import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2_.DigitalIdentityListType;
 import org.etsi.uri._02231.v2_.DigitalIdentityType;
 import org.etsi.uri._02231.v2_.ExtensionType;
@@ -60,7 +61,7 @@ public class TrustService {
 	private final DatatypeFactory datatypeFactory;
 
 	private final org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory eccObjectFactory;
-	
+
 	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
 
 	private final List<String> oids;
@@ -198,12 +199,24 @@ public class TrustService {
 			nonRepudiationKeyUsageBit.setValue(true);
 			nonRepudiationKeyUsageBit.setName("nonRepudiation");
 			keyUsage.getKeyUsageBit().add(nonRepudiationKeyUsageBit);
-			
-			//AnyType otherCriteriaList = this.xadesObjectFactory.createAnyType();
-			//criteriaList.setOtherCriteriaList(otherCriteriaList);
-			//List<PoliciesListType> policiesSet = criteriaList.getPolicySet();
-			
-			
+
+			CriteriaListType oidCriteriaList = this.eccObjectFactory
+					.createCriteriaListType();
+			criteriaList.setCriteriaList(oidCriteriaList);
+			oidCriteriaList.setAssert("atLeastOne");
+			List<PoliciesListType> policySet = oidCriteriaList.getPolicySet();
+			PoliciesListType policiesList = this.eccObjectFactory
+					.createPoliciesListType();
+			policySet.add(policiesList);
+			for (String oid : this.oids) {
+				ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+						.createObjectIdentifierType();
+				IdentifierType identifier = this.xadesObjectFactory
+						.createIdentifierType();
+				identifier.setValue(oid);
+				objectIdentifier.setIdentifier(identifier);
+				policiesList.getPolicyIdentifier().add(objectIdentifier);
+			}
 		}
 	}
 
