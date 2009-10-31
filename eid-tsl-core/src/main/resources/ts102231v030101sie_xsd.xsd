@@ -21,6 +21,7 @@
 		<sequence>
 			<element name="KeyUsage" type="tns:KeyUsageType" minOccurs="0" maxOccurs="unbounded"/>
 			<element name="PolicySet" type="tns:PoliciesListType" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="CriteriaList" type="tns:CriteriaListType" minOccurs="0"/>
 			<element name="otherCriteriaList" type="xades:AnyType" minOccurs="0"/>
 		</sequence>
 		<attribute name="assert">
