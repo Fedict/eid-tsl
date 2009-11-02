@@ -387,8 +387,8 @@ public class TrustServiceListFactoryTest {
 						Locale.ENGLISH);
 
 		// scheme information URIs
-		trustServiceList.addSchemeInformationUri(
-				"http://tsl.fedict.belgium.be/", Locale.ENGLISH);
+		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/",
+				Locale.ENGLISH);
 
 		// status determination approach
 		trustServiceList
@@ -514,8 +514,7 @@ public class TrustServiceListFactoryTest {
 				.getSchemeInformationUris();
 		assertNotNull(schemeInformationUris);
 		assertEquals(1, schemeInformationUris.size());
-		assertEquals("http://tsl.fedict.belgium.be/", schemeInformationUris
-				.get(0));
+		assertEquals("http://tsl.belgium.be/", schemeInformationUris.get(0));
 
 		// status determination approach
 		assertEquals(
