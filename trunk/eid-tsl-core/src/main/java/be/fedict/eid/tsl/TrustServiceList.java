@@ -25,6 +25,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -94,6 +96,7 @@ import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
+import org.jcp.xml.dsig.internal.dom.XMLDSigRI;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -669,8 +672,35 @@ public class TrustServiceList {
 			String tslId) throws NoSuchAlgorithmException,
 			InvalidAlgorithmParameterException, MarshalException,
 			XMLSignatureException {
+		ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
+		try {
+			Class<?> apacheInitClass = classLoader
+					.loadClass("org.apache.xml.security.Init");
+			LOG.debug("apache init class loader: "
+					+ apacheInitClass.getClassLoader());
+			ClassLoader apacheClassLoader = apacheInitClass.getClassLoader();
+			Class<?> xmldsigRi = apacheClassLoader
+					.loadClass("org.jcp.xml.dsig.internal.dom.XMLDSigRI");
+			LOG.debug("xmldsigri class loader: " + xmldsigRi.getClassLoader());
+		} catch (ClassNotFoundException e) {
+			LOG.debug("class loader error: " + e.getMessage(), e);
+		}
+		LOG.debug("XMLDSigRI classloader: " + XMLDSigRI.class.getClassLoader());
+		Security.addProvider(new XMLDSigRI());
+		Provider[] providers = Security.getProviders();
+		for (Provider provider : providers) {
+			LOG.debug("provider: " + provider.getName() + " "
+					+ provider.getInfo());
+			LOG.debug("provider class: " + provider.getClass().getName());
+			LOG.debug("provider class loader: "
+					+ provider.getClass().getClassLoader());
+		}
 		XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance(
 				"DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
+		LOG.debug("xml signature factory: "
+				+ signatureFactory.getClass().getName());
+		LOG.debug("loader: " + signatureFactory.getClass().getClassLoader());
 		XMLSignContext signContext = new DOMSignContext(privateKey,
 				this.tslDocument.getDocumentElement());
 		signContext.putNamespacePrefix(XMLSignature.XMLNS, "ds");

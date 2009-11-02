@@ -175,11 +175,6 @@ public class TrustService {
 			qualifierList.add(qcWithSscdqualifier);
 			qcWithSscdqualifier
 					.setUri("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD");
-			QualifierType qcForLegalPersonQualifier = this.eccObjectFactory
-					.createQualifierType();
-			qualifierList.add(qcForLegalPersonQualifier);
-			qcForLegalPersonQualifier
-					.setUri("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson");
 			qualificationElement.setQualifiers(qualifiers);
 
 			CriteriaListType criteriaList = this.eccObjectFactory
