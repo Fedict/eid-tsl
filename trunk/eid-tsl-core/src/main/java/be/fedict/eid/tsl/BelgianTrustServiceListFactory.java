@@ -18,6 +18,9 @@
 
 package be.fedict.eid.tsl;
 
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,8 +28,6 @@ import java.util.Locale;
 
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
-
-import test.unit.be.fedict.eid.tsl.TrustTestUtils;
 
 /**
  * Factory for the Belgian Trust Service List.
@@ -133,8 +134,7 @@ public class BelgianTrustServiceListFactory {
 				"http://www.certipost.be");
 
 		// certipost trust services: Root CA and Root CA2
-		X509Certificate rootCaCertificate = TrustTestUtils
-				.loadCertificateFromResource("./eu/be/belgiumrca.crt");
+		X509Certificate rootCaCertificate = loadCertificateFromResource("./eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
 				.createTrustService(rootCaCertificate);
 		rootCaTrustService.addOIDForQCWithSSCD("2.16.56.1.1.1.2.1", "Citizen");
@@ -142,8 +142,7 @@ public class BelgianTrustServiceListFactory {
 				.addOIDForQCWithSSCD("2.16.56.1.1.1.7.1", "Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
-		X509Certificate rootCa2Certificate = TrustTestUtils
-				.loadCertificateFromResource("./eu/be/belgiumrca2.crt");
+		X509Certificate rootCa2Certificate = loadCertificateFromResource("./eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
 				.createTrustService(rootCa2Certificate);
 		rootCa2TrustService.addOIDForQCWithSSCD("2.16.56.9.1.1.2.1", "Citizen");
@@ -152,5 +151,27 @@ public class BelgianTrustServiceListFactory {
 		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		return trustServiceList;
+	}
+
+	private static X509Certificate loadCertificateFromResource(
+			String resourceName) {
+		Thread currentThread = Thread.currentThread();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+		InputStream certificateInputStream = classLoader
+				.getResourceAsStream(resourceName);
+		if (null == certificateInputStream) {
+			throw new IllegalArgumentException(
+					"could not load certificate resource: " + resourceName);
+		}
+		try {
+			CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			X509Certificate certificate = (X509Certificate) certificateFactory
+					.generateCertificate(certificateInputStream);
+			return certificate;
+		} catch (CertificateException e) {
+			throw new RuntimeException("certificate factory error: "
+					+ e.getMessage(), e);
+		}
 	}
 }
