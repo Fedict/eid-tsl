@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.Provider;
-import java.security.Security;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -41,12 +41,15 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignatureMethod;
 import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.crypto.dsig.XMLSignContext;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureException;
@@ -80,6 +83,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
+import org.etsi.uri._01903.v1_3.CertIDListType;
+import org.etsi.uri._01903.v1_3.CertIDType;
+import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
+import org.etsi.uri._01903.v1_3.QualifyingPropertiesType;
+import org.etsi.uri._01903.v1_3.SignedPropertiesType;
+import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
 import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
@@ -96,8 +105,9 @@ import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
 import org.etsi.uri._02231.v2_.TrustStatusListType;
-import org.jcp.xml.dsig.internal.dom.XMLDSigRI;
 import org.joda.time.DateTime;
+import org.w3._2000._09.xmldsig_.DigestMethodType;
+import org.w3._2000._09.xmldsig_.X509IssuerSerialType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -116,6 +126,8 @@ public class TrustServiceList {
 
 	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLtype/generic";
 
+	private static final String XADES_TYPE = "http://uri.etsi.org/01903#SignedProperties";
+
 	private TrustStatusListType trustStatusList;
 
 	private Document tslDocument;
@@ -130,11 +142,17 @@ public class TrustServiceList {
 
 	private final DatatypeFactory datatypeFactory;
 
+	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
+
+	private final org.w3._2000._09.xmldsig_.ObjectFactory xmldsigObjectFactory;
+
 	protected TrustServiceList() {
 		super();
 		this.changed = true;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
+		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
+		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -149,6 +167,8 @@ public class TrustServiceList {
 		this.tslDocument = tslDocument;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
+		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
+		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -672,30 +692,6 @@ public class TrustServiceList {
 			String tslId) throws NoSuchAlgorithmException,
 			InvalidAlgorithmParameterException, MarshalException,
 			XMLSignatureException {
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
-		try {
-			Class<?> apacheInitClass = classLoader
-					.loadClass("org.apache.xml.security.Init");
-			LOG.debug("apache init class loader: "
-					+ apacheInitClass.getClassLoader());
-			ClassLoader apacheClassLoader = apacheInitClass.getClassLoader();
-			Class<?> xmldsigRi = apacheClassLoader
-					.loadClass("org.jcp.xml.dsig.internal.dom.XMLDSigRI");
-			LOG.debug("xmldsigri class loader: " + xmldsigRi.getClassLoader());
-		} catch (ClassNotFoundException e) {
-			LOG.debug("class loader error: " + e.getMessage(), e);
-		}
-		LOG.debug("XMLDSigRI classloader: " + XMLDSigRI.class.getClassLoader());
-		Security.addProvider(new XMLDSigRI());
-		Provider[] providers = Security.getProviders();
-		for (Provider provider : providers) {
-			LOG.debug("provider: " + provider.getName() + " "
-					+ provider.getInfo());
-			LOG.debug("provider class: " + provider.getClass().getName());
-			LOG.debug("provider class loader: "
-					+ provider.getClass().getClassLoader());
-		}
 		XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance(
 				"DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
 		LOG.debug("xml signature factory: "
@@ -719,6 +715,11 @@ public class TrustServiceList {
 		Reference reference = signatureFactory.newReference("#" + tslId,
 				digestMethod, transforms, null, null);
 		references.add(reference);
+
+		String signatureId = "xmldsig-" + UUID.randomUUID().toString();
+		List<XMLObject> objects = new LinkedList<XMLObject>();
+		addXadesBes(signatureFactory, this.tslDocument, signatureId,
+				certificate, references, objects);
 
 		SignatureMethod signatureMethod = signatureFactory.newSignatureMethod(
 				SignatureMethod.RSA_SHA1, null);
@@ -749,9 +750,118 @@ public class TrustServiceList {
 
 		KeyInfo keyInfo = keyInfoFactory.newKeyInfo(keyInfoContent);
 
+		String signatureValueId = signatureId + "-signature-value";
 		XMLSignature xmlSignature = signatureFactory.newXMLSignature(
-				signedInfo, keyInfo);
+				signedInfo, keyInfo, objects, signatureId, signatureValueId);
 		xmlSignature.sign(signContext);
+	}
+
+	public void addXadesBes(XMLSignatureFactory signatureFactory,
+			Document document, String signatureId,
+			X509Certificate signingCertificate, List<Reference> references,
+			List<XMLObject> objects) throws NoSuchAlgorithmException,
+			InvalidAlgorithmParameterException {
+		LOG.debug("preSign");
+
+		// QualifyingProperties
+		QualifyingPropertiesType qualifyingProperties = this.xadesObjectFactory
+				.createQualifyingPropertiesType();
+		qualifyingProperties.setTarget("#" + signatureId);
+
+		// SignedProperties
+		SignedPropertiesType signedProperties = this.xadesObjectFactory
+				.createSignedPropertiesType();
+		String signedPropertiesId = signatureId + "-xades";
+		signedProperties.setId(signedPropertiesId);
+		qualifyingProperties.setSignedProperties(signedProperties);
+
+		// SignedSignatureProperties
+		SignedSignaturePropertiesType signedSignatureProperties = this.xadesObjectFactory
+				.createSignedSignaturePropertiesType();
+		signedProperties
+				.setSignedSignatureProperties(signedSignatureProperties);
+
+		// SigningTime
+		GregorianCalendar signingTime = new GregorianCalendar();
+		signingTime.setTimeZone(TimeZone.getTimeZone("Z"));
+		signedSignatureProperties.setSigningTime(this.datatypeFactory
+				.newXMLGregorianCalendar(signingTime));
+
+		// SigningCertificate
+		CertIDListType signingCertificates = this.xadesObjectFactory
+				.createCertIDListType();
+		CertIDType signingCertificateId = this.xadesObjectFactory
+				.createCertIDType();
+
+		X509IssuerSerialType issuerSerial = this.xmldsigObjectFactory
+				.createX509IssuerSerialType();
+		issuerSerial.setX509IssuerName(signingCertificate
+				.getIssuerX500Principal().toString());
+		issuerSerial.setX509SerialNumber(signingCertificate.getSerialNumber());
+		signingCertificateId.setIssuerSerial(issuerSerial);
+
+		DigestAlgAndValueType certDigest = this.xadesObjectFactory
+				.createDigestAlgAndValueType();
+		DigestMethodType jaxbDigestMethod = xmldsigObjectFactory
+				.createDigestMethodType();
+		jaxbDigestMethod.setAlgorithm(DigestMethod.SHA1);
+		certDigest.setDigestMethod(jaxbDigestMethod);
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+		byte[] digestValue;
+		try {
+			digestValue = messageDigest.digest(signingCertificate.getEncoded());
+		} catch (CertificateEncodingException e) {
+			throw new RuntimeException("certificate encoding error: "
+					+ e.getMessage(), e);
+		}
+		certDigest.setDigestValue(digestValue);
+		signingCertificateId.setCertDigest(certDigest);
+
+		signingCertificates.getCert().add(signingCertificateId);
+		signedSignatureProperties.setSigningCertificate(signingCertificates);
+
+		// marshall XAdES QualifyingProperties
+		Node qualifyingPropertiesNode = marshallQualifyingProperties(document,
+				qualifyingProperties);
+
+		// add XAdES ds:Object
+		List<XMLStructure> xadesObjectContent = new LinkedList<XMLStructure>();
+		xadesObjectContent.add(new DOMStructure(qualifyingPropertiesNode));
+		XMLObject xadesObject = signatureFactory.newXMLObject(
+				xadesObjectContent, null, null, null);
+		objects.add(xadesObject);
+
+		// add XAdES ds:Reference
+		DigestMethod digestMethod = signatureFactory.newDigestMethod(
+				DigestMethod.SHA256, null);
+		List<Transform> transforms = new LinkedList<Transform>();
+		Transform exclusiveTransform = signatureFactory
+				.newTransform(CanonicalizationMethod.EXCLUSIVE,
+						(TransformParameterSpec) null);
+		transforms.add(exclusiveTransform);
+		Reference reference = signatureFactory.newReference("#"
+				+ signedPropertiesId, digestMethod, transforms, XADES_TYPE,
+				null);
+		references.add(reference);
+	}
+
+	private Node marshallQualifyingProperties(Document document,
+			QualifyingPropertiesType qualifyingProperties) {
+		Node marshallNode = document.createElement("marshall-node");
+		try {
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(org.etsi.uri._01903.v1_3.ObjectFactory.class);
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+					new TSLNamespacePrefixMapper());
+			marshaller.marshal(this.xadesObjectFactory
+					.createQualifyingProperties(qualifyingProperties),
+					marshallNode);
+		} catch (JAXBException e) {
+			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+		}
+		Node qualifyingPropertiesNode = marshallNode.getFirstChild();
+		return qualifyingPropertiesNode;
 	}
 
 	private void clearChanged() {
