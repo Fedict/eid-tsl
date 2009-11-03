@@ -83,6 +83,9 @@ public class BelgianTrustServiceListFactoryTest {
 		X509Certificate resultCertificate = trustServiceList.verifySignature();
 		assertEquals(certificate, resultCertificate);
 
+		File pdfExportFile = File.createTempFile("tsl-be-", ".pdf");
+		trustServiceList.humanReadableExport(pdfExportFile);
+
 		// scheme operator name
 		String schemeOperatorNameEn = trustServiceList
 				.getSchemeOperatorName(Locale.ENGLISH);
@@ -187,6 +190,7 @@ public class BelgianTrustServiceListFactoryTest {
 
 		LOG.debug("unsigned TSL: " + unsignedTslFile.getAbsolutePath());
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
+		LOG.debug("PDF: " + pdfExportFile.getAbsolutePath());
 	}
 
 }

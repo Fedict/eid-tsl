@@ -24,6 +24,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import javax.swing.JInternalFrame;
@@ -41,6 +42,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,6 +67,8 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	private JLabel serviceType;
 
 	private JLabel serviceStatus;
+
+	private JLabel serviceThumbprint;
 
 	private final TslTool tslTool;
 
@@ -197,6 +201,14 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		this.serviceStatus = new JLabel();
 		dataPanel.add(this.serviceStatus, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Service Thumbprint"), constraints);
+
+		constraints.gridx++;
+		this.serviceThumbprint = new JLabel();
+		dataPanel.add(this.serviceThumbprint, constraints);
 	}
 
 	private void addGenericTab(JTabbedPane tabbedPane) {
@@ -261,10 +273,20 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 			this.serviceName.setText(trustService.getName());
 			this.serviceType.setText(trustService.getType());
 			this.serviceStatus.setText(trustService.getStatus());
+			X509Certificate certificate = trustService
+					.getServiceDigitalIdentity();
+			String thumbprint;
+			try {
+				thumbprint = DigestUtils.shaHex(certificate.getEncoded());
+			} catch (CertificateEncodingException e) {
+				throw new RuntimeException("cert: " + e.getMessage(), e);
+			}
+			this.serviceThumbprint.setText(thumbprint);
 		} else {
 			this.serviceName.setText("");
 			this.serviceType.setText("");
 			this.serviceStatus.setText("");
+			this.serviceThumbprint.setText("");
 		}
 	}
 
@@ -325,5 +347,10 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	public void save(File tslFile) throws IOException {
 		this.tslFile = tslFile;
 		save();
+	}
+
+	public void export(File pdfFile) throws IOException {
+		LOG.debug("exporting to PDF: " + pdfFile.getAbsolutePath());
+		this.trustServiceList.humanReadableExport(pdfFile);
 	}
 }
