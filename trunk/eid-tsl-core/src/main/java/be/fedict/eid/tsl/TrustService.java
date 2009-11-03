@@ -26,10 +26,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.etsi.uri._01903.v1_3.IdentifierType;
 import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
@@ -43,8 +47,6 @@ import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.TSPServiceInformationType;
 import org.etsi.uri._02231.v2_.TSPServiceType;
 import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.CriteriaListType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.KeyUsageBitType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.KeyUsageType;
 import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.PoliciesListType;
 import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationElementType;
 import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationsType;
@@ -53,6 +55,8 @@ import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.Qualifiers
 import org.joda.time.DateTime;
 
 public class TrustService {
+
+	private static final Log LOG = LogFactory.getLog(TrustService.class);
 
 	private final TSPServiceType tspService;
 
@@ -83,6 +87,8 @@ public class TrustService {
 	public TrustService(X509Certificate certificate) {
 		this(certificate, new String[] {});
 	}
+
+	private static final String QC_WITH_SSCD_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD";
 
 	public TrustService(X509Certificate certificate, String... oids) {
 		this.oids = new LinkedList<String>();
@@ -173,33 +179,15 @@ public class TrustService {
 			QualifierType qcWithSscdqualifier = this.eccObjectFactory
 					.createQualifierType();
 			qualifierList.add(qcWithSscdqualifier);
-			qcWithSscdqualifier
-					.setUri("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD");
+			qcWithSscdqualifier.setUri(QC_WITH_SSCD_QUALIFIER_URI);
 			qualificationElement.setQualifiers(qualifiers);
 
 			CriteriaListType criteriaList = this.eccObjectFactory
 					.createCriteriaListType();
 			qualificationElement.setCriteriaList(criteriaList);
-			criteriaList.setAssert("all");
-			List<KeyUsageType> keyUsageList = criteriaList.getKeyUsage();
-			KeyUsageType keyUsage = this.eccObjectFactory.createKeyUsageType();
-			keyUsageList.add(keyUsage);
-			KeyUsageBitType digitalSignatureKeyUsageBit = this.eccObjectFactory
-					.createKeyUsageBitType();
-			digitalSignatureKeyUsageBit.setValue(false);
-			digitalSignatureKeyUsageBit.setName("digitalSignature");
-			keyUsage.getKeyUsageBit().add(digitalSignatureKeyUsageBit);
-			KeyUsageBitType nonRepudiationKeyUsageBit = this.eccObjectFactory
-					.createKeyUsageBitType();
-			nonRepudiationKeyUsageBit.setValue(true);
-			nonRepudiationKeyUsageBit.setName("nonRepudiation");
-			keyUsage.getKeyUsageBit().add(nonRepudiationKeyUsageBit);
+			criteriaList.setAssert("atLeastOne");
 
-			CriteriaListType oidCriteriaList = this.eccObjectFactory
-					.createCriteriaListType();
-			criteriaList.setCriteriaList(oidCriteriaList);
-			oidCriteriaList.setAssert("atLeastOne");
-			List<PoliciesListType> policySet = oidCriteriaList.getPolicySet();
+			List<PoliciesListType> policySet = criteriaList.getPolicySet();
 			PoliciesListType policiesList = this.eccObjectFactory
 					.createPoliciesListType();
 			policySet.add(policiesList);
@@ -252,5 +240,109 @@ public class TrustService {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	private static final QName qualifiersName = new QName(
+			"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
+			"Qualifications");
+
+	public void addOIDForQCWithSSCD(String oid, String description) {
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		ExtensionsListType extensionsList = tspServiceInformation
+				.getServiceInformationExtensions();
+		if (null == extensionsList) {
+			extensionsList = this.objectFactory.createExtensionsListType();
+			tspServiceInformation
+					.setServiceInformationExtensions(extensionsList);
+		}
+		List<ExtensionType> extensions = extensionsList.getExtension();
+		for (ExtensionType extension : extensions) {
+			if (false == extension.isCritical()) {
+				continue;
+			}
+			List<Object> extensionContent = extension.getContent();
+			for (Object extensionObject : extensionContent) {
+				JAXBElement<?> extensionElement = (JAXBElement<?>) extensionObject;
+				QName extensionName = extensionElement.getName();
+				LOG.debug("extension name: " + extensionName);
+				if (qualifiersName.equals(extensionName)) {
+					LOG.debug("extension found");
+					QualificationsType qualifications = (QualificationsType) extensionElement
+							.getValue();
+					List<QualificationElementType> qualificationElements = qualifications
+							.getQualificationElement();
+					for (QualificationElementType qualificationElement : qualificationElements) {
+						QualifiersType qualifiers = qualificationElement
+								.getQualifiers();
+						List<QualifierType> qualifierList = qualifiers
+								.getQualifier();
+						for (QualifierType qualifier : qualifierList) {
+							if (QC_WITH_SSCD_QUALIFIER_URI.equals(qualifier
+									.getUri())) {
+								CriteriaListType criteriaList = qualificationElement
+										.getCriteriaList();
+								List<PoliciesListType> policySet = criteriaList
+										.getPolicySet();
+								PoliciesListType policiesList = policySet
+										.get(0);
+
+								ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+										.createObjectIdentifierType();
+								IdentifierType identifier = this.xadesObjectFactory
+										.createIdentifierType();
+								identifier.setValue(oid);
+								objectIdentifier.setIdentifier(identifier);
+								objectIdentifier.setDescription(description);
+								policiesList.getPolicyIdentifier().add(
+										objectIdentifier);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		ExtensionType extension = this.objectFactory.createExtensionType();
+		extension.setCritical(true);
+		extensions.add(extension);
+
+		QualificationsType qualifications = this.eccObjectFactory
+				.createQualificationsType();
+		extension.getContent().add(
+				this.eccObjectFactory.createQualifications(qualifications));
+		List<QualificationElementType> qualificationElements = qualifications
+				.getQualificationElement();
+
+		QualificationElementType qualificationElement = this.eccObjectFactory
+				.createQualificationElementType();
+		qualificationElements.add(qualificationElement);
+
+		QualifiersType qualifiers = this.eccObjectFactory
+				.createQualifiersType();
+		List<QualifierType> qualifierList = qualifiers.getQualifier();
+		QualifierType qcWithSscdqualifier = this.eccObjectFactory
+				.createQualifierType();
+		qualifierList.add(qcWithSscdqualifier);
+		qcWithSscdqualifier.setUri(QC_WITH_SSCD_QUALIFIER_URI);
+		qualificationElement.setQualifiers(qualifiers);
+
+		CriteriaListType criteriaList = this.eccObjectFactory
+				.createCriteriaListType();
+		qualificationElement.setCriteriaList(criteriaList);
+		criteriaList.setAssert("atLeastOne");
+
+		List<PoliciesListType> policySet = criteriaList.getPolicySet();
+		PoliciesListType policiesList = this.eccObjectFactory
+				.createPoliciesListType();
+		policySet.add(policiesList);
+		ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+				.createObjectIdentifierType();
+		IdentifierType identifier = this.xadesObjectFactory
+				.createIdentifierType();
+		identifier.setValue(oid);
+		objectIdentifier.setDescription(description);
+		objectIdentifier.setIdentifier(identifier);
+		policiesList.getPolicyIdentifier().add(objectIdentifier);
 	}
 }

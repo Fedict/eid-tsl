@@ -136,15 +136,19 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate rootCaCertificate = TrustTestUtils
 				.loadCertificateFromResource("./eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate, "2.16.56.1.1.1.2.1",
-						"2.16.56.1.1.1.7.1");
+				.createTrustService(rootCaCertificate);
+		rootCaTrustService.addOIDForQCWithSSCD("2.16.56.1.1.1.2.1", "Citizen");
+		rootCaTrustService
+				.addOIDForQCWithSSCD("2.16.56.1.1.1.7.1", "Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
 		X509Certificate rootCa2Certificate = TrustTestUtils
 				.loadCertificateFromResource("./eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate, "2.16.56.9.1.1.2.1",
-						"2.16.56.9.1.1.7.1");
+				.createTrustService(rootCa2Certificate);
+		rootCa2TrustService.addOIDForQCWithSSCD("2.16.56.9.1.1.2.1", "Citizen");
+		rootCa2TrustService.addOIDForQCWithSSCD("2.16.56.9.1.1.7.1",
+				"Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		return trustServiceList;
