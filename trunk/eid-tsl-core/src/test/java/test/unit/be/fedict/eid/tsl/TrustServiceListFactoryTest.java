@@ -26,41 +26,22 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
-import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
-import be.fedict.eid.tsl.TrustService;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
@@ -83,7 +64,8 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testParseTsl() throws Exception {
 		// setup
-		Document tslDocument = loadDocumentFromResource("tsl-unsigned-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-unsigned-1.xml");
 
 		// operate
 		TrustServiceList result = TrustServiceListFactory
@@ -106,7 +88,8 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testVerifySignature() throws Exception {
 		// setup
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 
 		// operate
 		TrustServiceList result = TrustServiceListFactory
@@ -176,7 +159,8 @@ public class TrustServiceListFactoryTest {
 
 	@Test
 	public void testSaveExistingTsl() throws Exception {
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance(tslDocument);
 		File tmpTslFile = File.createTempFile("tsl-", ".xml");
@@ -215,7 +199,7 @@ public class TrustServiceListFactoryTest {
 		assertFalse(trustServiceList.hasChanged());
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
 		LOG.debug(FileUtils.readFileToString(tmpTslFile));
-		Document document = loadDocument(tmpTslFile);
+		Document document = TrustTestUtils.loadDocument(tmpTslFile);
 
 		// verify: TSLTag
 		Node tslTagNode = XPathAPI.selectSingleNode(document,
@@ -253,7 +237,8 @@ public class TrustServiceListFactoryTest {
 
 	@Test
 	public void testSaveChangedTsl() throws Exception {
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance(tslDocument);
 		String schemeName = "test-scheme-name";
@@ -276,7 +261,8 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testSetSchemeNameOnExistingTsl() throws Exception {
 		// setup
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 		String schemeName = "test-scheme-name";
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance(tslDocument);
@@ -292,7 +278,8 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testResignExistingTsl() throws Exception {
 		// setup
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance(tslDocument);
 
@@ -316,7 +303,8 @@ public class TrustServiceListFactoryTest {
 	@Test
 	public void testResignChangedTsl() throws Exception {
 		// setup
-		Document tslDocument = loadDocumentFromResource("tsl-signed-1.xml");
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-signed-1.xml");
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance(tslDocument);
 		String schemeName = "test-scheme-name";
@@ -339,243 +327,6 @@ public class TrustServiceListFactoryTest {
 		// verify
 		assertEquals(certificate, trustServiceList.verifySignature());
 		assertEquals(schemeName, trustServiceList.getSchemeName());
-	}
-
-	@Test
-	public void testBelgianTrustList() throws Exception {
-		// setup
-		TrustServiceList trustServiceList = TrustServiceListFactory
-				.newInstance();
-
-		// scheme operator name
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.ENGLISH);
-		trustServiceList.setSchemeOperatorName("Fedict", new Locale("nl"));
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.FRENCH);
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.GERMAN);
-
-		// scheme operator postal address
-		PostalAddressType schemeOperatorPostalAddress = new PostalAddressType();
-		schemeOperatorPostalAddress
-				.setStreetAddress("Maria-Theresiastraat 1/3");
-		schemeOperatorPostalAddress.setLocality("Brussels");
-		schemeOperatorPostalAddress.setStateOrProvince("Brussels");
-		schemeOperatorPostalAddress.setPostalCode("1000");
-		schemeOperatorPostalAddress.setCountryName("Belgium");
-		trustServiceList.setSchemeOperatorPostalAddress(
-				schemeOperatorPostalAddress, Locale.ENGLISH);
-
-		schemeOperatorPostalAddress
-				.setStreetAddress("Maria-Theresiastraat 1/3");
-		schemeOperatorPostalAddress.setLocality("Brussel");
-		schemeOperatorPostalAddress.setStateOrProvince("Brussel");
-		schemeOperatorPostalAddress.setPostalCode("1000");
-		schemeOperatorPostalAddress.setCountryName("België");
-		trustServiceList.setSchemeOperatorPostalAddress(
-				schemeOperatorPostalAddress, new Locale("nl"));
-
-		// scheme operator electronic address
-		List<String> electronicAddresses = new LinkedList<String>();
-		electronicAddresses.add("http://www.fedict.belgium.be/");
-		electronicAddresses.add("mailto://eid@belgium.be");
-		trustServiceList
-				.setSchemeOperatorElectronicAddresses(electronicAddresses);
-
-		// scheme name
-		trustServiceList
-				.setSchemeName(
-						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator Member State for compliance with the relevant provisions laid down in  Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures",
-						Locale.ENGLISH);
-
-		// scheme information URIs
-		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/",
-				Locale.ENGLISH);
-
-		// status determination approach
-		trustServiceList
-				.setStatusDeterminationApproach("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ");
-
-		// scheme type
-		trustServiceList
-				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common");
-		trustServiceList
-				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
-
-		// scheme territory
-		trustServiceList.setSchemeTerritory("BE");
-
-		// legal notice
-		trustServiceList
-				.addLegalNotice(
-						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgium laws.",
-						Locale.ENGLISH);
-
-		// historical information period
-		trustServiceList.setHistoricalInformationPeriod(3653);
-
-		// list issue date time
-		DateTime listIssueDateTime = new DateTime();
-		trustServiceList.setListIssueDateTime(listIssueDateTime);
-
-		// next update
-		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
-		trustServiceList.setNextUpdate(nextUpdateDateTime);
-
-		// trust service provider list: certipost
-		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost");
-		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
-		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",
-				"BE");
-		certipostTrustServiceProvider
-				.addElectronicAddress("http://www.certipost.be/",
-						"mailto:eid.csp@staff.certipost.be");
-
-		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				"http://www.certipost.be");
-
-		// certipost trust services: Root CA and Root CA2
-		X509Certificate rootCaCertificate = TrustTestUtils
-				.loadCertificateFromResource("belgiumrca.crt");
-		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate, "2.16.56.1.1.1.2.1",
-						"2.16.56.1.1.1.7.1");
-		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
-
-		X509Certificate rootCa2Certificate = TrustTestUtils
-				.loadCertificateFromResource("belgiumrca2.crt");
-		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate, "2.16.56.9.1.1.2.1",
-						"2.16.56.9.1.1.7.1");
-		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
-
-		// sign trust list
-		KeyPair keyPair = TrustTestUtils.generateKeyPair(2048);
-		PrivateKey privateKey = keyPair.getPrivate();
-		DateTime notBefore = new DateTime();
-		DateTime notAfter = notBefore.plusYears(1);
-		X509Certificate certificate = TrustTestUtils
-				.generateSelfSignedCertificate(keyPair,
-						"C=BE, CN=Belgium Trust List Scheme Operator",
-						notBefore, notAfter);
-		trustServiceList.sign(privateKey, certificate);
-
-		// operate
-		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
-		// tmpTslFile.deleteOnExit();
-		trustServiceList.save(tmpTslFile);
-
-		// --------------- VERIFY TRUST LIST --------------------
-		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
-		Document document = loadDocument(tmpTslFile);
-
-		// signature
-		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
-		X509Certificate resultCertificate = trustServiceList.verifySignature();
-		assertEquals(certificate, resultCertificate);
-
-		// scheme operator name
-		String schemeOperatorNameEn = trustServiceList
-				.getSchemeOperatorName(Locale.ENGLISH);
-		assertEquals("Fedict", schemeOperatorNameEn);
-		LOG.debug("Locale.ENGLISH: " + Locale.ENGLISH.getLanguage());
-		assertEquals("Fedict", trustServiceList
-				.getSchemeOperatorName(Locale.FRENCH));
-
-		Node schemeOperatorNameEnNode = XPathAPI
-				.selectSingleNode(
-						document,
-						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='EN']");
-		assertNotNull(schemeOperatorNameEnNode);
-		assertEquals("Fedict", schemeOperatorNameEnNode.getTextContent());
-
-		// scheme operator postal address
-		PostalAddressType resultPostalAddress = trustServiceList
-				.getSchemeOperatorPostalAddress(Locale.ENGLISH);
-		assertNotNull(resultPostalAddress);
-		assertEquals("Maria-Theresiastraat 1/3", resultPostalAddress
-				.getStreetAddress());
-		assertEquals("Brussels", resultPostalAddress.getLocality());
-		assertEquals("Brussel", trustServiceList
-				.getSchemeOperatorPostalAddress(new Locale("nl")).getLocality());
-
-		// scheme operator electronic address
-		assertEquals(2, trustServiceList.getSchemeOperatorElectronicAddresses()
-				.size());
-		LOG.debug("electronic addresses: "
-				+ trustServiceList.getSchemeOperatorElectronicAddresses());
-
-		// scheme name
-		assertTrue(trustServiceList.getSchemeName(Locale.ENGLISH).startsWith(
-				"BE:"));
-
-		// scheme information uri
-		List<String> schemeInformationUris = trustServiceList
-				.getSchemeInformationUris();
-		assertNotNull(schemeInformationUris);
-		assertEquals(1, schemeInformationUris.size());
-		assertEquals("http://tsl.belgium.be/", schemeInformationUris.get(0));
-
-		// status determination approach
-		assertEquals(
-				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ",
-				trustServiceList.getStatusDeterminationApproach());
-
-		// scheme types
-		List<String> schemeTypes = trustServiceList.getSchemeTypes();
-		assertNotNull(schemeTypes);
-		assertEquals(2, schemeTypes.size());
-
-		// scheme territory
-		assertEquals("BE", trustServiceList.getSchemeTerritory());
-
-		// legal notice
-		String resultLegalNotice = trustServiceList
-				.getLegalNotice(Locale.ENGLISH);
-		assertNotNull(resultLegalNotice);
-		assertTrue(resultLegalNotice.indexOf("1999/93/EC") != -1);
-		assertTrue(resultLegalNotice.indexOf("Belgium") != -1);
-
-		// historical information period
-		assertEquals(new Integer(3653), trustServiceList
-				.getHistoricalInformationPeriod());
-
-		// list issue date time
-		DateTime resultListIssueDateTime = trustServiceList
-				.getListIssueDateTime();
-		assertNotNull(resultListIssueDateTime);
-
-		// next update
-		DateTime resultNextUpdateDateTime = trustServiceList.getNextUpdate();
-		assertNotNull(resultNextUpdateDateTime);
-
-		// trust service provider list
-		List<TrustServiceProvider> trustServiceProviders = trustServiceList
-				.getTrustServiceProviders();
-		assertEquals(1, trustServiceProviders.size());
-		certipostTrustServiceProvider = trustServiceProviders.get(0);
-		assertEquals("Certipost", certipostTrustServiceProvider
-				.getName(Locale.ENGLISH));
-
-		// postal address
-		PostalAddressType certipostPostalAddress = certipostTrustServiceProvider
-				.getPostalAddress(Locale.ENGLISH);
-		assertNotNull(certipostPostalAddress);
-		assertEquals("Ninovesteenweg 196", certipostPostalAddress
-				.getStreetAddress());
-		assertEquals("BE", certipostPostalAddress.getCountryName());
-
-		// electronic address
-		List<String> resultElectronicAddress = certipostTrustServiceProvider
-				.getElectronicAddress();
-		assertEquals(2, resultElectronicAddress.size());
-
-		// information uri
-		String resultInformationUri = certipostTrustServiceProvider
-				.getInformationUri(Locale.ENGLISH);
-		assertEquals("http://www.certipost.be", resultInformationUri);
-
-		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
 	}
 
 	@Test
@@ -604,49 +355,4 @@ public class TrustServiceListFactoryTest {
 		assertEquals(certificate, trustServiceList.verifySignature());
 	}
 
-	private Document loadDocumentFromResource(String resourceName)
-			throws ParserConfigurationException, SAXException, IOException {
-		Thread currentThread = Thread.currentThread();
-		ClassLoader classLoader = currentThread.getContextClassLoader();
-		InputStream documentInputStream = classLoader
-				.getResourceAsStream(resourceName);
-		if (null == documentInputStream) {
-			throw new IllegalArgumentException("resource not found: "
-					+ resourceName);
-		}
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
-		documentBuilderFactory.setNamespaceAware(true);
-		DocumentBuilder documentBuilder = documentBuilderFactory
-				.newDocumentBuilder();
-		Document tslDocument = documentBuilder.parse(documentInputStream);
-		return tslDocument;
-	}
-
-	private Document loadDocument(File file)
-			throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
-		documentBuilderFactory.setNamespaceAware(true);
-		DocumentBuilder documentBuilder = documentBuilderFactory
-				.newDocumentBuilder();
-		Document document = documentBuilder.parse(file);
-		return document;
-	}
-
-	private String toString(Node dom) throws TransformerException {
-		Source source = new DOMSource(dom);
-		StringWriter stringWriter = new StringWriter();
-		Result result = new StreamResult(stringWriter);
-		TransformerFactory transformerFactory = TransformerFactory
-				.newInstance();
-		Transformer transformer = transformerFactory.newTransformer();
-		/*
-		 * We have to omit the ?xml declaration if we want to embed the
-		 * document.
-		 */
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		transformer.transform(source, result);
-		return stringWriter.getBuffer().toString();
-	}
 }

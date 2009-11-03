@@ -19,8 +19,10 @@
 package test.unit.be.fedict.eid.tsl;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -40,6 +42,18 @@ import java.security.spec.RSAKeyGenParameterSpec;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -75,6 +89,9 @@ import org.bouncycastle.x509.X509V2CRLGenerator;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.joda.time.DateTime;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class TrustTestUtils {
 
@@ -432,5 +449,51 @@ public class TrustTestUtils {
 				OCSPRespGenerator.SUCCESSFUL, basicOCSPResp);
 
 		return ocspResp;
+	}
+
+	public static Document loadDocumentFromResource(String resourceName)
+			throws ParserConfigurationException, SAXException, IOException {
+		Thread currentThread = Thread.currentThread();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+		InputStream documentInputStream = classLoader
+				.getResourceAsStream(resourceName);
+		if (null == documentInputStream) {
+			throw new IllegalArgumentException("resource not found: "
+					+ resourceName);
+		}
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		DocumentBuilder documentBuilder = documentBuilderFactory
+				.newDocumentBuilder();
+		Document tslDocument = documentBuilder.parse(documentInputStream);
+		return tslDocument;
+	}
+
+	public static Document loadDocument(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		DocumentBuilder documentBuilder = documentBuilderFactory
+				.newDocumentBuilder();
+		Document document = documentBuilder.parse(file);
+		return document;
+	}
+
+	public static String toString(Node dom) throws TransformerException {
+		Source source = new DOMSource(dom);
+		StringWriter stringWriter = new StringWriter();
+		Result result = new StreamResult(stringWriter);
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		/*
+		 * We have to omit the ?xml declaration if we want to embed the
+		 * document.
+		 */
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		transformer.transform(source, result);
+		return stringWriter.getBuffer().toString();
 	}
 }
