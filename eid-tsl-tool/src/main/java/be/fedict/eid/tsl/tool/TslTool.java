@@ -62,6 +62,8 @@ public class TslTool extends JFrame implements ActionListener {
 
 	private static final String CLOSE_ACTION_COMMAND = "close";
 
+	private static final String EXPORT_ACTION_COMMAND = "export";
+
 	private static final String SIGN_ACTION_COMMAND = "sign";
 
 	private static final String SAVE_ACTION_COMMAND = "save";
@@ -73,6 +75,8 @@ public class TslTool extends JFrame implements ActionListener {
 	private final JDesktopPane desktopPane;
 
 	private JMenuItem closeMenuItem;
+
+	private JMenuItem exportMenuItem;
 
 	private JMenuItem signMenuItem;
 
@@ -125,6 +129,8 @@ public class TslTool extends JFrame implements ActionListener {
 				SAVE_ACTION_COMMAND, fileMenu, false);
 		this.saveAsMenuItem = addActionMenuItem("Save As", KeyEvent.VK_V,
 				SAVE_AS_ACTION_COMMAND, fileMenu, false);
+		this.exportMenuItem = addActionMenuItem("Export", KeyEvent.VK_E,
+				EXPORT_ACTION_COMMAND, fileMenu, false);
 		this.closeMenuItem = addActionMenuItem("Close", KeyEvent.VK_C,
 				CLOSE_ACTION_COMMAND, fileMenu, false);
 		fileMenu.addSeparator();
@@ -244,6 +250,29 @@ public class TslTool extends JFrame implements ActionListener {
 				}
 				this.saveMenuItem.setEnabled(false);
 			}
+		} else if (EXPORT_ACTION_COMMAND.equals(command)) {
+			LOG.debug("export");
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Export to PDF");
+			int result = fileChooser.showSaveDialog(this);
+			if (JFileChooser.APPROVE_OPTION == result) {
+				File pdfFile = fileChooser.getSelectedFile();
+				if (pdfFile.exists()) {
+					int confirmResult = JOptionPane.showConfirmDialog(this,
+							"File already exists.\n"
+									+ pdfFile.getAbsolutePath() + "\n"
+									+ "Overwrite file?", "Overwrite",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (JOptionPane.CANCEL_OPTION == confirmResult) {
+						return;
+					}
+				}
+				try {
+					this.activeTslInternalFrame.export(pdfFile);
+				} catch (IOException e) {
+					LOG.debug("IO error: " + e.getMessage(), e);
+				}
+			}
 		}
 	}
 
@@ -277,11 +306,13 @@ public class TslTool extends JFrame implements ActionListener {
 		if (null == tslInternalFrame) {
 			this.signMenuItem.setEnabled(false);
 			this.closeMenuItem.setEnabled(false);
+			this.exportMenuItem.setEnabled(false);
 			this.saveMenuItem.setEnabled(false);
 			this.saveAsMenuItem.setEnabled(false);
 		} else {
 			this.signMenuItem.setEnabled(true);
 			this.closeMenuItem.setEnabled(true);
+			this.exportMenuItem.setEnabled(true);
 			boolean changed = tslInternalFrame.getTrustServiceList()
 					.hasChanged();
 			this.saveMenuItem.setEnabled(changed);

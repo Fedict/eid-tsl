@@ -92,6 +92,10 @@ public class TrustServiceProvider {
 		postalAddress.setCountryName(countryName);
 	}
 
+	public PostalAddressType getPostalAddress() {
+		return getPostalAddress(Locale.ENGLISH);
+	}
+
 	public PostalAddressType getPostalAddress(Locale locale) {
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
 		if (null == tspInformation) {
@@ -185,6 +189,10 @@ public class TrustServiceProvider {
 		uris.add(uri);
 	}
 
+	public String getInformationUri() {
+		return getInformationUri(Locale.ENGLISH);
+	}
+
 	public String getInformationUri(Locale locale) {
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
 		if (null == tspInformation) {
@@ -224,6 +232,9 @@ public class TrustServiceProvider {
 		}
 		this.trustServices = new LinkedList<TrustService>();
 		TSPServicesListType tspServices = this.tsp.getTSPServices();
+		if (null == tspServices) {
+			return this.trustServices;
+		}
 		List<TSPServiceType> tspServiceList = tspServices.getTSPService();
 		for (TSPServiceType tspService : tspServiceList) {
 			TrustService trustService = new TrustService(tspService);

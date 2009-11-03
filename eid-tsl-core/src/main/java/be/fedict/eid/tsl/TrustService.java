@@ -18,7 +18,10 @@
 
 package be.fedict.eid.tsl;
 
+import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -235,6 +238,37 @@ public class TrustService {
 				.getServiceInformation();
 		String status = tspServiceInformation.getServiceStatus();
 		return status;
+	}
+
+	public DateTime getStatusStartingTime() {
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		XMLGregorianCalendar statusStartingTimeXmlCalendar = tspServiceInformation
+				.getStatusStartingTime();
+		DateTime statusStartingTimeDateTime = new DateTime(
+				statusStartingTimeXmlCalendar.toGregorianCalendar());
+		return statusStartingTimeDateTime;
+	}
+
+	public X509Certificate getServiceDigitalIdentity() {
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		DigitalIdentityListType digitalIdentityList = tspServiceInformation
+				.getServiceDigitalIdentity();
+		List<DigitalIdentityType> digitalIdentities = digitalIdentityList
+				.getDigitalId();
+		DigitalIdentityType digitalIdentity = digitalIdentities.get(0);
+		byte[] x509CertificateData = digitalIdentity.getX509Certificate();
+		try {
+			CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			X509Certificate certificate = (X509Certificate) certificateFactory
+					.generateCertificate(new ByteArrayInputStream(
+							x509CertificateData));
+			return certificate;
+		} catch (CertificateException e) {
+			throw new RuntimeException("X509 error: " + e.getMessage(), e);
+		}
 	}
 
 	@Override

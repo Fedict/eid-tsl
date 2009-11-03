@@ -19,7 +19,11 @@
 package be.fedict.eid.tsl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyException;
@@ -79,10 +83,13 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
+import org.bouncycastle.openssl.PEMWriter;
 import org.etsi.uri._01903.v1_3.CertIDListType;
 import org.etsi.uri._01903.v1_3.CertIDType;
 import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
@@ -111,6 +118,13 @@ import org.w3._2000._09.xmldsig_.X509IssuerSerialType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Trust Service List.
@@ -1006,6 +1020,10 @@ public class TrustServiceList {
 		tslLegalNotices.add(tslLegalNotice);
 	}
 
+	public String getLegalNotice() {
+		return getLegalNotice(Locale.ENGLISH);
+	}
+
 	public String getLegalNotice(Locale locale) {
 		if (null == this.trustStatusList) {
 			return null;
@@ -1134,5 +1152,192 @@ public class TrustServiceList {
 		tspList.add(trustServiceProvider.getTSP());
 		// reset Java model cache
 		this.trustServiceProviders = null;
+	}
+
+	public void humanReadableExport(File pdfExportFile) {
+		com.lowagie.text.Document document = new com.lowagie.text.Document();
+		OutputStream outputStream;
+		try {
+			outputStream = new FileOutputStream(pdfExportFile);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("file not found: "
+					+ pdfExportFile.getAbsolutePath(), e);
+		}
+		try {
+			PdfWriter.getInstance(document, outputStream);
+			document.open();
+
+			// title
+			Paragraph titleParagraph = new Paragraph("Trust List");
+			titleParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+			Font titleFont = titleParagraph.getFont();
+			titleFont.setSize((float) 20.0);
+			titleFont.setStyle(Font.BOLD);
+			titleParagraph.setSpacingAfter(20);
+			document.add(titleParagraph);
+
+			// information table
+			PdfPTable informationTable = new PdfPTable(2);
+			informationTable.getDefaultCell().setBorder(0);
+			informationTable.addCell("Scheme name");
+			informationTable.addCell(this.getSchemeName());
+			informationTable.addCell("Scheme territory");
+			informationTable.addCell(this.getSchemeTerritory());
+
+			informationTable.addCell("Scheme operator name");
+			informationTable.addCell(this.getSchemeOperatorName());
+			PostalAddressType schemeOperatorPostalAddress = this
+					.getSchemeOperatorPostalAddress(Locale.ENGLISH);
+			informationTable.addCell("Scheme operator street address");
+			informationTable.addCell(schemeOperatorPostalAddress
+					.getStreetAddress());
+			informationTable.addCell("Scheme operator postal code");
+			informationTable.addCell(schemeOperatorPostalAddress
+					.getPostalCode());
+			informationTable.addCell("Scheme operator locality");
+			informationTable.addCell(schemeOperatorPostalAddress.getLocality());
+			informationTable.addCell("Scheme operator state");
+			informationTable.addCell(schemeOperatorPostalAddress
+					.getStateOrProvince());
+			informationTable.addCell("Scheme operator country");
+			informationTable.addCell(schemeOperatorPostalAddress
+					.getCountryName());
+
+			List<String> schemeOperatorElectronicAddressess = this
+					.getSchemeOperatorElectronicAddresses();
+			informationTable.addCell("Scheme operator contact");
+			PdfPCell schemeAddressInfoCell = new PdfPCell();
+			schemeAddressInfoCell.setBorder(0);
+			for (String schemeOperatorElectronicAddress : schemeOperatorElectronicAddressess) {
+				schemeAddressInfoCell.addElement(new Paragraph(
+						schemeOperatorElectronicAddress));
+			}
+			informationTable.addCell(schemeAddressInfoCell);
+
+			informationTable.addCell("Issue date");
+			informationTable.addCell(this.getListIssueDateTime().toString());
+			informationTable.addCell("Next update");
+			informationTable.addCell(this.getNextUpdate().toString());
+			informationTable.addCell("Historical information period");
+			informationTable.addCell(this.getHistoricalInformationPeriod()
+					.toString()
+					+ " days");
+			informationTable.addCell("Sequence number");
+			informationTable.addCell(this.getSequenceNumber().toString());
+			informationTable.addCell("Legal Notice");
+			informationTable.addCell(this.getLegalNotice());
+			informationTable.addCell("Scheme information URIs");
+			PdfPCell schemeInfoCell = new PdfPCell();
+			schemeInfoCell.setBorder(0);
+			for (String schemeInformationUri : this.getSchemeInformationUris()) {
+				schemeInfoCell.addElement(new Paragraph(schemeInformationUri));
+			}
+			informationTable.addCell(schemeInfoCell);
+			document.add(informationTable);
+
+			List<TrustServiceProvider> trustServiceProviders = this
+					.getTrustServiceProviders();
+			for (TrustServiceProvider trustServiceProvider : trustServiceProviders) {
+				document.add(new Paragraph(trustServiceProvider.getName(),
+						new Font(Font.HELVETICA, 18, Font.BOLD)));
+				PdfPTable providerTable = new PdfPTable(2);
+				providerTable.getDefaultCell().setBorder(0);
+				providerTable.addCell("Information URI");
+				providerTable.addCell(trustServiceProvider.getInformationUri());
+				PostalAddressType postalAddress = trustServiceProvider
+						.getPostalAddress();
+				providerTable.addCell("Service provider street address");
+				providerTable.addCell(postalAddress.getStreetAddress());
+				providerTable.addCell("Service provider postal code");
+				providerTable.addCell(postalAddress.getPostalCode());
+				providerTable.addCell("Service provider locality");
+				providerTable.addCell(postalAddress.getLocality());
+				providerTable.addCell("Service provider state");
+				providerTable.addCell(postalAddress.getStateOrProvince());
+				providerTable.addCell("Service provider country");
+				providerTable.addCell(postalAddress.getCountryName());
+				document.add(providerTable);
+
+				List<TrustService> trustServices = trustServiceProvider
+						.getTrustServices();
+				for (TrustService trustService : trustServices) {
+					document.add(new Paragraph(trustService.getName(),
+							new Font(Font.HELVETICA, 12, Font.BOLDITALIC)));
+					PdfPTable serviceTable = new PdfPTable(2);
+					serviceTable.getDefaultCell().setBorder(0);
+					serviceTable.addCell("Type");
+					serviceTable.addCell(trustService.getType());
+					serviceTable.addCell("Status");
+					serviceTable.addCell(trustService.getStatus());
+					serviceTable.addCell("Status starting time");
+					serviceTable.addCell(trustService.getStatusStartingTime()
+							.toString());
+					document.add(serviceTable);
+					document.add(new Paragraph(
+							"Service digital identity (X509)", new Font(
+									Font.HELVETICA, 12, Font.ITALIC)));
+					X509Certificate certificate = trustService
+							.getServiceDigitalIdentity();
+					PdfPTable serviceIdentityTable = new PdfPTable(2);
+					serviceIdentityTable.getDefaultCell().setBorder(0);
+					serviceIdentityTable.addCell("Subject");
+					serviceIdentityTable.addCell(certificate
+							.getSubjectX500Principal().toString());
+					serviceIdentityTable.addCell("Issuer");
+					serviceIdentityTable.addCell(certificate
+							.getIssuerX500Principal().toString());
+					serviceIdentityTable.addCell("Not before");
+					serviceIdentityTable.addCell(certificate.getNotBefore()
+							.toString());
+					serviceIdentityTable.addCell("Not after");
+					serviceIdentityTable.addCell(certificate.getNotAfter()
+							.toString());
+					serviceIdentityTable.addCell("Serial number");
+					serviceIdentityTable.addCell(certificate.getSerialNumber()
+							.toString());
+					serviceIdentityTable.addCell("Version");
+					serviceIdentityTable.addCell(Integer.toString(certificate
+							.getVersion()));
+					serviceIdentityTable.addCell("Thumbprint algorithm");
+					serviceIdentityTable.addCell("SHA1");
+					serviceIdentityTable.addCell("Thumbprint");
+					String thumbprint;
+					try {
+						thumbprint = DigestUtils.shaHex(certificate
+								.getEncoded());
+					} catch (CertificateEncodingException e) {
+						throw new RuntimeException("cert: " + e.getMessage(), e);
+					}
+					serviceIdentityTable.addCell(thumbprint);
+					document.add(serviceIdentityTable);
+
+					Paragraph pemParagraph = new Paragraph(toPem(certificate),
+							new Font(Font.COURIER, 8, Font.NORMAL));
+					pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+					document.add(pemParagraph);
+				}
+			}
+
+			document.close();
+		} catch (DocumentException e) {
+			throw new RuntimeException("PDF document error: " + e.getMessage(),
+					e);
+		}
+	}
+
+	private String toPem(Object object) {
+		StringWriter buffer = new StringWriter();
+		try {
+			PEMWriter writer = new PEMWriter(buffer);
+			writer.writeObject(object);
+			writer.close();
+			return buffer.toString();
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Cannot convert public key to PEM format: "
+							+ e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(buffer);
+		}
 	}
 }
