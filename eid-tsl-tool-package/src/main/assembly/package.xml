@@ -18,6 +18,10 @@
 		<file>
 			<source>target/eid-tsl-tool.exe</source>
 		</file>
+		<file>
+			<source>src/main/assembly/eid-tsl-tool.sh</source>
+			<fileMode>0544</fileMode>
+		</file>
 	</files>
 	<dependencySets>
 		<dependencySet>
