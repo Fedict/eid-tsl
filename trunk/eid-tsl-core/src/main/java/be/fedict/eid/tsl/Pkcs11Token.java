@@ -35,6 +35,9 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.security.auth.login.FailedLoginException;
+import javax.swing.JOptionPane;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -69,19 +72,33 @@ public class Pkcs11Token {
 			NoSuchAlgorithmException, CertificateException, IOException,
 			UnrecoverableEntryException {
 		List<String> aliases = new LinkedList<String>();
-		this.keyStore = KeyStore.getInstance("PKCS11", this.pkcs11Provider);
+		try {
+			this.keyStore = KeyStore.getInstance("PKCS11", this.pkcs11Provider);
+		} catch (KeyStoreException e) {
+			JOptionPane.showMessageDialog(null, "No keystore present: "
+					+ e.getMessage(), "PKCS#11 error",
+					JOptionPane.ERROR_MESSAGE);
+			throw e;
+		}
 		LoadStoreParameter loadStoreParameter = new Pkcs11LoadStoreParameter();
-		this.keyStore.load(loadStoreParameter);
+		try {
+			this.keyStore.load(loadStoreParameter);
+		} catch (IOException e) {
+			LOG.debug("I/O error: " + e.getMessage(), e);
+			Throwable cause = e.getCause();
+			if (null != cause) {
+				if (cause instanceof FailedLoginException) {
+					JOptionPane.showMessageDialog(null, "PIN incorrect",
+							"Login failed", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			return aliases;
+		}
 		Enumeration<String> aliasesEnum = this.keyStore.aliases();
 		while (aliasesEnum.hasMoreElements()) {
 			String alias = aliasesEnum.nextElement();
 			LOG.debug("keystore alias: " + alias);
-			Entry entry = this.keyStore.getEntry(alias, null);
-			if (false == entry instanceof PrivateKeyEntry) {
-				/*
-				 * We only pass the aliases that can be used to create a digital
-				 * signature.
-				 */
+			if (false == this.keyStore.isKeyEntry(alias)) {
 				continue;
 			}
 			aliases.add(alias);
@@ -92,11 +109,17 @@ public class Pkcs11Token {
 	public PrivateKeyEntry getPrivateKeyEntry(String alias)
 			throws NoSuchAlgorithmException, UnrecoverableEntryException,
 			KeyStoreException {
-		Entry entry = this.keyStore.getEntry(alias, null);
-		if (false == entry instanceof PrivateKeyEntry) {
+		if (null == this.keyStore) {
+			throw new IllegalStateException("first call getAliases()");
+		}
+		if (false == this.keyStore.isKeyEntry(alias)) {
+			throw new RuntimeException("not a key entry: " + alias);
+		}
+		Entry keyEntry = this.keyStore.getEntry(alias, null);
+		if (false == keyEntry instanceof PrivateKeyEntry) {
 			throw new RuntimeException("not a private key entry: " + alias);
 		}
-		PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) entry;
+		PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) keyEntry;
 		return privateKeyEntry;
 	}
 

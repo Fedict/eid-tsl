@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -41,17 +42,35 @@ public class Pkcs11TokenTest {
 	private static final Log LOG = LogFactory.getLog(Pkcs11TokenTest.class);
 
 	@Test
-	public void testAliases() throws Exception {
+	public void testEIDAliases() throws Exception {
 		File eidPkcs11File = new File("/usr/local/lib/libbeidpkcs11.so");
-		listAliases(eidPkcs11File);
+		listAliases(eidPkcs11File, 2);
 
 		File openscPkcs11File = new File("/usr/lib/opensc-pkcs11.so");
-		listAliases(openscPkcs11File);
+		listAliases(openscPkcs11File, 2);
 	}
 
-	private void listAliases(File pkcs11File) throws IOException,
-			KeyStoreException, NoSuchAlgorithmException, CertificateException,
-			UnrecoverableEntryException {
+	@Test
+	public void testETokenAliases() throws Exception {
+		File eidPkcs11File = new File("/usr/lib/libeTPkcs11.so");
+		//listAliases(eidPkcs11File, 1);
+
+		Pkcs11Token pkcs11Token = new Pkcs11Token(eidPkcs11File
+				.getAbsolutePath());
+		try {
+			List<String> aliases = pkcs11Token.getAliases();
+			String alias = aliases.get(0);
+			LOG.debug("alias: " + alias);
+			PrivateKeyEntry privateKeyEntry = pkcs11Token.getPrivateKeyEntry(alias);
+			
+		} finally {
+			pkcs11Token.close();
+		}
+	}
+
+	private void listAliases(File pkcs11File, int aliasCount)
+			throws IOException, KeyStoreException, NoSuchAlgorithmException,
+			CertificateException, UnrecoverableEntryException {
 		LOG.debug("pkcs11 file: " + pkcs11File.getAbsolutePath());
 		assertTrue(pkcs11File.exists());
 
@@ -62,7 +81,7 @@ public class Pkcs11TokenTest {
 			for (String alias : aliases) {
 				LOG.debug("alias: " + alias);
 			}
-			assertEquals(2, aliases.size());
+			assertEquals(aliasCount, aliases.size());
 		} finally {
 			pkcs11Token.close();
 		}

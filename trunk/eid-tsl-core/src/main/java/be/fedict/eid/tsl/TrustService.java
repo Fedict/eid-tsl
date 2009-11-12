@@ -71,7 +71,9 @@ public class TrustService {
 
 	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
 
-	private final List<String> oids;
+	private final List<String> noSscdOids;
+
+	private static final String QC_NO_SSCD_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCNoSSCD";
 
 	TrustService(TSPServiceType tspService) {
 		this.tspService = tspService;
@@ -82,7 +84,7 @@ public class TrustService {
 			throw new RuntimeException("datatype config error: "
 					+ e.getMessage(), e);
 		}
-		this.oids = new LinkedList<String>();
+		this.noSscdOids = new LinkedList<String>();
 		this.eccObjectFactory = new org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
 	}
@@ -91,12 +93,10 @@ public class TrustService {
 		this(certificate, new String[] {});
 	}
 
-	private static final String QC_WITH_SSCD_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD";
-
-	public TrustService(X509Certificate certificate, String... oids) {
-		this.oids = new LinkedList<String>();
-		for (String oid : oids) {
-			this.oids.add(oid);
+	public TrustService(X509Certificate certificate, String... noSscdOids) {
+		this.noSscdOids = new LinkedList<String>();
+		for (String oid : noSscdOids) {
+			this.noSscdOids.add(oid);
 		}
 
 		this.objectFactory = new ObjectFactory();
@@ -155,7 +155,7 @@ public class TrustService {
 				.newXMLGregorianCalendar(statusStartingCalendar);
 		tspServiceInformation.setStatusStartingTime(statusStartingTime);
 
-		if (false == this.oids.isEmpty()) {
+		if (false == this.noSscdOids.isEmpty()) {
 			ExtensionsListType extensionsList = this.objectFactory
 					.createExtensionsListType();
 			tspServiceInformation
@@ -182,7 +182,7 @@ public class TrustService {
 			QualifierType qcWithSscdqualifier = this.eccObjectFactory
 					.createQualifierType();
 			qualifierList.add(qcWithSscdqualifier);
-			qcWithSscdqualifier.setUri(QC_WITH_SSCD_QUALIFIER_URI);
+			qcWithSscdqualifier.setUri(QC_NO_SSCD_QUALIFIER_URI);
 			qualificationElement.setQualifiers(qualifiers);
 
 			CriteriaListType criteriaList = this.eccObjectFactory
@@ -194,7 +194,7 @@ public class TrustService {
 			PoliciesListType policiesList = this.eccObjectFactory
 					.createPoliciesListType();
 			policySet.add(policiesList);
-			for (String oid : this.oids) {
+			for (String oid : this.noSscdOids) {
 				ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
 						.createObjectIdentifierType();
 				IdentifierType identifier = this.xadesObjectFactory
@@ -280,7 +280,7 @@ public class TrustService {
 			"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
 			"Qualifications");
 
-	public void addOIDForQCWithSSCD(String oid, String description) {
+	public void addOIDForQCNoSSCD(String noSscdOid, String description) {
 		TSPServiceInformationType tspServiceInformation = this.tspService
 				.getServiceInformation();
 		ExtensionsListType extensionsList = tspServiceInformation
@@ -312,7 +312,7 @@ public class TrustService {
 						List<QualifierType> qualifierList = qualifiers
 								.getQualifier();
 						for (QualifierType qualifier : qualifierList) {
-							if (QC_WITH_SSCD_QUALIFIER_URI.equals(qualifier
+							if (QC_NO_SSCD_QUALIFIER_URI.equals(qualifier
 									.getUri())) {
 								CriteriaListType criteriaList = qualificationElement
 										.getCriteriaList();
@@ -325,7 +325,7 @@ public class TrustService {
 										.createObjectIdentifierType();
 								IdentifierType identifier = this.xadesObjectFactory
 										.createIdentifierType();
-								identifier.setValue(oid);
+								identifier.setValue(noSscdOid);
 								objectIdentifier.setIdentifier(identifier);
 								objectIdentifier.setDescription(description);
 								policiesList.getPolicyIdentifier().add(
@@ -358,7 +358,7 @@ public class TrustService {
 		QualifierType qcWithSscdqualifier = this.eccObjectFactory
 				.createQualifierType();
 		qualifierList.add(qcWithSscdqualifier);
-		qcWithSscdqualifier.setUri(QC_WITH_SSCD_QUALIFIER_URI);
+		qcWithSscdqualifier.setUri(QC_NO_SSCD_QUALIFIER_URI);
 		qualificationElement.setQualifiers(qualifiers);
 
 		CriteriaListType criteriaList = this.eccObjectFactory
@@ -374,7 +374,7 @@ public class TrustService {
 				.createObjectIdentifierType();
 		IdentifierType identifier = this.xadesObjectFactory
 				.createIdentifierType();
-		identifier.setValue(oid);
+		identifier.setValue(noSscdOid);
 		objectIdentifier.setDescription(description);
 		objectIdentifier.setIdentifier(identifier);
 		policiesList.getPolicyIdentifier().add(objectIdentifier);
