@@ -149,7 +149,7 @@ public class BelgianTrustServiceListFactoryTest {
 		assertTrue(resultLegalNotice.indexOf("Belgium") != -1);
 
 		// historical information period
-		assertEquals(new Integer(3653), trustServiceList
+		assertEquals(new Integer(3653 * 3), trustServiceList
 				.getHistoricalInformationPeriod());
 
 		// list issue date time

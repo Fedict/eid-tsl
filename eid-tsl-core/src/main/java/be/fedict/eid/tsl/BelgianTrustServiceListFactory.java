@@ -109,7 +109,16 @@ public class BelgianTrustServiceListFactory {
 						Locale.ENGLISH);
 
 		// historical information period
-		trustServiceList.setHistoricalInformationPeriod(3653);
+		/*
+		 * Volgens de wet van 9 JULI 2001. — Wet houdende vaststelling van
+		 * bepaalde regels in verband met het juridisch kader voor elektronische
+		 * handtekeningen en certificatiediensten: Bijlage II - punt i) alle
+		 * relevante informatie over een gekwalificeerd certificaat te
+		 * registreren gedurende de nuttige termijn van dertig jaar, in het
+		 * bijzonder om een certificatiebewijs te kunnen voorleggen bij
+		 * gerechtelijke procedures.
+		 */
+		trustServiceList.setHistoricalInformationPeriod(3653 * 3);
 
 		// list issue date time
 		DateTime listIssueDateTime = new DateTime();
@@ -137,17 +146,15 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate rootCaCertificate = loadCertificateFromResource("./eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
 				.createTrustService(rootCaCertificate);
-		rootCaTrustService.addOIDForQCWithSSCD("2.16.56.1.1.1.2.1", "Citizen");
-		rootCaTrustService
-				.addOIDForQCWithSSCD("2.16.56.1.1.1.7.1", "Foreigner");
+		rootCaTrustService.addOIDForQCNoSSCD("2.16.56.1.1.1.2.1", "Citizen");
+		rootCaTrustService.addOIDForQCNoSSCD("2.16.56.1.1.1.7.1", "Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
 		X509Certificate rootCa2Certificate = loadCertificateFromResource("./eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
 				.createTrustService(rootCa2Certificate);
-		rootCa2TrustService.addOIDForQCWithSSCD("2.16.56.9.1.1.2.1", "Citizen");
-		rootCa2TrustService.addOIDForQCWithSSCD("2.16.56.9.1.1.7.1",
-				"Foreigner");
+		rootCa2TrustService.addOIDForQCNoSSCD("2.16.56.9.1.1.2.1", "Citizen");
+		rootCa2TrustService.addOIDForQCNoSSCD("2.16.56.9.1.1.7.1", "Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		return trustServiceList;

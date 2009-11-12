@@ -23,7 +23,10 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
@@ -258,6 +261,28 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		dataPanel.add(new JLabel(this.trustServiceList.getIssueDate()
 				.toString()), constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("TSL SHA1 fingerprint"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(getSha1Fingerprint()), constraints);
+
+	}
+
+	private String getSha1Fingerprint() {
+		InputStream tslInputStream;
+		try {
+			tslInputStream = new FileInputStream(this.tslFile);
+		} catch (FileNotFoundException e) {
+			return "TSL file not found: " + e.getMessage();
+		}
+		try {
+			String fingerprint = DigestUtils.shaHex(tslInputStream);
+			return fingerprint;
+		} catch (IOException e) {
+			return "I/O error: " + e.getMessage();
+		}
 	}
 
 	public TrustServiceList getTrustServiceList() {
