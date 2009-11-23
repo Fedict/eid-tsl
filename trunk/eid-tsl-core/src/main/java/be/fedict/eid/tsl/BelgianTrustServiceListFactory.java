@@ -88,14 +88,27 @@ public class BelgianTrustServiceListFactory {
 		// scheme information URIs
 		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/",
 				Locale.ENGLISH);
+		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/nl/",
+				new Locale("nl"));
+		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/fr/",
+				Locale.FRENCH);
 
 		// status determination approach
 		trustServiceList
 				.setStatusDeterminationApproach("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ");
 
 		// scheme type
+		/*
+		 * The Scheme Type URIs can actually be visited. We should provide some
+		 * information to ETSI for the BE schemerules.
+		 */
 		trustServiceList
 				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common");
+		/*
+		 * The BE schemerules MUSH be provided. We can add extra paths for
+		 * language. For example: http://
+		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
+		 */
 		trustServiceList
 				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
 
@@ -105,7 +118,7 @@ public class BelgianTrustServiceListFactory {
 		// legal notice
 		trustServiceList
 				.addLegalNotice(
-						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgium laws.",
+						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgian laws.",
 						Locale.ENGLISH);
 
 		// historical information period
@@ -127,6 +140,9 @@ public class BelgianTrustServiceListFactory {
 		// next update
 		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
 		trustServiceList.setNextUpdate(nextUpdateDateTime);
+
+		trustServiceList
+				.addDistributionPoint("http://tsl.belgium.be/tsl-be.xml");
 
 		// trust service provider list: certipost
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory

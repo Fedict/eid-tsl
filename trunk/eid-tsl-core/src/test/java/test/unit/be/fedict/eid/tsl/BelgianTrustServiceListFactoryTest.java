@@ -125,7 +125,7 @@ public class BelgianTrustServiceListFactoryTest {
 		List<String> schemeInformationUris = trustServiceList
 				.getSchemeInformationUris();
 		assertNotNull(schemeInformationUris);
-		assertEquals(1, schemeInformationUris.size());
+		assertEquals(3, schemeInformationUris.size());
 		assertEquals("http://tsl.belgium.be/", schemeInformationUris.get(0));
 
 		// status determination approach

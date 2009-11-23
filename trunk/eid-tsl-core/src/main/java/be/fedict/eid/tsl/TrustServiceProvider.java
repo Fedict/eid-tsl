@@ -53,11 +53,17 @@ public class TrustServiceProvider {
 		this.tsp = this.objectFactory.createTSPType();
 		TSPInformationType tspInformation = this.objectFactory
 				.createTSPInformationType();
+		this.tsp.setTSPInformation(tspInformation);
+
 		InternationalNamesType tspNames = this.objectFactory
 				.createInternationalNamesType();
 		TrustServiceListUtils.setValue(name, Locale.ENGLISH, tspNames);
 		tspInformation.setTSPName(tspNames);
-		this.tsp.setTSPInformation(tspInformation);
+
+		InternationalNamesType tspTradeNames = this.objectFactory
+				.createInternationalNamesType();
+		TrustServiceListUtils.setValue(name, Locale.ENGLISH, tspTradeNames);
+		tspInformation.setTSPTradeName(tspTradeNames);
 	}
 
 	TSPType getTSP() {

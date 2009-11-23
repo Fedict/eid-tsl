@@ -1340,4 +1340,17 @@ public class TrustServiceList {
 			IOUtils.closeQuietly(buffer);
 		}
 	}
+
+	public void addDistributionPoint(String distributionPointUri) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		ElectronicAddressType distributionPoints = schemeInformation
+				.getDistributionPoints();
+		if (null == distributionPoints) {
+			distributionPoints = this.objectFactory
+					.createElectronicAddressType();
+			schemeInformation.setDistributionPoints(distributionPoints);
+		}
+		List<String> uris = distributionPoints.getURI();
+		uris.add(distributionPointUri);
+	}
 }
