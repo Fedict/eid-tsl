@@ -138,7 +138,7 @@ public class TrustServiceList {
 
 	public static final String TSL_TAG = "http://uri.etsi.org/02231/TSLtag";
 
-	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLtype/generic";
+	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic";
 
 	private static final String XADES_TYPE = "http://uri.etsi.org/01903#SignedProperties";
 
@@ -346,7 +346,7 @@ public class TrustServiceList {
 			 */
 			PostalAddressType newPostalAddress = this.objectFactory
 					.createPostalAddressType();
-			newPostalAddress.setLang(locale.getLanguage().toUpperCase());
+			newPostalAddress.setLang(locale.getLanguage());
 			newPostalAddress.setStreetAddress(postalAddress.getStreetAddress());
 			newPostalAddress.setPostalCode(postalAddress.getPostalCode());
 			newPostalAddress.setLocality(postalAddress.getLocality());
@@ -435,7 +435,7 @@ public class TrustServiceList {
 		}
 		NonEmptyMultiLangURIType i18nUri = this.objectFactory
 				.createNonEmptyMultiLangURIType();
-		i18nUri.setLang(locale.getLanguage().toUpperCase());
+		i18nUri.setLang(locale.getLanguage());
 		i18nUri.setValue(uri);
 		schemeInformationUriList.getURI().add(i18nUri);
 	}
@@ -1014,7 +1014,7 @@ public class TrustServiceList {
 
 		MultiLangStringType tslLegalNotice = this.objectFactory
 				.createMultiLangStringType();
-		tslLegalNotice.setLang(locale.getLanguage().toUpperCase());
+		tslLegalNotice.setLang(locale.getLanguage());
 		tslLegalNotice.setValue(legalNotice);
 
 		tslLegalNotices.add(tslLegalNotice);
@@ -1042,7 +1042,7 @@ public class TrustServiceList {
 				.getTSLLegalNotice();
 		for (MultiLangStringType tslLegalNotice : tslLegalNotices) {
 			String lang = tslLegalNotice.getLang();
-			if (locale.getLanguage().toUpperCase().equals(lang)) {
+			if (locale.getLanguage().equals(lang)) {
 				return tslLegalNotice.getValue();
 			}
 		}

@@ -98,7 +98,7 @@ class TrustServiceListUtils {
 			 */
 			ObjectFactory objectFactory = new ObjectFactory();
 			localeName = objectFactory.createMultiLangNormStringType();
-			localeName.setLang(locale.getLanguage().toUpperCase());
+			localeName.setLang(locale.getLanguage());
 			names.add(localeName);
 		}
 		localeName.setValue(value);

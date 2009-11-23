@@ -84,7 +84,7 @@ public class TrustServiceProvider {
 				.createPostalAddressType();
 		postalAddressList.add(postalAddress);
 
-		postalAddress.setLang(locale.getLanguage().toUpperCase());
+		postalAddress.setLang(locale.getLanguage());
 		postalAddress.setStreetAddress(streetAddress);
 		postalAddress.setLocality(locality);
 		postalAddress.setStateOrProvince(stateOrProvince);
@@ -184,7 +184,7 @@ public class TrustServiceProvider {
 		List<NonEmptyMultiLangURIType> uris = tspInformationURI.getURI();
 		NonEmptyMultiLangURIType uri = this.objectFactory
 				.createNonEmptyMultiLangURIType();
-		uri.setLang(locale.getLanguage().toUpperCase());
+		uri.setLang(locale.getLanguage());
 		uri.setValue(informationUri);
 		uris.add(uri);
 	}

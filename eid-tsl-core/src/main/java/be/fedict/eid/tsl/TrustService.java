@@ -121,7 +121,7 @@ public class TrustService {
 		MultiLangNormStringType serviceName = this.objectFactory
 				.createMultiLangNormStringType();
 		serviceNames.add(serviceName);
-		serviceName.setLang("EN");
+		serviceName.setLang(Locale.ENGLISH.getLanguage());
 		serviceName.setValue(certificate.getSubjectX500Principal().toString());
 		tspServiceInformation.setServiceName(i18nServiceName);
 
