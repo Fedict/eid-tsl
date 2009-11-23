@@ -231,7 +231,7 @@ public class TrustServiceListFactoryTest {
 				"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLType");
 		assertNotNull(typeNode);
 		assertEquals(
-				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLtype/generic",
+				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic",
 				typeNode.getTextContent());
 	}
 

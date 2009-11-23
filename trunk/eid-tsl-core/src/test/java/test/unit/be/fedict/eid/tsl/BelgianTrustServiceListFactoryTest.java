@@ -97,7 +97,7 @@ public class BelgianTrustServiceListFactoryTest {
 		Node schemeOperatorNameEnNode = XPathAPI
 				.selectSingleNode(
 						document,
-						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='EN']");
+						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='en']");
 		assertNotNull(schemeOperatorNameEnNode);
 		assertEquals("Fedict", schemeOperatorNameEnNode.getTextContent());
 
