@@ -1183,6 +1183,22 @@ public class TrustServiceList {
 			informationTable.addCell(this.getSchemeName());
 			informationTable.addCell("Scheme territory");
 			informationTable.addCell(this.getSchemeTerritory());
+			informationTable.addCell("Scheme status determination approach");
+			informationTable.addCell(this.getStatusDeterminationApproach()
+					.substring(
+							this.getStatusDeterminationApproach().indexOf(
+									"StatusDetn/")
+									+ "StatusDetn/".length()));
+			informationTable.addCell("Scheme type community rules");
+			PdfPCell schemeTypeCell = new PdfPCell();
+			schemeTypeCell.setBorder(0);
+			for (String schemeType : this.getSchemeTypes()) {
+				schemeType = schemeType.substring(schemeType
+						.indexOf("schemerules/")
+						+ "schemerules/".length());
+				schemeTypeCell.addElement(new Paragraph(schemeType));
+			}
+			informationTable.addCell(schemeTypeCell);
 
 			informationTable.addCell("Scheme operator name");
 			informationTable.addCell(this.getSchemeOperatorName());
@@ -1266,9 +1282,13 @@ public class TrustServiceList {
 					PdfPTable serviceTable = new PdfPTable(2);
 					serviceTable.getDefaultCell().setBorder(0);
 					serviceTable.addCell("Type");
-					serviceTable.addCell(trustService.getType());
+					serviceTable.addCell(trustService.getType().substring(
+							trustService.getType().indexOf("Svctype/")
+									+ "Svctype/".length()));
 					serviceTable.addCell("Status");
-					serviceTable.addCell(trustService.getStatus());
+					serviceTable.addCell(trustService.getStatus().substring(
+							trustService.getStatus().indexOf("Svcstatus/")
+									+ "Svcstatus/".length()));
 					serviceTable.addCell("Status starting time");
 					serviceTable.addCell(trustService.getStatusStartingTime()
 							.toString());
@@ -1311,6 +1331,14 @@ public class TrustServiceList {
 					serviceIdentityTable.addCell(thumbprint);
 					document.add(serviceIdentityTable);
 
+					document.add(new Paragraph("The decoded certificate:"));
+					Paragraph certParagraph = new Paragraph(certificate
+							.toString(), new Font(Font.COURIER, 8, Font.NORMAL));
+					// certParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+					document.add(certParagraph);
+
+					document
+							.add(new Paragraph("The certificate in PEM format:"));
 					Paragraph pemParagraph = new Paragraph(toPem(certificate),
 							new Font(Font.COURIER, 8, Font.NORMAL));
 					pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
