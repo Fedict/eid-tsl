@@ -145,7 +145,7 @@ public class BelgianTrustServiceListFactory {
 
 		// trust service provider list: certipost
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost");
+				.createTrustServiceProvider("Certipost", "Certipost België");
 		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
 				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",

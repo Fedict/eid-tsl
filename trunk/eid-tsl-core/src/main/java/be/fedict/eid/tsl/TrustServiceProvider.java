@@ -48,7 +48,7 @@ public class TrustServiceProvider {
 		this.objectFactory = new ObjectFactory();
 	}
 
-	public TrustServiceProvider(String name) {
+	public TrustServiceProvider(String name, String tradeName) {
 		this.objectFactory = new ObjectFactory();
 		this.tsp = this.objectFactory.createTSPType();
 		TSPInformationType tspInformation = this.objectFactory
@@ -62,7 +62,8 @@ public class TrustServiceProvider {
 
 		InternationalNamesType tspTradeNames = this.objectFactory
 				.createInternationalNamesType();
-		TrustServiceListUtils.setValue(name, Locale.ENGLISH, tspTradeNames);
+		TrustServiceListUtils
+				.setValue(tradeName, Locale.ENGLISH, tspTradeNames);
 		tspInformation.setTSPTradeName(tspTradeNames);
 	}
 
