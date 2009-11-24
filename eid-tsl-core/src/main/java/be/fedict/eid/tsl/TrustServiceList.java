@@ -142,6 +142,10 @@ public class TrustServiceList {
 
 	private static final String XADES_TYPE = "http://uri.etsi.org/01903#SignedProperties";
 
+	public static final String STATUS_DETERMINATION_APPROPRIATE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate";
+
+	public static final String SCHEME_RULE_COMMON = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common";
+
 	private TrustStatusListType trustStatusList;
 
 	private Document tslDocument;

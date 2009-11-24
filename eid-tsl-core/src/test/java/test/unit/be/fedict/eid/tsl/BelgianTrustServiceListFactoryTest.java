@@ -130,7 +130,7 @@ public class BelgianTrustServiceListFactoryTest {
 
 		// status determination approach
 		assertEquals(
-				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ",
+				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate",
 				trustServiceList.getStatusDeterminationApproach());
 
 		// scheme types
