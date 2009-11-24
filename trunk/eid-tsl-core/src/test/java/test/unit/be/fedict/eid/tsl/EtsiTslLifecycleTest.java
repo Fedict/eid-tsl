@@ -53,10 +53,10 @@ public class EtsiTslLifecycleTest {
 				.newInstance();
 
 		// scheme operator name
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.ENGLISH);
-		trustServiceList.setSchemeOperatorName("Fedict", new Locale("nl"));
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.FRENCH);
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.GERMAN);
+		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.ENGLISH);
+		trustServiceList.setSchemeOperatorName("BE:Fedict", new Locale("nl"));
+		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.FRENCH);
+		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.GERMAN);
 
 		// scheme operator postal address
 		PostalAddressType schemeOperatorPostalAddress = new PostalAddressType();
@@ -97,15 +97,14 @@ public class EtsiTslLifecycleTest {
 
 		// status determination approach
 		trustServiceList
-				.setStatusDeterminationApproach("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate ");
+				.setStatusDeterminationApproach(TrustServiceList.STATUS_DETERMINATION_APPROPRIATE);
 
 		// scheme type
 		/*
 		 * The Scheme Type URIs can actually be visited. We should provide some
 		 * information to ETSI for the BE schemerules.
 		 */
-		trustServiceList
-				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common");
+		trustServiceList.addSchemeType(TrustServiceList.SCHEME_RULE_COMMON);
 		/*
 		 * The BE schemerules MUSH be provided. We can add extra paths for
 		 * language. For example: http://
