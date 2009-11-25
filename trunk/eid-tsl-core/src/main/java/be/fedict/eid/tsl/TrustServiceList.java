@@ -1175,10 +1175,14 @@ public class TrustServiceList {
 			Paragraph titleParagraph = new Paragraph("Trust List");
 			titleParagraph.setAlignment(Paragraph.ALIGN_CENTER);
 			Font titleFont = titleParagraph.getFont();
-			titleFont.setSize((float) 20.0);
+			titleFont.setSize((float) 30.0);
 			titleFont.setStyle(Font.BOLD);
 			titleParagraph.setSpacingAfter(20);
 			document.add(titleParagraph);
+
+			Paragraph dateParagraph = new Paragraph(new Date().toString());
+			dateParagraph.setAlignment(Paragraph.ALIGN_RIGHT);
+			document.add(dateParagraph);
 
 			// information table
 			PdfPTable informationTable = new PdfPTable(2);
@@ -1204,6 +1208,35 @@ public class TrustServiceList {
 			}
 			informationTable.addCell(schemeTypeCell);
 
+			informationTable.addCell("Issue date");
+			informationTable.addCell(this.getListIssueDateTime().toString());
+			informationTable.addCell("Next update");
+			informationTable.addCell(this.getNextUpdate().toString());
+			informationTable.addCell("Historical information period");
+			informationTable.addCell(this.getHistoricalInformationPeriod()
+					.toString()
+					+ " days");
+			informationTable.addCell("Sequence number");
+			informationTable.addCell(this.getSequenceNumber().toString());
+			informationTable.addCell("Legal Notice");
+			informationTable.addCell(this.getLegalNotice());
+			informationTable.addCell("Scheme information URIs");
+			PdfPCell schemeInfoCell = new PdfPCell();
+			schemeInfoCell.setBorder(0);
+			for (String schemeInformationUri : this.getSchemeInformationUris()) {
+				schemeInfoCell.addElement(new Paragraph(schemeInformationUri));
+			}
+			informationTable.addCell(schemeInfoCell);
+
+			document.add(informationTable);
+
+			Paragraph schemeOperatorTitle = new Paragraph("Scheme Operator",
+					new Font(Font.HELVETICA, 18, Font.BOLDITALIC));
+			schemeOperatorTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			document.add(schemeOperatorTitle);
+
+			informationTable = new PdfPTable(2);
+			informationTable.getDefaultCell().setBorder(0);
 			informationTable.addCell("Scheme operator name");
 			informationTable.addCell(this.getSchemeOperatorName());
 			PostalAddressType schemeOperatorPostalAddress = this
@@ -1234,26 +1267,13 @@ public class TrustServiceList {
 			}
 			informationTable.addCell(schemeAddressInfoCell);
 
-			informationTable.addCell("Issue date");
-			informationTable.addCell(this.getListIssueDateTime().toString());
-			informationTable.addCell("Next update");
-			informationTable.addCell(this.getNextUpdate().toString());
-			informationTable.addCell("Historical information period");
-			informationTable.addCell(this.getHistoricalInformationPeriod()
-					.toString()
-					+ " days");
-			informationTable.addCell("Sequence number");
-			informationTable.addCell(this.getSequenceNumber().toString());
-			informationTable.addCell("Legal Notice");
-			informationTable.addCell(this.getLegalNotice());
-			informationTable.addCell("Scheme information URIs");
-			PdfPCell schemeInfoCell = new PdfPCell();
-			schemeInfoCell.setBorder(0);
-			for (String schemeInformationUri : this.getSchemeInformationUris()) {
-				schemeInfoCell.addElement(new Paragraph(schemeInformationUri));
-			}
-			informationTable.addCell(schemeInfoCell);
 			document.add(informationTable);
+
+			Paragraph serviceProvidersTitle = new Paragraph(
+					"Trust Service Providers", new Font(Font.HELVETICA, 18,
+							Font.BOLDITALIC));
+			serviceProvidersTitle.setAlignment(Paragraph.ALIGN_CENTER);
+			document.add(serviceProvidersTitle);
 
 			List<TrustServiceProvider> trustServiceProviders = this
 					.getTrustServiceProviders();
@@ -1262,6 +1282,8 @@ public class TrustServiceList {
 						new Font(Font.HELVETICA, 18, Font.BOLD)));
 				PdfPTable providerTable = new PdfPTable(2);
 				providerTable.getDefaultCell().setBorder(0);
+				providerTable.addCell("Service provider trade name");
+				providerTable.addCell(trustServiceProvider.getTradeName());
 				providerTable.addCell("Information URI");
 				providerTable.addCell(trustServiceProvider.getInformationUri());
 				PostalAddressType postalAddress = trustServiceProvider
@@ -1348,6 +1370,27 @@ public class TrustServiceList {
 					pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
 					document.add(pemParagraph);
 				}
+			}
+
+			X509Certificate signerCertificate = verifySignature();
+			if (null != signerCertificate) {
+				Paragraph tslSignerTitle = new Paragraph(
+						"TSL Signer Certificate", new Font(Font.HELVETICA, 18,
+								Font.BOLDITALIC));
+				tslSignerTitle.setAlignment(Paragraph.ALIGN_CENTER);
+				document.add(tslSignerTitle);
+				document.add(new Paragraph("The decoded certificate:"));
+				Paragraph certParagraph = new Paragraph(signerCertificate
+						.toString(), new Font(Font.COURIER, 8, Font.NORMAL));
+				// certParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+				document.add(certParagraph);
+
+				document.add(new Paragraph("The certificate in PEM format:"));
+				Paragraph pemParagraph = new Paragraph(
+						toPem(signerCertificate), new Font(Font.COURIER, 8,
+								Font.NORMAL));
+				pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+				document.add(pemParagraph);
 			}
 
 			document.close();

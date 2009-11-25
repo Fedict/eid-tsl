@@ -40,12 +40,15 @@ import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.etsi.uri._01903.v1_3.IdentifierType;
 import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
+import org.etsi.uri._02231.v2_.AdditionalServiceInformationType;
 import org.etsi.uri._02231.v2_.DigitalIdentityListType;
 import org.etsi.uri._02231.v2_.DigitalIdentityType;
 import org.etsi.uri._02231.v2_.ExtensionType;
 import org.etsi.uri._02231.v2_.ExtensionsListType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.MultiLangNormStringType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.TSPServiceInformationType;
 import org.etsi.uri._02231.v2_.TSPServiceType;
@@ -203,6 +206,26 @@ public class TrustService {
 				objectIdentifier.setIdentifier(identifier);
 				policiesList.getPolicyIdentifier().add(objectIdentifier);
 			}
+
+			AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
+					.createAdditionalServiceInformationType();
+			NonEmptyMultiLangURIListType additionalServiceInformationUris = this.objectFactory
+					.createNonEmptyMultiLangURIListType();
+			List<NonEmptyMultiLangURIType> uriList = additionalServiceInformationUris
+					.getURI();
+			NonEmptyMultiLangURIType uri = this.objectFactory
+					.createNonEmptyMultiLangURIType();
+			uri.setLang("en");
+			uri
+					.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+			uriList.add(uri);
+			additionalServiceInformation
+					.setURI(additionalServiceInformationUris);
+			extension
+					.getContent()
+					.add(
+							this.objectFactory
+									.createAdditionalServiceInformation(additionalServiceInformation));
 		}
 	}
 
@@ -378,5 +401,25 @@ public class TrustService {
 		objectIdentifier.setDescription(description);
 		objectIdentifier.setIdentifier(identifier);
 		policiesList.getPolicyIdentifier().add(objectIdentifier);
+
+		AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
+				.createAdditionalServiceInformationType();
+		NonEmptyMultiLangURIListType additionalServiceInformationUris = this.objectFactory
+				.createNonEmptyMultiLangURIListType();
+		List<NonEmptyMultiLangURIType> uriList = additionalServiceInformationUris
+				.getURI();
+		NonEmptyMultiLangURIType uri = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		uri.setLang("en");
+		uri
+				.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+		uriList.add(uri);
+		additionalServiceInformation.setURI(additionalServiceInformationUris);
+		extension
+				.getContent()
+				.add(
+						this.objectFactory
+								.createAdditionalServiceInformation(additionalServiceInformation));
+
 	}
 }
