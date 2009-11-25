@@ -18,11 +18,17 @@
 		</sequence>
 	</complexType>
 	<complexType name="CriteriaListType">
+		<xsd:annotation>
+			<xsd:documentation>
+				Please first try to use the CriteriaList before doing the 
+				OtherCriteria extension point.
+			</xsd:documentation>
+		</xsd:annotation>
 		<sequence>
 			<element name="KeyUsage" type="tns:KeyUsageType" minOccurs="0" maxOccurs="unbounded"/>
 			<element name="PolicySet" type="tns:PoliciesListType" minOccurs="0" maxOccurs="unbounded"/>
-			<element name="CriteriaList" type="tns:CriteriaListType" minOccurs="0"/>
-			<element name="otherCriteriaList" type="xades:AnyType" minOccurs="0"/>
+			<element name="CriteriaList" type="tns:CriteriaListType" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="OtherCriteria" type="xades:AnyType" minOccurs="0" maxOccurs="unbounded"/>
 		</sequence>
 		<attribute name="assert">
 			<simpleType>

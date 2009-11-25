@@ -228,6 +228,19 @@ public class TrustServiceProvider {
 		return tspName;
 	}
 
+	public String getTradeName(Locale locale) {
+		TSPInformationType tspInformation = this.tsp.getTSPInformation();
+		InternationalNamesType i18nTspTradeName = tspInformation
+				.getTSPTradeName();
+		String tspTradeName = TrustServiceListUtils.getValue(i18nTspTradeName,
+				locale);
+		return tspTradeName;
+	}
+
+	public String getTradeName() {
+		return getTradeName(Locale.ENGLISH);
+	}
+
 	public String getName() {
 		Locale locale = Locale.getDefault();
 		return getName(locale);
