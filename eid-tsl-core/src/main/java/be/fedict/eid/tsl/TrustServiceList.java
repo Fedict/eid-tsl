@@ -1172,7 +1172,8 @@ public class TrustServiceList {
 			document.open();
 
 			// title
-			Paragraph titleParagraph = new Paragraph("Trust List");
+			Paragraph titleParagraph = new Paragraph(
+					getSourceLanguageShortName() + ": Trusted List");
 			titleParagraph.setAlignment(Paragraph.ALIGN_CENTER);
 			Font titleFont = titleParagraph.getFont();
 			titleFont.setSize((float) 30.0);
@@ -1186,7 +1187,7 @@ public class TrustServiceList {
 
 			// information table
 			PdfPTable informationTable = new PdfPTable(2);
-			informationTable.getDefaultCell().setBorder(0);
+			informationTable.getDefaultCell().setBorder(1);
 			informationTable.addCell("Scheme name");
 			informationTable.addCell(this.getSchemeName());
 			informationTable.addCell("Scheme territory");
@@ -1236,7 +1237,7 @@ public class TrustServiceList {
 			document.add(schemeOperatorTitle);
 
 			informationTable = new PdfPTable(2);
-			informationTable.getDefaultCell().setBorder(0);
+			informationTable.getDefaultCell().setBorder(1);
 			informationTable.addCell("Scheme operator name");
 			informationTable.addCell(this.getSchemeOperatorName());
 			PostalAddressType schemeOperatorPostalAddress = this
@@ -1281,7 +1282,7 @@ public class TrustServiceList {
 				document.add(new Paragraph(trustServiceProvider.getName(),
 						new Font(Font.HELVETICA, 18, Font.BOLD)));
 				PdfPTable providerTable = new PdfPTable(2);
-				providerTable.getDefaultCell().setBorder(0);
+				providerTable.getDefaultCell().setBorder(1);
 				providerTable.addCell("Service provider trade name");
 				providerTable.addCell(trustServiceProvider.getTradeName());
 				providerTable.addCell("Information URI");
@@ -1306,7 +1307,7 @@ public class TrustServiceList {
 					document.add(new Paragraph(trustService.getName(),
 							new Font(Font.HELVETICA, 12, Font.BOLDITALIC)));
 					PdfPTable serviceTable = new PdfPTable(2);
-					serviceTable.getDefaultCell().setBorder(0);
+					serviceTable.getDefaultCell().setBorder(1);
 					serviceTable.addCell("Type");
 					serviceTable.addCell(trustService.getType().substring(
 							trustService.getType().indexOf("Svctype/")
@@ -1325,7 +1326,7 @@ public class TrustServiceList {
 					X509Certificate certificate = trustService
 							.getServiceDigitalIdentity();
 					PdfPTable serviceIdentityTable = new PdfPTable(2);
-					serviceIdentityTable.getDefaultCell().setBorder(0);
+					serviceIdentityTable.getDefaultCell().setBorder(1);
 					serviceIdentityTable.addCell("Subject");
 					serviceIdentityTable.addCell(certificate
 							.getSubjectX500Principal().toString());
@@ -1398,6 +1399,19 @@ public class TrustServiceList {
 			throw new RuntimeException("PDF document error: " + e.getMessage(),
 					e);
 		}
+	}
+
+	/**
+	 * http://publications.europa.eu/code/pdf/370000en.htm
+	 * 
+	 * @return
+	 */
+	private String getSourceLanguageShortName() {
+		String countryCode = getSchemeTerritory();
+		if ("BE".equals(countryCode)) {
+			return "Belgique/België (Belgium)";
+		}
+		return countryCode;
 	}
 
 	private String toPem(Object object) {
