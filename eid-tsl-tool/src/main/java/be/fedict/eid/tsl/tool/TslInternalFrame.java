@@ -71,13 +71,19 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 	private JLabel serviceStatus;
 
-	private JLabel serviceThumbprint;
+	private JLabel serviceSha1Thumbprint;
+
+	private JLabel serviceSha256Thumbprint;
 
 	private final TslTool tslTool;
 
 	private JLabel signer;
 
 	private File tslFile;
+
+	private JLabel signerSha1Fingerprint;
+
+	private JLabel signerSha256Fingerprint;
 
 	TslInternalFrame(File tslFile, TrustServiceList trustServiceList,
 			TslTool tslTool) {
@@ -127,6 +133,24 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		dataPanel.add(this.signer, constraints);
 
+		JLabel signerSha1FingerprintLabel = new JLabel(
+				"Public key SHA1 fingerprint:");
+		constraints.gridx = 0;
+		constraints.gridy++;
+		dataPanel.add(signerSha1FingerprintLabel, constraints);
+		this.signerSha1Fingerprint = new JLabel();
+		constraints.gridx++;
+		dataPanel.add(this.signerSha1Fingerprint, constraints);
+
+		JLabel signerSha256FingerprintLabel = new JLabel(
+				"Public key SHA256 fingerprint:");
+		constraints.gridx = 0;
+		constraints.gridy++;
+		dataPanel.add(signerSha256FingerprintLabel, constraints);
+		this.signerSha256Fingerprint = new JLabel();
+		constraints.gridx++;
+		dataPanel.add(this.signerSha256Fingerprint, constraints);
+
 		updateView();
 	}
 
@@ -136,8 +160,16 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		if (null != signerCertificate) {
 			this.signer.setText(signerCertificate.getSubjectX500Principal()
 					.toString());
+			byte[] encodedPublicKey = signerCertificate.getPublicKey()
+					.getEncoded();
+			this.signerSha1Fingerprint.setText(DigestUtils
+					.shaHex(encodedPublicKey));
+			this.signerSha256Fingerprint.setText(DigestUtils
+					.sha256Hex(encodedPublicKey));
 		} else {
 			this.signer.setText("[TSL is not signed]");
+			this.signerSha1Fingerprint.setText("");
+			this.signerSha256Fingerprint.setText("");
 		}
 	}
 
@@ -207,11 +239,19 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 		constraints.gridy++;
 		constraints.gridx = 0;
-		dataPanel.add(new JLabel("Service Thumbprint"), constraints);
+		dataPanel.add(new JLabel("Service SHA1 Thumbprint"), constraints);
 
 		constraints.gridx++;
-		this.serviceThumbprint = new JLabel();
-		dataPanel.add(this.serviceThumbprint, constraints);
+		this.serviceSha1Thumbprint = new JLabel();
+		dataPanel.add(this.serviceSha1Thumbprint, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Service SHA256 Thumbprint"), constraints);
+
+		constraints.gridx++;
+		this.serviceSha256Thumbprint = new JLabel();
+		dataPanel.add(this.serviceSha256Thumbprint, constraints);
 	}
 
 	private void addGenericTab(JTabbedPane tabbedPane) {
@@ -246,7 +286,9 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx = 0;
 		dataPanel.add(new JLabel("Type"), constraints);
 		constraints.gridx++;
-		dataPanel.add(new JLabel(this.trustServiceList.getType()), constraints);
+		dataPanel.add(new JLabel(this.trustServiceList.getType().substring(
+				this.trustServiceList.getType().indexOf("TSLType/")
+						+ "TSLType/".length())), constraints);
 
 		constraints.gridy++;
 		constraints.gridx = 0;
@@ -268,6 +310,11 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		dataPanel.add(new JLabel(getSha1Fingerprint()), constraints);
 
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("TSL SHA256 fingerprint"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(getSha256Fingerprint()), constraints);
 	}
 
 	private String getSha1Fingerprint() {
@@ -285,6 +332,21 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		}
 	}
 
+	private String getSha256Fingerprint() {
+		InputStream tslInputStream;
+		try {
+			tslInputStream = new FileInputStream(this.tslFile);
+		} catch (FileNotFoundException e) {
+			return "TSL file not found: " + e.getMessage();
+		}
+		try {
+			String fingerprint = DigestUtils.sha256Hex(tslInputStream);
+			return fingerprint;
+		} catch (IOException e) {
+			return "I/O error: " + e.getMessage();
+		}
+	}
+
 	public TrustServiceList getTrustServiceList() {
 		return this.trustServiceList;
 	}
@@ -296,22 +358,31 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		if (treeNode.isLeaf()) {
 			TrustService trustService = (TrustService) treeNode.getUserObject();
 			this.serviceName.setText(trustService.getName());
-			this.serviceType.setText(trustService.getType());
-			this.serviceStatus.setText(trustService.getStatus());
+			this.serviceType.setText(trustService.getType().substring(
+					trustService.getType().indexOf("Svctype/")
+							+ "Svctype/".length()));
+			this.serviceStatus.setText(trustService.getStatus().substring(
+					trustService.getStatus().indexOf("Svcstatus/")
+							+ "Svcstatus/".length()));
 			X509Certificate certificate = trustService
 					.getServiceDigitalIdentity();
-			String thumbprint;
+			byte[] encodedCertificate;
 			try {
-				thumbprint = DigestUtils.shaHex(certificate.getEncoded());
+				encodedCertificate = certificate.getEncoded();
 			} catch (CertificateEncodingException e) {
 				throw new RuntimeException("cert: " + e.getMessage(), e);
 			}
-			this.serviceThumbprint.setText(thumbprint);
+			String sha1Thumbprint = DigestUtils.shaHex(encodedCertificate);
+			this.serviceSha1Thumbprint.setText(sha1Thumbprint);
+
+			String sha256Thumbprint = DigestUtils.sha256Hex(encodedCertificate);
+			this.serviceSha256Thumbprint.setText(sha256Thumbprint);
 		} else {
 			this.serviceName.setText("");
 			this.serviceType.setText("");
 			this.serviceStatus.setText("");
-			this.serviceThumbprint.setText("");
+			this.serviceSha1Thumbprint.setText("");
+			this.serviceSha256Thumbprint.setText("");
 		}
 	}
 
