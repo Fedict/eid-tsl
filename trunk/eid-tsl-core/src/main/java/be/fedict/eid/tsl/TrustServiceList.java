@@ -121,7 +121,9 @@ import org.w3c.dom.Node;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
+import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -1158,6 +1160,8 @@ public class TrustServiceList {
 		this.trustServiceProviders = null;
 	}
 
+	private static final int BORDER = 0;
+
 	public void humanReadableExport(File pdfExportFile) {
 		com.lowagie.text.Document document = new com.lowagie.text.Document();
 		OutputStream outputStream;
@@ -1172,8 +1176,8 @@ public class TrustServiceList {
 			document.open();
 
 			// title
-			Paragraph titleParagraph = new Paragraph(
-					getSourceLanguageShortName() + ": Trusted List");
+			String title = getSourceLanguageShortName() + ": Trusted List";
+			Paragraph titleParagraph = new Paragraph(title);
 			titleParagraph.setAlignment(Paragraph.ALIGN_CENTER);
 			Font titleFont = titleParagraph.getFont();
 			titleFont.setSize((float) 30.0);
@@ -1181,15 +1185,32 @@ public class TrustServiceList {
 			titleParagraph.setSpacingAfter(20);
 			document.add(titleParagraph);
 
-			Paragraph dateParagraph = new Paragraph(new Date().toString());
-			dateParagraph.setAlignment(Paragraph.ALIGN_RIGHT);
-			document.add(dateParagraph);
+			Phrase footerPhrase = new Phrase("PDF document generated on "
+					+ new Date().toString() + ", page ");
+			HeaderFooter footer = new HeaderFooter(footerPhrase, true);
+			document.setFooter(footer);
+
+			Phrase headerPhrase = new Phrase(title);
+			HeaderFooter header = new HeaderFooter(headerPhrase, false);
+			document.setHeader(header);
+
+			Paragraph schemeNameTitle = new Paragraph("Scheme name");
+			Font schemeNameTitleFont = schemeNameTitle.getFont();
+			schemeNameTitleFont.setStyle(Font.BOLD);
+			schemeNameTitle.setFont(schemeNameTitleFont);
+			document.add(schemeNameTitle);
+			document.add(new Paragraph(this.getSchemeName()));
+
+			Paragraph legalNoticeTitle = new Paragraph("Legal Notice");
+			Font legalNoticeTitleFont = legalNoticeTitle.getFont();
+			legalNoticeTitleFont.setStyle(Font.BOLD);
+			legalNoticeTitle.setFont(legalNoticeTitleFont);
+			document.add(legalNoticeTitle);
+			document.add(new Paragraph(this.getLegalNotice()));
 
 			// information table
 			PdfPTable informationTable = new PdfPTable(2);
-			informationTable.getDefaultCell().setBorder(1);
-			informationTable.addCell("Scheme name");
-			informationTable.addCell(this.getSchemeName());
+			informationTable.getDefaultCell().setBorder(BORDER);
 			informationTable.addCell("Scheme territory");
 			informationTable.addCell(this.getSchemeTerritory());
 			informationTable.addCell("Scheme status determination approach");
@@ -1219,8 +1240,6 @@ public class TrustServiceList {
 					+ " days");
 			informationTable.addCell("Sequence number");
 			informationTable.addCell(this.getSequenceNumber().toString());
-			informationTable.addCell("Legal Notice");
-			informationTable.addCell(this.getLegalNotice());
 			informationTable.addCell("Scheme information URIs");
 			PdfPCell schemeInfoCell = new PdfPCell();
 			schemeInfoCell.setBorder(0);
@@ -1237,7 +1256,7 @@ public class TrustServiceList {
 			document.add(schemeOperatorTitle);
 
 			informationTable = new PdfPTable(2);
-			informationTable.getDefaultCell().setBorder(1);
+			informationTable.getDefaultCell().setBorder(BORDER);
 			informationTable.addCell("Scheme operator name");
 			informationTable.addCell(this.getSchemeOperatorName());
 			PostalAddressType schemeOperatorPostalAddress = this
@@ -1282,7 +1301,7 @@ public class TrustServiceList {
 				document.add(new Paragraph(trustServiceProvider.getName(),
 						new Font(Font.HELVETICA, 18, Font.BOLD)));
 				PdfPTable providerTable = new PdfPTable(2);
-				providerTable.getDefaultCell().setBorder(1);
+				providerTable.getDefaultCell().setBorder(BORDER);
 				providerTable.addCell("Service provider trade name");
 				providerTable.addCell(trustServiceProvider.getTradeName());
 				providerTable.addCell("Information URI");
@@ -1307,7 +1326,7 @@ public class TrustServiceList {
 					document.add(new Paragraph(trustService.getName(),
 							new Font(Font.HELVETICA, 12, Font.BOLDITALIC)));
 					PdfPTable serviceTable = new PdfPTable(2);
-					serviceTable.getDefaultCell().setBorder(1);
+					serviceTable.getDefaultCell().setBorder(BORDER);
 					serviceTable.addCell("Type");
 					serviceTable.addCell(trustService.getType().substring(
 							trustService.getType().indexOf("Svctype/")
@@ -1326,7 +1345,7 @@ public class TrustServiceList {
 					X509Certificate certificate = trustService
 							.getServiceDigitalIdentity();
 					PdfPTable serviceIdentityTable = new PdfPTable(2);
-					serviceIdentityTable.getDefaultCell().setBorder(1);
+					serviceIdentityTable.getDefaultCell().setBorder(BORDER);
 					serviceIdentityTable.addCell("Subject");
 					serviceIdentityTable.addCell(certificate
 							.getSubjectX500Principal().toString());
@@ -1345,17 +1364,19 @@ public class TrustServiceList {
 					serviceIdentityTable.addCell("Version");
 					serviceIdentityTable.addCell(Integer.toString(certificate
 							.getVersion()));
-					serviceIdentityTable.addCell("Thumbprint algorithm");
-					serviceIdentityTable.addCell("SHA1");
-					serviceIdentityTable.addCell("Thumbprint");
-					String thumbprint;
+					byte[] encodedCertificate;
 					try {
-						thumbprint = DigestUtils.shaHex(certificate
-								.getEncoded());
+						encodedCertificate = certificate.getEncoded();
 					} catch (CertificateEncodingException e) {
 						throw new RuntimeException("cert: " + e.getMessage(), e);
 					}
+					serviceIdentityTable.addCell("SHA1 Thumbprint");
+					String thumbprint = DigestUtils.shaHex(encodedCertificate);
 					serviceIdentityTable.addCell(thumbprint);
+					serviceIdentityTable.addCell("SHA256 Thumbprint");
+					String sha256thumbprint = DigestUtils
+							.sha256Hex(encodedCertificate);
+					serviceIdentityTable.addCell(sha256thumbprint);
 					document.add(serviceIdentityTable);
 
 					document.add(new Paragraph("The decoded certificate:"));
@@ -1375,11 +1396,41 @@ public class TrustServiceList {
 
 			X509Certificate signerCertificate = verifySignature();
 			if (null != signerCertificate) {
-				Paragraph tslSignerTitle = new Paragraph(
-						"TSL Signer Certificate", new Font(Font.HELVETICA, 18,
-								Font.BOLDITALIC));
+				Paragraph tslSignerTitle = new Paragraph("TSL Signer",
+						new Font(Font.HELVETICA, 18, Font.BOLDITALIC));
 				tslSignerTitle.setAlignment(Paragraph.ALIGN_CENTER);
 				document.add(tslSignerTitle);
+
+				PdfPTable signerTable = new PdfPTable(2);
+				signerTable.getDefaultCell().setBorder(BORDER);
+				signerTable.addCell("Subject");
+				signerTable.addCell(signerCertificate.getSubjectX500Principal()
+						.toString());
+				signerTable.addCell("Issuer");
+				signerTable.addCell(signerCertificate.getIssuerX500Principal()
+						.toString());
+				signerTable.addCell("Not before");
+				signerTable
+						.addCell(signerCertificate.getNotBefore().toString());
+				signerTable.addCell("Not after");
+				signerTable.addCell(signerCertificate.getNotAfter().toString());
+				signerTable.addCell("Serial number");
+				signerTable.addCell(signerCertificate.getSerialNumber()
+						.toString());
+				signerTable.addCell("Version");
+				signerTable.addCell(Integer.toString(signerCertificate
+						.getVersion()));
+				byte[] encodedPublicKey = signerCertificate.getPublicKey()
+						.getEncoded();
+				signerTable.addCell("Public key SHA1 Thumbprint");
+				String thumbprint = DigestUtils.shaHex(encodedPublicKey);
+				signerTable.addCell(thumbprint);
+				signerTable.addCell("Public key SHA256 Thumbprint");
+				String sha256thumbprint = DigestUtils
+						.sha256Hex(encodedPublicKey);
+				signerTable.addCell(sha256thumbprint);
+				document.add(signerTable);
+
 				document.add(new Paragraph("The decoded certificate:"));
 				Paragraph certParagraph = new Paragraph(signerCertificate
 						.toString(), new Font(Font.COURIER, 8, Font.NORMAL));
@@ -1392,6 +1443,13 @@ public class TrustServiceList {
 								Font.NORMAL));
 				pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
 				document.add(pemParagraph);
+
+				document.add(new Paragraph("The public key in PEM format:"));
+				Paragraph publicKeyPemParagraph = new Paragraph(
+						toPem(signerCertificate.getPublicKey()), new Font(
+								Font.COURIER, 8, Font.NORMAL));
+				publicKeyPemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
+				document.add(publicKeyPemParagraph);
 			}
 
 			document.close();

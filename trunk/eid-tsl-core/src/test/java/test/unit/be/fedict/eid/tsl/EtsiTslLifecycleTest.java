@@ -53,10 +53,14 @@ public class EtsiTslLifecycleTest {
 				.newInstance();
 
 		// scheme operator name
-		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.ENGLISH);
-		trustServiceList.setSchemeOperatorName("BE:Fedict", new Locale("nl"));
-		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.FRENCH);
-		trustServiceList.setSchemeOperatorName("BE:Fedict", Locale.GERMAN);
+		trustServiceList.setSchemeOperatorName("EN:SchemeOperatorName",
+				Locale.ENGLISH);
+		trustServiceList.setSchemeOperatorName("NL:SchemeOperatorName",
+				new Locale("nl"));
+		trustServiceList.setSchemeOperatorName("FR:SchemeOperatorName",
+				Locale.FRENCH);
+		trustServiceList.setSchemeOperatorName("DE:SchemeOperatorName",
+				Locale.GERMAN);
 
 		// scheme operator postal address
 		PostalAddressType schemeOperatorPostalAddress = new PostalAddressType();

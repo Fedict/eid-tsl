@@ -182,8 +182,8 @@
 			<url>http://bits.nbextras.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>maven-java.net</id>
-			<url>https://maven-repository.dev.java.net/repository/</url>
+			<id>maven1-java.net</id>
+			<url>http://download.java.net/maven/1/</url>
 			<layout>legacy</layout>
 			<releases>
 				<enabled>true</enabled>
