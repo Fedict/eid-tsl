@@ -23,10 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
@@ -432,11 +429,11 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	}
 
 	public void save() throws IOException {
-		this.trustServiceList.save(this.tslFile);
+		this.trustServiceList.saveAs(this.tslFile);
 		setTitle(this.tslFile.getName());
 	}
 
-	public void save(File tslFile) throws IOException {
+	public void saveAs(File tslFile) throws IOException {
 		this.tslFile = tslFile;
 		save();
 	}

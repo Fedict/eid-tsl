@@ -73,7 +73,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -85,6 +84,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -153,6 +153,8 @@ public class TrustServiceList {
 
 	private Document tslDocument;
 
+	private File tslFile;
+
 	private List<TrustServiceProvider> trustServiceProviders;
 
 	private boolean changed;
@@ -183,9 +185,10 @@ public class TrustServiceList {
 	}
 
 	protected TrustServiceList(TrustStatusListType trustStatusList,
-			Document tslDocument) {
+			Document tslDocument, File tslFile) {
 		this.trustStatusList = trustStatusList;
 		this.tslDocument = tslDocument;
+		this.tslFile = tslFile;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
@@ -514,10 +517,12 @@ public class TrustServiceList {
 	}
 
 	public String getType() {
-		try {
-			marshall();
-		} catch (Exception e) {
-			throw new RuntimeException("marshall error: " + e.getMessage());
+		if (null == this.tslDocument) {
+			try {
+				marshall();
+			} catch (Exception e) {
+				throw new RuntimeException("marshall error: " + e.getMessage());
+			}
 		}
 		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
 				.getSchemeInformation();
@@ -894,8 +899,11 @@ public class TrustServiceList {
 		this.changed = false;
 	}
 
-	public void save(File tslFile) throws IOException {
-		LOG.debug("save to: " + tslFile.getAbsolutePath());
+	public void save() throws IOException {
+		if (null == this.tslFile) {
+			throw new IllegalStateException("no TSL file set");
+		}
+		LOG.debug("save to: " + this.tslFile.getAbsolutePath());
 		if (null == this.tslDocument) {
 			try {
 				marshall();
@@ -912,12 +920,17 @@ public class TrustServiceList {
 			}
 		}
 		try {
-			toFile(tslFile);
+			toFile(this.tslFile);
 		} catch (Exception e) {
 			throw new IOException(
 					"DOM transformation error: " + e.getMessage(), e);
 		}
 		clearChanged();
+	}
+
+	public void saveAs(File tslFile) throws IOException {
+		this.tslFile = tslFile;
+		save();
 	}
 
 	private void toFile(File tslFile)
@@ -932,7 +945,8 @@ public class TrustServiceList {
 		 * We have to omit the ?xml declaration if we want to embed the
 		 * document.
 		 */
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		// transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+		// "yes");
 		transformer.transform(source, result);
 	}
 
@@ -1513,6 +1527,13 @@ public class TrustServiceList {
 	}
 
 	private byte[] toByteArray() throws TransformerFactoryConfigurationError {
+		if (null != this.tslFile) {
+			try {
+				return FileUtils.readFileToByteArray(this.tslFile);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		Source source = new DOMSource(this.tslDocument);
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		Result result = new StreamResult(byteArrayOutputStream);

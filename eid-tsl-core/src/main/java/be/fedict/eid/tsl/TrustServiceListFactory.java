@@ -69,7 +69,7 @@ public class TrustServiceListFactory {
 		} catch (Exception e) {
 			throw new IOException("DOM parse error: " + e.getMessage(), e);
 		}
-		TrustServiceList trustServiceList = newInstance(tslDocument);
+		TrustServiceList trustServiceList = newInstance(tslDocument, tslFile);
 		return trustServiceList;
 	}
 
@@ -82,8 +82,8 @@ public class TrustServiceListFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static TrustServiceList newInstance(Document tslDocument)
-			throws IOException {
+	public static TrustServiceList newInstance(Document tslDocument,
+			File tslFile) throws IOException {
 		if (null == tslDocument) {
 			throw new IllegalArgumentException();
 		}
@@ -93,7 +93,13 @@ public class TrustServiceListFactory {
 		} catch (JAXBException e) {
 			throw new IOException("TSL parse error: " + e.getMessage(), e);
 		}
-		return new TrustServiceList(trustServiceStatusList, tslDocument);
+		return new TrustServiceList(trustServiceStatusList, tslDocument,
+				tslFile);
+	}
+
+	public static TrustServiceList newInstance(Document tslDocument)
+			throws IOException {
+		return newInstance(tslDocument, null);
 	}
 
 	private static Document parseDocument(File file)

@@ -59,7 +59,7 @@ public class BelgianTrustServiceListFactoryTest {
 		assertNotNull(trustServiceList.getType());
 		
 		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
-		trustServiceList.save(unsignedTslFile);
+		trustServiceList.saveAs(unsignedTslFile);
 
 		// sign trust list
 		KeyPair keyPair = TrustTestUtils.generateKeyPair(2048);
@@ -75,7 +75,7 @@ public class BelgianTrustServiceListFactoryTest {
 		// operate
 		File tmpTslFile = File.createTempFile("tsl-be-", ".xml");
 		// tmpTslFile.deleteOnExit();
-		trustServiceList.save(tmpTslFile);
+		trustServiceList.saveAs(tmpTslFile);
 
 		// --------------- VERIFY TRUST LIST --------------------
 		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));

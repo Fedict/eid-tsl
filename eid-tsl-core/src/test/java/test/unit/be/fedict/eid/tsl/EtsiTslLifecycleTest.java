@@ -163,7 +163,7 @@ public class EtsiTslLifecycleTest {
 		trustServiceList.sign(privateKey, certificate);
 
 		// save TSL
-		trustServiceList.save(tslFile);
+		trustServiceList.saveAs(tslFile);
 		LOG.debug("TSL file: " + tslFile.getAbsolutePath());
 	}
 
@@ -280,7 +280,7 @@ public class EtsiTslLifecycleTest {
 		trustServiceList.sign(privateKey, certificate);
 
 		// save TSL
-		trustServiceList.save(tslFile);
+		trustServiceList.saveAs(tslFile);
 		LOG.debug("TSL file: " + tslFile.getAbsolutePath());
 	}
 }

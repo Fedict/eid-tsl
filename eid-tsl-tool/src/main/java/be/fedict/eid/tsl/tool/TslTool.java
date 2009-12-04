@@ -264,7 +264,7 @@ public class TslTool extends JFrame implements ActionListener {
 					}
 				}
 				try {
-					this.activeTslInternalFrame.save(tslFile);
+					this.activeTslInternalFrame.saveAs(tslFile);
 				} catch (IOException e) {
 					LOG.debug("IO error: " + e.getMessage(), e);
 				}
@@ -312,6 +312,7 @@ public class TslTool extends JFrame implements ActionListener {
 					"Load Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		LOG.debug("SHA1 fingerprint: " + trustServiceList.getSha1Fingerprint());
 		displayTsl(tslFile, trustServiceList);
 	}
 

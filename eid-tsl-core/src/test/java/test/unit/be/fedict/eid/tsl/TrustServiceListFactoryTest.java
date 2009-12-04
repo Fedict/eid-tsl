@@ -86,6 +86,45 @@ public class TrustServiceListFactoryTest {
 	}
 
 	@Test
+	public void testStableThumbprint() throws Exception {
+		// setup
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-unsigned-1.xml");
+		TrustServiceList trustServiceList = TrustServiceListFactory
+				.newInstance(tslDocument);
+
+		// operate
+		String thumbprint1 = trustServiceList.getSha1Fingerprint();
+
+		tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-unsigned-1.xml");
+		trustServiceList = TrustServiceListFactory.newInstance(tslDocument);
+		String thumbprint2 = trustServiceList.getSha1Fingerprint();
+
+		assertEquals(thumbprint1, thumbprint2);
+	}
+
+	@Test
+	public void testThumbprint() throws Exception {
+		// setup
+		Document tslDocument = TrustTestUtils
+				.loadDocumentFromResource("tsl-unsigned-1.xml");
+		Thread currentThread = Thread.currentThread();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+		File tslFile = new File(classLoader.getResource("tsl-unsigned-1.xml")
+				.toURI());
+		TrustServiceList trustServiceList = TrustServiceListFactory
+				.newInstance(tslDocument, tslFile);
+
+		// operate
+		String thumbprint = trustServiceList.getSha1Fingerprint();
+
+		// verify
+		LOG.debug("thumbprint: " + thumbprint);
+		assertEquals("035a826a61d786c1c73c922cb5044952672cd3e0", thumbprint);
+	}
+
+	@Test
 	public void testVerifySignature() throws Exception {
 		// setup
 		Document tslDocument = TrustTestUtils
@@ -168,7 +207,7 @@ public class TrustServiceListFactoryTest {
 
 		// operate
 		assertFalse(trustServiceList.hasChanged());
-		trustServiceList.save(tmpTslFile);
+		trustServiceList.saveAs(tmpTslFile);
 
 		// verify
 		assertFalse(trustServiceList.hasChanged());
@@ -193,7 +232,7 @@ public class TrustServiceListFactoryTest {
 
 		// operate
 		assertTrue(trustServiceList.hasChanged());
-		trustServiceList.save(tmpTslFile);
+		trustServiceList.saveAs(tmpTslFile);
 
 		// verify
 		assertFalse(trustServiceList.hasChanged());
@@ -249,7 +288,7 @@ public class TrustServiceListFactoryTest {
 		assertFalse(trustServiceList.hasChanged());
 		trustServiceList.setSchemeName(schemeName);
 		assertTrue(trustServiceList.hasChanged());
-		trustServiceList.save(tmpTslFile);
+		trustServiceList.saveAs(tmpTslFile);
 		assertFalse(trustServiceList.hasChanged());
 
 		// verify
