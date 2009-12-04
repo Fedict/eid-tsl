@@ -43,6 +43,7 @@ import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Semester;
 
 public class BelgianTrustServiceListFactoryTest {
 
@@ -53,8 +54,10 @@ public class BelgianTrustServiceListFactoryTest {
 	public void testBelgianTrustList() throws Exception {
 		// setup
 		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
-				.newInstance();
+				.newInstance(2010, Semester.FIRST);
 
+		assertNotNull(trustServiceList.getType());
+		
 		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
 		trustServiceList.save(unsignedTslFile);
 

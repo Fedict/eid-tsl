@@ -104,6 +104,24 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		setVisible(true);
 	}
 
+	TslInternalFrame(String name, TrustServiceList trustServiceList,
+			TslTool tslTool) {
+		super(name, true, true, true);
+		this.trustServiceList = trustServiceList;
+		this.tslTool = tslTool;
+
+		initUI();
+
+		/*
+		 * Keep us up-to-date on the changes on the TSL document.
+		 */
+		this.trustServiceList.addChangeListener(this);
+
+		addInternalFrameListener(this);
+		setSize(500, 300);
+		setVisible(true);
+	}
+
 	private void initUI() {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		Container contentPane = this.getContentPane();
@@ -318,33 +336,11 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	}
 
 	private String getSha1Fingerprint() {
-		InputStream tslInputStream;
-		try {
-			tslInputStream = new FileInputStream(this.tslFile);
-		} catch (FileNotFoundException e) {
-			return "TSL file not found: " + e.getMessage();
-		}
-		try {
-			String fingerprint = DigestUtils.shaHex(tslInputStream);
-			return fingerprint;
-		} catch (IOException e) {
-			return "I/O error: " + e.getMessage();
-		}
+		return this.trustServiceList.getSha1Fingerprint();
 	}
 
 	private String getSha256Fingerprint() {
-		InputStream tslInputStream;
-		try {
-			tslInputStream = new FileInputStream(this.tslFile);
-		} catch (FileNotFoundException e) {
-			return "TSL file not found: " + e.getMessage();
-		}
-		try {
-			String fingerprint = DigestUtils.sha256Hex(tslInputStream);
-			return fingerprint;
-		} catch (IOException e) {
-			return "I/O error: " + e.getMessage();
-		}
+		return this.trustServiceList.getSha256Fingerprint();
 	}
 
 	public TrustServiceList getTrustServiceList() {
