@@ -46,6 +46,17 @@
 				<module>eid-tsl-tests</module>
 			</modules>
 		</profile>
+		<profile>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>package</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-tsl-tool-package</module>
+			</modules>
+		</profile>
 	</profiles>
 	<build>
 		<plugins>
@@ -84,7 +95,7 @@
 				<plugin>
 					<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 					<artifactId>launch4j-plugin</artifactId>
-					<version>1.0.0.2</version>
+					<version>1.0.0.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

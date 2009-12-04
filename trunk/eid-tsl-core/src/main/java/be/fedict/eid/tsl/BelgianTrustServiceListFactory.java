@@ -179,7 +179,7 @@ public class BelgianTrustServiceListFactory {
 				"http://www.certipost.be");
 
 		// certipost trust services: Root CA and Root CA2
-		X509Certificate rootCaCertificate = loadCertificateFromResource("./eu/be/belgiumrca.crt");
+		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
 				.createTrustService(rootCaCertificate);
 		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
@@ -188,7 +188,7 @@ public class BelgianTrustServiceListFactory {
 				"Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
-		X509Certificate rootCa2Certificate = loadCertificateFromResource("./eu/be/belgiumrca2.crt");
+		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
 				.createTrustService(rootCa2Certificate);
 		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
