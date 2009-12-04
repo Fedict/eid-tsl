@@ -28,6 +28,7 @@ import java.util.Locale;
 
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  * Factory for the Belgian Trust Service List.
@@ -41,7 +42,26 @@ public class BelgianTrustServiceListFactory {
 		super();
 	}
 
-	public static TrustServiceList newInstance() {
+	public static enum Semester {
+		FIRST, SECOND
+	}
+
+	/**
+	 * Creates a new instance of a trust service list for Belgium according to
+	 * the given time frame.
+	 * 
+	 * @param year
+	 *            the year for which the TSL should be valid.
+	 * @param semester
+	 *            the semester for which the TSL should be valid.
+	 * @return the trust service list object.
+	 */
+	public static TrustServiceList newInstance(int year, Semester semester) {
+		if (2010 != year || Semester.FIRST != semester) {
+			throw new IllegalArgumentException("cannot create a TSL for year: "
+					+ year + " semester " + semester);
+		}
+
 		// setup
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance();
@@ -133,7 +153,8 @@ public class BelgianTrustServiceListFactory {
 		trustServiceList.setHistoricalInformationPeriod(3653 * 3);
 
 		// list issue date time
-		DateTime listIssueDateTime = new DateTime();
+		DateTime listIssueDateTime = new DateTime(2010, 1, 1, 0, 0, 0, 0,
+				DateTimeZone.UTC);
 		trustServiceList.setListIssueDateTime(listIssueDateTime);
 
 		// next update
@@ -161,15 +182,19 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate rootCaCertificate = loadCertificateFromResource("./eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
 				.createTrustService(rootCaCertificate);
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1", "Citizen");
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1", "Foreigner");
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
+				"Citizen");
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
+				"Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
 
 		X509Certificate rootCa2Certificate = loadCertificateFromResource("./eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
 				.createTrustService(rootCa2Certificate);
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1", "Citizen");
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1", "Foreigner");
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
+				"Citizen");
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
+				"Foreigner");
 		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		return trustServiceList;

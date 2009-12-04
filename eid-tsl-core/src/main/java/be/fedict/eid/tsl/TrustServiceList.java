@@ -18,6 +18,7 @@
 
 package be.fedict.eid.tsl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -513,6 +514,11 @@ public class TrustServiceList {
 	}
 
 	public String getType() {
+		try {
+			marshall();
+		} catch (Exception e) {
+			throw new RuntimeException("marshall error: " + e.getMessage());
+		}
 		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
 				.getSchemeInformation();
 		String type = tslSchemeInformation.getTSLType();
@@ -1499,5 +1505,37 @@ public class TrustServiceList {
 		}
 		List<String> uris = distributionPoints.getURI();
 		uris.add(distributionPointUri);
+	}
+
+	public String getSha1Fingerprint() {
+		String fingerprint = DigestUtils.shaHex(toByteArray());
+		return fingerprint;
+	}
+
+	private byte[] toByteArray() throws TransformerFactoryConfigurationError {
+		Source source = new DOMSource(this.tslDocument);
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		Result result = new StreamResult(byteArrayOutputStream);
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer transformer;
+		try {
+			transformer = transformerFactory.newTransformer();
+		} catch (TransformerConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+		// transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+		// "yes");
+		try {
+			transformer.transform(source, result);
+		} catch (TransformerException e) {
+			throw new RuntimeException(e);
+		}
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	public String getSha256Fingerprint() {
+		String fingerprint = DigestUtils.sha256Hex(toByteArray());
+		return fingerprint;
 	}
 }

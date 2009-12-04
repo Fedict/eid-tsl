@@ -41,8 +41,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Semester;
 
 /**
  * Trusted Service List Tool.
@@ -121,6 +123,8 @@ public class TslTool extends JFrame implements ActionListener {
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(fileMenu);
 
+		initNewMenu(fileMenu);
+
 		addActionMenuItem("Open", KeyEvent.VK_O, OPEN_ACTION_COMMAND, fileMenu);
 		fileMenu.addSeparator();
 		this.signMenuItem = addActionMenuItem("Sign", KeyEvent.VK_S,
@@ -135,6 +139,22 @@ public class TslTool extends JFrame implements ActionListener {
 				CLOSE_ACTION_COMMAND, fileMenu, false);
 		fileMenu.addSeparator();
 		addActionMenuItem("Exit", KeyEvent.VK_X, EXIT_ACTION_COMMAND, fileMenu);
+	}
+
+	private void initNewMenu(JMenu fileMenu) {
+		JMenu newMenu = new JMenu("New");
+		newMenu.setMnemonic(KeyEvent.VK_N);
+		fileMenu.add(newMenu);
+
+		JMenu belgiumMenu = new JMenu("Belgium");
+		newMenu.add(belgiumMenu);
+
+		JMenu _2010BelgiumMenu = new JMenu("2010");
+		belgiumMenu.add(_2010BelgiumMenu);
+
+		JMenuItem _2010_S1_BelgiumMenuItem = addActionMenuItem("Semester 1",
+				KeyEvent.VK_1, "TSL-BE-2010-S1", _2010BelgiumMenu, true);
+		_2010BelgiumMenu.add(_2010_S1_BelgiumMenuItem);
 	}
 
 	private JMenuItem addActionMenuItem(String text, int mnemonic,
@@ -273,6 +293,11 @@ public class TslTool extends JFrame implements ActionListener {
 					LOG.debug("IO error: " + e.getMessage(), e);
 				}
 			}
+		} else if ("TSL-BE-2010-S1".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2010, Semester.FIRST);
+			displayTsl("*TSL-BE-2010-S1.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
 		}
 	}
 
@@ -287,7 +312,27 @@ public class TslTool extends JFrame implements ActionListener {
 					"Load Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		displayTsl(tslFile, trustServiceList);
+	}
+
+	private void displayTsl(File tslFile, TrustServiceList trustServiceList) {
 		JInternalFrame internalFrame = new TslInternalFrame(tslFile,
+				trustServiceList, this);
+		this.desktopPane.add(internalFrame);
+
+		/*
+		 * Bring new internal frame to top and focus on it.
+		 */
+		this.desktopPane.getDesktopManager().activateFrame(internalFrame);
+		try {
+			internalFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			LOG.error("veto exception");
+		}
+	}
+
+	private void displayTsl(String tslName, TrustServiceList trustServiceList) {
+		JInternalFrame internalFrame = new TslInternalFrame(tslName,
 				trustServiceList, this);
 		this.desktopPane.add(internalFrame);
 
