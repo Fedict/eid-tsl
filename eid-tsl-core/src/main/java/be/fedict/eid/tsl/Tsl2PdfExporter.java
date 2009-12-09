@@ -294,55 +294,21 @@ public class Tsl2PdfExporter {
 				tslSignerTitle.setAlignment(Paragraph.ALIGN_CENTER);
 				document.add(tslSignerTitle);
 
-				PdfPTable signerTable = new PdfPTable(2);
-				signerTable.getDefaultCell().setBorder(BORDER);
-				signerTable.addCell("Subject");
-				signerTable.addCell(signerCertificate.getSubjectX500Principal()
-						.toString());
-				signerTable.addCell("Issuer");
-				signerTable.addCell(signerCertificate.getIssuerX500Principal()
-						.toString());
-				signerTable.addCell("Not before");
-				signerTable
-						.addCell(signerCertificate.getNotBefore().toString());
-				signerTable.addCell("Not after");
-				signerTable.addCell(signerCertificate.getNotAfter().toString());
-				signerTable.addCell("Serial number");
-				signerTable.addCell(signerCertificate.getSerialNumber()
-						.toString());
-				signerTable.addCell("Version");
-				signerTable.addCell(Integer.toString(signerCertificate
-						.getVersion()));
-				byte[] encodedPublicKey = signerCertificate.getPublicKey()
-						.getEncoded();
-				signerTable.addCell("Public key SHA1 Thumbprint");
-				String thumbprint = DigestUtils.shaHex(encodedPublicKey);
-				signerTable.addCell(thumbprint);
-				signerTable.addCell("Public key SHA256 Thumbprint");
-				String sha256thumbprint = DigestUtils
-						.sha256Hex(encodedPublicKey);
-				signerTable.addCell(sha256thumbprint);
+				final PdfPTable signerTable = createInfoTable();
+				addItemRow( "Subject", signerCertificate.getSubjectX500Principal().toString(), signerTable );
+				addItemRow( "Issuer", signerCertificate.getIssuerX500Principal().toString(), signerTable ); 
+				addItemRow( "Not before", signerCertificate.getNotBefore().toString(), signerTable );
+				addItemRow( "Not after", signerCertificate.getNotAfter().toString(), signerTable );
+				addItemRow( "Serial number", signerCertificate.getSerialNumber().toString(), signerTable );
+				addItemRow( "Version", Integer.toString(signerCertificate.getVersion()), signerTable );
+				byte[] encodedPublicKey = signerCertificate.getPublicKey().getEncoded();
+				addItemRow( "Public key SHA1 Thumbprint", DigestUtils.shaHex(encodedPublicKey), signerTable );
+				addItemRow( "Public key SHA256 Thumbprint", DigestUtils.sha256Hex(encodedPublicKey), signerTable );
 				document.add(signerTable);
 
-				document.add(new Paragraph("The decoded certificate:"));
-				Paragraph certParagraph = new Paragraph(signerCertificate
-						.toString(), new Font(Font.COURIER, 8, Font.NORMAL));
-				// certParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-				document.add(certParagraph);
-
-				document.add(new Paragraph("The certificate in PEM format:"));
-				Paragraph pemParagraph = new Paragraph(
-						toPem(signerCertificate), new Font(Font.COURIER, 8,
-								Font.NORMAL));
-				pemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-				document.add(pemParagraph);
-
-				document.add(new Paragraph("The public key in PEM format:"));
-				Paragraph publicKeyPemParagraph = new Paragraph(
-						toPem(signerCertificate.getPublicKey()), new Font(
-								Font.COURIER, 8, Font.NORMAL));
-				publicKeyPemParagraph.setAlignment(Paragraph.ALIGN_CENTER);
-				document.add(publicKeyPemParagraph);
+				addLongMonoItem( "The decoded certificate:", signerCertificate.toString(), document );
+				addLongMonoItem( "The certificate in PEM format:", toPem(signerCertificate), document );
+				addLongMonoItem( "The public key in PEM format:", toPem(signerCertificate.getPublicKey()), document );
 			}
 
 			document.close();
