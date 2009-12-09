@@ -35,9 +35,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -49,7 +54,12 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.openssl.PEMWriter;
+import org.etsi.uri._02231.v2_.AdditionalServiceInformationType;
+import org.etsi.uri._02231.v2_.ExtensionType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
+import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
+import org.w3c.dom.Element;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -63,6 +73,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class Tsl2PdfExporter {
+
+	private static final Log LOG = LogFactory.getLog(Tsl2PdfExporter.class);
 
 	public Tsl2PdfExporter() {
 	}
@@ -108,7 +120,7 @@ public class Tsl2PdfExporter {
 		try {
 			final PdfWriter pdfWriter = PdfWriter.getInstance(document,
 					outputStream);
-			//pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
+			// pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
 
 			// title
 			final EUCountry country = EUCountry.valueOf(tsl
@@ -280,6 +292,12 @@ public class Tsl2PdfExporter {
 							serviceIdentityTable);
 					document.add(serviceIdentityTable);
 
+					List<ExtensionType> extensions = trustService
+							.getExtensions();
+					for (ExtensionType extension : extensions) {
+						printExtension(extension, document);
+					}
+
 					addLongMonoItem("The decoded certificate:", certificate
 							.toString(), document);
 					addLongMonoItem("The certificate in PEM format:",
@@ -295,20 +313,32 @@ public class Tsl2PdfExporter {
 				document.add(tslSignerTitle);
 
 				final PdfPTable signerTable = createInfoTable();
-				addItemRow( "Subject", signerCertificate.getSubjectX500Principal().toString(), signerTable );
-				addItemRow( "Issuer", signerCertificate.getIssuerX500Principal().toString(), signerTable ); 
-				addItemRow( "Not before", signerCertificate.getNotBefore().toString(), signerTable );
-				addItemRow( "Not after", signerCertificate.getNotAfter().toString(), signerTable );
-				addItemRow( "Serial number", signerCertificate.getSerialNumber().toString(), signerTable );
-				addItemRow( "Version", Integer.toString(signerCertificate.getVersion()), signerTable );
-				byte[] encodedPublicKey = signerCertificate.getPublicKey().getEncoded();
-				addItemRow( "Public key SHA1 Thumbprint", DigestUtils.shaHex(encodedPublicKey), signerTable );
-				addItemRow( "Public key SHA256 Thumbprint", DigestUtils.sha256Hex(encodedPublicKey), signerTable );
+				addItemRow("Subject", signerCertificate
+						.getSubjectX500Principal().toString(), signerTable);
+				addItemRow("Issuer", signerCertificate.getIssuerX500Principal()
+						.toString(), signerTable);
+				addItemRow("Not before", signerCertificate.getNotBefore()
+						.toString(), signerTable);
+				addItemRow("Not after", signerCertificate.getNotAfter()
+						.toString(), signerTable);
+				addItemRow("Serial number", signerCertificate.getSerialNumber()
+						.toString(), signerTable);
+				addItemRow("Version", Integer.toString(signerCertificate
+						.getVersion()), signerTable);
+				byte[] encodedPublicKey = signerCertificate.getPublicKey()
+						.getEncoded();
+				addItemRow("Public key SHA1 Thumbprint", DigestUtils
+						.shaHex(encodedPublicKey), signerTable);
+				addItemRow("Public key SHA256 Thumbprint", DigestUtils
+						.sha256Hex(encodedPublicKey), signerTable);
 				document.add(signerTable);
 
-				addLongMonoItem( "The decoded certificate:", signerCertificate.toString(), document );
-				addLongMonoItem( "The certificate in PEM format:", toPem(signerCertificate), document );
-				addLongMonoItem( "The public key in PEM format:", toPem(signerCertificate.getPublicKey()), document );
+				addLongMonoItem("The decoded certificate:", signerCertificate
+						.toString(), document);
+				addLongMonoItem("The certificate in PEM format:",
+						toPem(signerCertificate), document);
+				addLongMonoItem("The public key in PEM format:",
+						toPem(signerCertificate.getPublicKey()), document);
 			}
 
 			document.close();
@@ -317,6 +347,51 @@ public class Tsl2PdfExporter {
 					e);
 		} catch (Exception e) {
 			throw new RuntimeException("Exception: " + e.getMessage(), e);
+		}
+	}
+
+	private static final QName ADDITIONAL_SERVICE_INFORMATION_QNAME = new QName(
+			"http://uri.etsi.org/02231/v2#", "AdditionalServiceInformation");
+
+	private void printExtension(ExtensionType extension, Document document)
+			throws DocumentException {
+		addTitle("Extension (critical: " + extension.isCritical() + ")",
+				new Font(Font.HELVETICA, 10, Font.BOLDITALIC),
+				Paragraph.ALIGN_LEFT, 0, 0, document);
+		List<Object> contentList = extension.getContent();
+		for (Object content : contentList) {
+			LOG.debug("extension content: " + content.getClass().getName());
+			if (content instanceof JAXBElement<?>) {
+				JAXBElement<?> element = (JAXBElement<?>) content;
+				LOG.debug("QName: " + element.getName());
+				if (false == ADDITIONAL_SERVICE_INFORMATION_QNAME
+						.equals(element.getName())) {
+					continue;
+				}
+				addTitle("Additional service information", new Font(
+						Font.HELVETICA, 8, Font.BOLD), Paragraph.ALIGN_LEFT, 0,
+						0, document);
+				AdditionalServiceInformationType additionalServiceInformation = (AdditionalServiceInformationType) element
+						.getValue();
+				LOG.debug("information value: "
+						+ additionalServiceInformation.getInformationValue());
+				NonEmptyMultiLangURIListType multiLangUris = additionalServiceInformation
+						.getURI();
+				List<NonEmptyMultiLangURIType> uris = multiLangUris.getURI();
+				for (NonEmptyMultiLangURIType uri : uris) {
+					LOG.debug("URI : " + uri.getValue() + " (language: "
+							+ uri.getLang() + ")");
+					if ("en".equals(uri.getLang())) {
+						document.add(new Paragraph("URI: " + uri.getValue(),
+								this.labelFont));
+					}
+				}
+			} else if (content instanceof Element) {
+				Element element = (Element) content;
+				LOG.debug("element namespace: " + element.getNamespaceURI());
+				LOG.debug("element name: " + element.getLocalName());
+				// TODO
+			}
 		}
 	}
 

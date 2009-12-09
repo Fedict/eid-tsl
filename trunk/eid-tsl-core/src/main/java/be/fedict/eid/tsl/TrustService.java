@@ -259,6 +259,18 @@ public class TrustService {
 		return serviceTypeIdentifier;
 	}
 
+	public List<ExtensionType> getExtensions() {
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		ExtensionsListType extensionsList = tspServiceInformation
+				.getServiceInformationExtensions();
+		if (null == extensionsList) {
+			return new LinkedList<ExtensionType>();
+		}
+		List<ExtensionType> extensions = extensionsList.getExtension();
+		return extensions;
+	}
+
 	public String getStatus() {
 		TSPServiceInformationType tspServiceInformation = this.tspService
 				.getServiceInformation();
@@ -282,18 +294,23 @@ public class TrustService {
 		DigitalIdentityListType digitalIdentityList = tspServiceInformation
 				.getServiceDigitalIdentity();
 		try {
-			final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-			for ( final DigitalIdentityType digitalIdentity : digitalIdentityList.getDigitalId() ) {
-				byte[] x509CertificateData = digitalIdentity.getX509Certificate();
-				if ( x509CertificateData != null ) {
+			final CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			for (final DigitalIdentityType digitalIdentity : digitalIdentityList
+					.getDigitalId()) {
+				byte[] x509CertificateData = digitalIdentity
+						.getX509Certificate();
+				if (x509CertificateData != null) {
 					try {
 						X509Certificate certificate = (X509Certificate) certificateFactory
-								.generateCertificate(new ByteArrayInputStream(x509CertificateData));
+								.generateCertificate(new ByteArrayInputStream(
+										x509CertificateData));
 						return certificate;
 					} catch (CertificateException e) {
-						throw new RuntimeException("X509 error: " + e.getMessage(), e);
+						throw new RuntimeException("X509 error: "
+								+ e.getMessage(), e);
 					}
-				}			
+				}
 			}
 			throw new RuntimeException("No X509Certificate identity specified");
 		} catch (CertificateException e) {
