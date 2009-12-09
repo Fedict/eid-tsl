@@ -419,7 +419,9 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	@Override
 	public void changed() {
 		LOG.debug("TSL changed");
-		setTitle("*" + this.tslFile.getName());
+		if (null != this.tslFile) {
+			setTitle("*" + this.tslFile.getName());
+		}
 		this.tslTool.setChanged(true);
 		updateView();
 	}

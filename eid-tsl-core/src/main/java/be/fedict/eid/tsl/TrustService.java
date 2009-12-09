@@ -281,17 +281,21 @@ public class TrustService {
 				.getServiceInformation();
 		DigitalIdentityListType digitalIdentityList = tspServiceInformation
 				.getServiceDigitalIdentity();
-		List<DigitalIdentityType> digitalIdentities = digitalIdentityList
-				.getDigitalId();
-		DigitalIdentityType digitalIdentity = digitalIdentities.get(0);
-		byte[] x509CertificateData = digitalIdentity.getX509Certificate();
 		try {
-			CertificateFactory certificateFactory = CertificateFactory
-					.getInstance("X.509");
-			X509Certificate certificate = (X509Certificate) certificateFactory
-					.generateCertificate(new ByteArrayInputStream(
-							x509CertificateData));
-			return certificate;
+			final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+			for ( final DigitalIdentityType digitalIdentity : digitalIdentityList.getDigitalId() ) {
+				byte[] x509CertificateData = digitalIdentity.getX509Certificate();
+				if ( x509CertificateData != null ) {
+					try {
+						X509Certificate certificate = (X509Certificate) certificateFactory
+								.generateCertificate(new ByteArrayInputStream(x509CertificateData));
+						return certificate;
+					} catch (CertificateException e) {
+						throw new RuntimeException("X509 error: " + e.getMessage(), e);
+					}
+				}			
+			}
+			throw new RuntimeException("No X509Certificate identity specified");
 		} catch (CertificateException e) {
 			throw new RuntimeException("X509 error: " + e.getMessage(), e);
 		}

@@ -94,6 +94,7 @@ public class SignSelectCertificatePanel implements ValidatingPanel<Object> {
 		PrivateKey privateKey = privateKeyEntry.getPrivateKey();
 		X509Certificate certificate = (X509Certificate) privateKeyEntry
 				.getCertificate();
+		LOG.debug("signing certificate: " + certificate);
 		try {
 			this.trustServiceList.sign(privateKey, certificate);
 		} catch (IOException e) {
