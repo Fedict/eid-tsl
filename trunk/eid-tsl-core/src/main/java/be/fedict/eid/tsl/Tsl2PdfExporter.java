@@ -36,7 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.codec.binary.Hex;
@@ -55,11 +58,18 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.openssl.PEMWriter;
+import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2_.AdditionalServiceInformationType;
 import org.etsi.uri._02231.v2_.ExtensionType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.CriteriaListType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.PoliciesListType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationElementType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationsType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifierType;
+import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifiersType;
 import org.w3c.dom.Element;
 
 import com.lowagie.text.Document;
@@ -429,17 +439,82 @@ public class Tsl2PdfExporter {
 					LOG.debug("URI : " + uri.getValue() + " (language: "
 							+ uri.getLang() + ")");
 					if ("en".equals(uri.getLang())) {
-						document.add(new Paragraph("URI: " + uri.getValue(),
-								this.labelFont));
+						document.add(new Paragraph(uri.getValue().substring(
+								uri.getValue().indexOf("SvcInfoExt/")
+										+ "SvcInfoExt/".length()),
+								this.valueFont));
 					}
 				}
 			} else if (content instanceof Element) {
+				addTitle("Qualifications", title4Font, Paragraph.ALIGN_LEFT, 0,
+						0, document);
 				Element element = (Element) content;
 				LOG.debug("element namespace: " + element.getNamespaceURI());
 				LOG.debug("element name: " + element.getLocalName());
-				// TODO
+				if ("http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#"
+						.equals(element.getNamespaceURI())
+						&& "Qualifications".equals(element.getLocalName())) {
+					try {
+						QualificationsType qualifications = unmarshallQualifications(element);
+						List<QualificationElementType> qualificationElements = qualifications
+								.getQualificationElement();
+						for (QualificationElementType qualificationElement : qualificationElements) {
+							QualifiersType qualifiers = qualificationElement
+									.getQualifiers();
+							List<QualifierType> qualifierList = qualifiers
+									.getQualifier();
+							for (QualifierType qualifier : qualifierList) {
+								document.add(new Paragraph("Qualifier: "
+										+ qualifier.getUri().substring(
+												qualifier.getUri().indexOf(
+														"SvcInfoExt/")
+														+ "SvcInfoExt/"
+																.length()),
+										this.valueFont));
+							}
+							String description = qualificationElement
+									.getDescription();
+							if (null != description) {
+								document.add(new Paragraph("Description",
+										this.labelFont));
+								document.add(new Paragraph(description,
+										this.valueFont));
+							}
+							CriteriaListType criteriaList = qualificationElement
+									.getCriteriaList();
+							document
+									.add(new Paragraph("Assert: "
+											+ criteriaList.getAssert(),
+											this.valueFont));
+							List<PoliciesListType> policySet = criteriaList
+									.getPolicySet();
+							for (PoliciesListType policiesList : policySet) {
+								List<ObjectIdentifierType> oids = policiesList
+										.getPolicyIdentifier();
+								for (ObjectIdentifierType oid : oids) {
+									document.add(new Paragraph("Policy OID: "
+											+ oid.getIdentifier().getValue(),
+											this.valueFont));
+								}
+							}
+						}
+					} catch (JAXBException e) {
+						LOG.error("JAXB error: " + e.getMessage(), e);
+					}
+				}
 			}
 		}
+	}
+
+	private QualificationsType unmarshallQualifications(Element element)
+			throws JAXBException {
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance(org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		JAXBElement<QualificationsType> jaxbElement = (JAXBElement<QualificationsType>) unmarshaller
+				.unmarshal(element);
+		QualificationsType qualifications = jaxbElement.getValue();
+		return qualifications;
 	}
 
 	private String toPem(Object object) {
