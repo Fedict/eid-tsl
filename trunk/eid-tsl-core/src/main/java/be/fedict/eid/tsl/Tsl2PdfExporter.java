@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.security.cert.CertificateEncodingException;
@@ -68,6 +69,7 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -77,25 +79,72 @@ public class Tsl2PdfExporter {
 	private static final Log LOG = LogFactory.getLog(Tsl2PdfExporter.class);
 
 	public Tsl2PdfExporter() {
+		initializeFontResources();
+		title0Font = FontFactory.getFont("DejaVuSerifCondensed-Bold",
+				BaseFont.IDENTITY_H, true, 30, Font.BOLD);
+		title1Font = FontFactory.getFont("DejaVuSerifCondensed-BoldItalic",
+				BaseFont.IDENTITY_H, true, 16, Font.BOLD | Font.ITALIC);
+		title2Font = FontFactory.getFont("DejaVuSerifCondensed-BoldItalic",
+				BaseFont.IDENTITY_H, true, 16, Font.BOLD | Font.ITALIC);
+		title3Font = FontFactory.getFont("DejaVuSerifCondensed-Italic",
+				BaseFont.IDENTITY_H, true, 16, Font.ITALIC);
+		title4Font = FontFactory.getFont("DejaVuSerifCondensed-Italic",
+				BaseFont.IDENTITY_H, true, 12, Font.BOLD);
+		labelFont = FontFactory.getFont("DejaVuSerifCondensed-Italic",
+				BaseFont.IDENTITY_H, true, 11, Font.ITALIC);
+		valueFont = FontFactory.getFont("DejaVuSerifCondensed",
+				BaseFont.IDENTITY_H, true, 11, Font.NORMAL);
+		monoFont = FontFactory.getFont("DejaVuSansMono", BaseFont.IDENTITY_H,
+				true, 5, Font.NORMAL);
+		headerFooterFont = FontFactory.getFont("DejaVuSerifCondensed",
+				BaseFont.IDENTITY_H, true, 10, Font.NORMAL);
+	}
+
+	private static void initializeFontResources() {
+		try {
+			final File tmpDir = createTempDirectory();
+			loadFont(tmpDir, "DejaVuSerifCondensed-Bold");
+			loadFont(tmpDir, "DejaVuSerifCondensed-BoldItalic");
+			loadFont(tmpDir, "DejaVuSerifCondensed-Italic");
+			loadFont(tmpDir, "DejaVuSerifCondensed");
+			loadFont(tmpDir, "DejaVuSansMono");
+			FontFactory.registerDirectory(tmpDir.getAbsolutePath());
+		} catch (Exception e) {
+			throw new RuntimeException("when initializing fonts", e);
+		}
+	}
+
+	private static void loadFont(final File dir, final String name) {
+		final String fontBase = "/org/dejavu/font/";
+		final File file = new File(dir, name + ".ttf");
+		final InputStream ttfStream = Tsl2PdfExporter.class
+				.getResourceAsStream(fontBase + name + ".ttf");
+		try {
+			final OutputStream fileStream = new FileOutputStream(file);
+			try {
+				IOUtils.copy(ttfStream, fileStream);
+			} finally {
+				IOUtils.closeQuietly(fileStream);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("error initializing font", e);
+		} finally {
+			IOUtils.closeQuietly(ttfStream);
+		}
+		file.deleteOnExit();
 	}
 
 	private static final int BORDER = 0;
-	protected final Font title0Font = FontFactory.getFont(
-			FontFactory.TIMES_BOLD, 30, Font.BOLD);
-	protected final Font title1Font = FontFactory.getFont(
-			FontFactory.TIMES_BOLD, 18, Font.BOLD);
-	protected final Font title2Font = FontFactory.getFont(
-			FontFactory.TIMES_BOLDITALIC, 16, Font.BOLD | Font.ITALIC);
-	protected final Font title3Font = FontFactory.getFont(
-			FontFactory.TIMES_ITALIC, 16, Font.ITALIC);
-	protected final Font labelFont = FontFactory.getFont(
-			FontFactory.TIMES_ITALIC, 11, Font.ITALIC);
-	protected final Font valueFont = FontFactory.getFont(FontFactory.TIMES, 11,
-			Font.NORMAL);
-	protected final Font monoFont = FontFactory.getFont(FontFactory.COURIER, 5,
-			Font.NORMAL);
-	protected final Font headerFooterFont = FontFactory.getFont(
-			FontFactory.TIMES, 10, Font.NORMAL);
+
+	protected final Font title0Font;
+	protected final Font title1Font;
+	protected final Font title2Font;
+	protected final Font title3Font;
+	protected final Font title4Font;
+	protected final Font labelFont;
+	protected final Font valueFont;
+	protected final Font monoFont;
+	protected final Font headerFooterFont;
 
 	/**
 	 * Produce a human readable export of the given tsl to the given file.
@@ -109,7 +158,7 @@ public class Tsl2PdfExporter {
 	 */
 	public void humanReadableExport(final TrustServiceList tsl,
 			final File pdfFile) {
-		com.lowagie.text.Document document = new com.lowagie.text.Document();
+		Document document = new Document();
 		OutputStream outputStream;
 		try {
 			outputStream = new FileOutputStream(pdfFile);
@@ -120,7 +169,7 @@ public class Tsl2PdfExporter {
 		try {
 			final PdfWriter pdfWriter = PdfWriter.getInstance(document,
 					outputStream);
-			// pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
+			pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
 
 			// title
 			final EUCountry country = EUCountry.valueOf(tsl
@@ -308,7 +357,7 @@ public class Tsl2PdfExporter {
 			X509Certificate signerCertificate = tsl.verifySignature();
 			if (null != signerCertificate) {
 				Paragraph tslSignerTitle = new Paragraph("TSL Signer",
-						new Font(Font.HELVETICA, 18, Font.BOLDITALIC));
+						title1Font);
 				tslSignerTitle.setAlignment(Paragraph.ALIGN_CENTER);
 				document.add(tslSignerTitle);
 
@@ -356,8 +405,7 @@ public class Tsl2PdfExporter {
 	private void printExtension(ExtensionType extension, Document document)
 			throws DocumentException {
 		addTitle("Extension (critical: " + extension.isCritical() + ")",
-				new Font(Font.HELVETICA, 10, Font.BOLDITALIC),
-				Paragraph.ALIGN_LEFT, 0, 0, document);
+				title3Font, Paragraph.ALIGN_LEFT, 0, 0, document);
 		List<Object> contentList = extension.getContent();
 		for (Object content : contentList) {
 			LOG.debug("extension content: " + content.getClass().getName());
@@ -368,9 +416,8 @@ public class Tsl2PdfExporter {
 						.equals(element.getName())) {
 					continue;
 				}
-				addTitle("Additional service information", new Font(
-						Font.HELVETICA, 8, Font.BOLD), Paragraph.ALIGN_LEFT, 0,
-						0, document);
+				addTitle("Additional service information", title4Font,
+						Paragraph.ALIGN_LEFT, 0, 0, document);
 				AdditionalServiceInformationType additionalServiceInformation = (AdditionalServiceInformationType) element
 						.getValue();
 				LOG.debug("information value: "
@@ -591,4 +638,13 @@ public class Tsl2PdfExporter {
 	protected static String toHex(final byte[] value) {
 		return (value != null) ? Hex.encodeHexString(value) : null;
 	}
+
+	private static File createTempDirectory() throws IOException {
+		final File tmpDir = File.createTempFile("eid-tsl-", ".fonts");
+		tmpDir.delete();
+		tmpDir.mkdir();
+		tmpDir.deleteOnExit();
+		return tmpDir;
+	}
+
 }
