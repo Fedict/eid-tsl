@@ -81,6 +81,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
@@ -737,8 +738,14 @@ public class TrustServiceList {
 		addXadesBes(signatureFactory, this.tslDocument, signatureId,
 				certificate, references, objects);
 
-		SignatureMethod signatureMethod = signatureFactory.newSignatureMethod(
-				SignatureMethod.RSA_SHA1, null);
+		SignatureMethod signatureMethod;
+		if (isJava6u18OrAbove()) {
+			signatureMethod = signatureFactory.newSignatureMethod(
+					"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", null);
+		} else {
+			signatureMethod = signatureFactory.newSignatureMethod(
+					SignatureMethod.RSA_SHA1, null);
+		}
 		CanonicalizationMethod canonicalizationMethod = signatureFactory
 				.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE,
 						(C14NMethodParameterSpec) null);
@@ -770,6 +777,44 @@ public class TrustServiceList {
 		XMLSignature xmlSignature = signatureFactory.newXMLSignature(
 				signedInfo, keyInfo, objects, signatureId, signatureValueId);
 		xmlSignature.sign(signContext);
+	}
+
+	private boolean isJava6u18OrAbove() {
+		String javaVersion = System.getProperty("java.version");
+		String javaVmVersion = System.getProperty("java.vm.version");
+		LOG.debug("java version: " + javaVersion);
+		LOG.debug("java vm version: " + javaVmVersion);
+		if (false == SystemUtils.isJavaVersionAtLeast(160)) {
+			// 1.5- here
+			return false;
+		}
+		// 1.6+ here
+		if (false == javaVersion.startsWith("1.6.0")) {
+			// 1.7+ here
+			return true;
+		}
+		// 1.6 here
+		String updateVersion = javaVersion.substring("1.6.0_".length());
+		LOG.debug("update version: " + updateVersion);
+		if (-1 != updateVersion.indexOf("-")) {
+			updateVersion = updateVersion.substring(0, updateVersion
+					.indexOf("-"));
+		}
+		try {
+			Integer updateVersionNumber = Integer.parseInt(updateVersion);
+			LOG.debug("update version number: " + updateVersionNumber);
+			if (updateVersionNumber < 18) {
+				/*
+				 * Only from Java 6u18 we have the RSA-SHA256 XML signature algo
+				 * available.
+				 */
+				return false;
+			}
+			return true;
+		} catch (NumberFormatException e) {
+			// let's give it a try in this case
+			return true;
+		}
 	}
 
 	public void addXadesBes(XMLSignatureFactory signatureFactory,
@@ -820,9 +865,9 @@ public class TrustServiceList {
 				.createDigestAlgAndValueType();
 		DigestMethodType jaxbDigestMethod = xmldsigObjectFactory
 				.createDigestMethodType();
-		jaxbDigestMethod.setAlgorithm(DigestMethod.SHA1);
+		jaxbDigestMethod.setAlgorithm(DigestMethod.SHA256);
 		certDigest.setDigestMethod(jaxbDigestMethod);
-		MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
 		byte[] digestValue;
 		try {
 			digestValue = messageDigest.digest(signingCertificate.getEncoded());

@@ -10,7 +10,7 @@ The source code is hosted at: http://code.google.com/p/eid-tsl/
 === 2. Requirements
 
 The following is required for compiling the eID TSL software:
-* Sun Java 1.6.0_14
+* Sun Java 1.6.0_18 !!! Required for RSA-SHA256 XML signatures !!!
 * Apache Maven 2.0.10
 
 

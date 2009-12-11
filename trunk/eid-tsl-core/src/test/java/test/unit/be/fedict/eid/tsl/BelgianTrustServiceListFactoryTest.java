@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Locale;
@@ -33,8 +34,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -50,6 +53,11 @@ public class BelgianTrustServiceListFactoryTest {
 	private static final Log LOG = LogFactory
 			.getLog(BelgianTrustServiceListFactoryTest.class);
 
+	@Before
+	public void setUp() throws Exception {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+
 	@Test
 	public void testBelgianTrustList() throws Exception {
 		// setup
@@ -57,7 +65,7 @@ public class BelgianTrustServiceListFactoryTest {
 				.newInstance(2010, Semester.FIRST);
 
 		assertNotNull(trustServiceList.getType());
-		
+
 		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
 		trustServiceList.saveAs(unsignedTslFile);
 
