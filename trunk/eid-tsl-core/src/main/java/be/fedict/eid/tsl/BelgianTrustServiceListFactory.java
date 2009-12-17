@@ -67,15 +67,27 @@ public class BelgianTrustServiceListFactory {
 				.newInstance();
 
 		// scheme operator name
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.ENGLISH);
-		trustServiceList.setSchemeOperatorName("Fedict", new Locale("nl"));
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.FRENCH);
-		trustServiceList.setSchemeOperatorName("Fedict", Locale.GERMAN);
+		trustServiceList
+				.setSchemeOperatorName(
+						"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+						Locale.ENGLISH);
+		trustServiceList
+				.setSchemeOperatorName(
+						"FOD Economie, KMO, Middenstand en Energie - Kwaliteit en Veiligheid - Information Management",
+						new Locale("nl"));
+		trustServiceList
+				.setSchemeOperatorName(
+						"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité - Information Management",
+						Locale.FRENCH);
+		trustServiceList
+				.setSchemeOperatorName(
+						"FÖD Wirtschaft, KMU, Mittelstand und Energie - Qualität und Sicherheit - Informationsmanagement",
+						Locale.GERMAN);
 
 		// scheme operator postal address
 		PostalAddressType schemeOperatorPostalAddress = new PostalAddressType();
 		schemeOperatorPostalAddress
-				.setStreetAddress("Maria-Theresiastraat 1/3");
+				.setStreetAddress("NG III - Koning Albert II-laan 16");
 		schemeOperatorPostalAddress.setLocality("Brussels");
 		schemeOperatorPostalAddress.setStateOrProvince("Brussels");
 		schemeOperatorPostalAddress.setPostalCode("1000");
@@ -84,7 +96,7 @@ public class BelgianTrustServiceListFactory {
 				schemeOperatorPostalAddress, Locale.ENGLISH);
 
 		schemeOperatorPostalAddress
-				.setStreetAddress("Maria-Theresiastraat 1/3");
+				.setStreetAddress("NG III - Koning Albert II-laan 16");
 		schemeOperatorPostalAddress.setLocality("Brussel");
 		schemeOperatorPostalAddress.setStateOrProvince("Brussel");
 		schemeOperatorPostalAddress.setPostalCode("1000");
@@ -94,8 +106,8 @@ public class BelgianTrustServiceListFactory {
 
 		// scheme operator electronic address
 		List<String> electronicAddresses = new LinkedList<String>();
-		electronicAddresses.add("http://www.fedict.belgium.be/");
-		electronicAddresses.add("mailto://eid@belgium.be");
+		electronicAddresses.add("http://economie.fgov.be");
+		electronicAddresses.add("mailto://be.sign@economie.fgov.be");
 		trustServiceList
 				.setSchemeOperatorElectronicAddresses(electronicAddresses);
 
@@ -137,7 +149,7 @@ public class BelgianTrustServiceListFactory {
 		// legal notice
 		trustServiceList
 				.addLegalNotice(
-						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgian laws. The applicable legal national framework is the Wet van 9 juli 2001 houdende vaststelling van bepaalde regels in verband met het juridisch kader voor elektronische handtekeningen en certificatiediensten.",
+						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgian laws. The applicable legal national framework is the Belgian CSP act of 9 July 2001 to create a legal framework for the usage of electronic signatures and certification services.",
 						Locale.ENGLISH);
 
 		// historical information period
