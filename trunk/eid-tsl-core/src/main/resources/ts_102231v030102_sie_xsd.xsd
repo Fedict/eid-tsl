@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:tns="http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<!--
-	<xsd:import namespace="http://uri.etsi.org/02231/v2#" schemaLocation="./draft_ts102231v030101xsd.xsd">
-</xsd:import>
+<!--                  ****** NOTICE ******
+This document is part of ETSI TS 102 231. In the event that any
+part of this document in conflict with the text of TS 102 231 
+then that text shall prevail as the authoritative source
 -->
+<schema targetNamespace="http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:tns="http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<import namespace="http://uri.etsi.org/01903/v1.3.2#" schemaLocation="http://uri.etsi.org/01903/v1.3.2/XAdES.xsd"/>
 	<element name="Qualifications" type="tns:QualificationsType"/>
 	<complexType name="QualificationsType">
@@ -15,21 +16,18 @@
 		<sequence>
 			<element name="Qualifiers" type="tns:QualifiersType"/>
 			<element name="CriteriaList" type="tns:CriteriaListType"/>
-			<element name="Description" type="string" minOccurs="0"/>
 		</sequence>
 	</complexType>
 	<complexType name="CriteriaListType">
-		<xsd:annotation>
-			<xsd:documentation>
-				Please first try to use the CriteriaList before doing the 
-				OtherCriteria extension point.
-			</xsd:documentation>
-		</xsd:annotation>
+		<annotation>
+			<documentation>Please first try to use the CriteriaList before doing the OtherCriteria extension point.</documentation>
+		</annotation>
 		<sequence>
 			<element name="KeyUsage" type="tns:KeyUsageType" minOccurs="0" maxOccurs="unbounded"/>
 			<element name="PolicySet" type="tns:PoliciesListType" minOccurs="0" maxOccurs="unbounded"/>
 			<element name="CriteriaList" type="tns:CriteriaListType" minOccurs="0" maxOccurs="unbounded"/>
-			<element name="OtherCriteria" type="xades:AnyType" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Description" type="xsd:string" minOccurs="0"/>
+			<element name="otherCriteriaList" type="xades:AnyType" minOccurs="0"/>
 		</sequence>
 		<attribute name="assert">
 			<simpleType>

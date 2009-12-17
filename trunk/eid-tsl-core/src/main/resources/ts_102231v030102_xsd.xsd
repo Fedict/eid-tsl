@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--                                   ****** NOTICE ******                                            
-This version of this document is NOT a formally-approved and issued ETSI publication.  
-This document is a work-in-progress being undertaken by the TC ESI STF 290 and has been revised
-to correct identified errors and omissions in the current extant formal ETSI publication and to 
-also resolve issues of interpretation raised during implementations based upon that publication  
-which are considered to be neither contentious nor to change the fundamental TSL structure defined 
-in the original TS 102 231 document and its XSD counterpart.
+<!--                  ****** NOTICE ******
+This document is part of ETSI TS 102 231. In the event that any
+part of this document in conflict with the text of TS 102 231 
+then that text shall prevail as the authoritative source
 -->
-<xsd:schema targetNamespace="http://uri.etsi.org/02231/v2#" xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"   elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:schema targetNamespace="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tsl="http://uri.etsi.org/02231/v2#" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- Imports -->
 	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
 	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
@@ -128,7 +125,7 @@ in the original TS 102 231 document and its XSD counterpart.
 		<xsd:sequence>
 			<xsd:element ref="tsl:SchemeInformation"/>
 			<xsd:element ref="tsl:TrustServiceProviderList" minOccurs="0"/>
-			<xsd:element ref="ds:Signature"/>
+			<xsd:element ref="ds:Signature" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attribute name="TSLTag" type="tsl:TSLTagType" use="required"/>
 		<xsd:attribute name="Id" type="xsd:ID" use="optional"/>
@@ -207,7 +204,7 @@ in the original TS 102 231 document and its XSD counterpart.
 		<xsd:sequence>
 			<xsd:element ref="tsl:ServiceDigitalIdentities" minOccurs="0"/>
 			<xsd:element name="TSLLocation" type="tsl:NonEmptyURIType"/>
-			<xsd:element ref="tsl:AdditionalInformation"/>
+			<xsd:element ref="tsl:AdditionalInformation" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:element name="ServiceDigitalIdentities" type="tsl:ServiceDigitalIdentityListType"/>
@@ -220,6 +217,7 @@ in the original TS 102 231 document and its XSD counterpart.
 	<xsd:complexType name="AdditionalInformationType">
 		<xsd:choice maxOccurs="unbounded">
 			<xsd:element name="TextualInformation" type="tsl:MultiLangStringType"/>
+			<xsd:element ref="tsl:TSLType" />
 			<xsd:element name="OtherInformation" type="tsl:AnyType"/>
 		</xsd:choice>
 	</xsd:complexType>
@@ -326,9 +324,9 @@ in the original TS 102 231 document and its XSD counterpart.
 	<xsd:element name="AdditionalServiceInformation" type="tsl:AdditionalServiceInformationType"/>
 	<xsd:complexType name="AdditionalServiceInformationType">
 		<xsd:sequence>
-			<xsd:element name="URI" type="tsl:NonEmptyMultiLangURIListType"/>
+			<xsd:element name="URI" type="tsl:NonEmptyMultiLangURIType"/>
 			<xsd:element name="InformationValue" type="xsd:string" minOccurs="0"/>
-			<xsd:element name="OtherInformation" type="tsl:AnyType"/>
+			<xsd:element name="OtherInformation" type="tsl:AnyType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 </xsd:schema>
