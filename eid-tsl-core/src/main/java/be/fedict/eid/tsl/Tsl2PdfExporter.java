@@ -61,7 +61,6 @@ import org.bouncycastle.openssl.PEMWriter;
 import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2_.AdditionalServiceInformationType;
 import org.etsi.uri._02231.v2_.ExtensionType;
-import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.CriteriaListType;
@@ -432,19 +431,13 @@ public class Tsl2PdfExporter {
 						.getValue();
 				LOG.debug("information value: "
 						+ additionalServiceInformation.getInformationValue());
-				NonEmptyMultiLangURIListType multiLangUris = additionalServiceInformation
+				NonEmptyMultiLangURIType multiLangUri = additionalServiceInformation
 						.getURI();
-				List<NonEmptyMultiLangURIType> uris = multiLangUris.getURI();
-				for (NonEmptyMultiLangURIType uri : uris) {
-					LOG.debug("URI : " + uri.getValue() + " (language: "
-							+ uri.getLang() + ")");
-					if ("en".equals(uri.getLang())) {
-						document.add(new Paragraph(uri.getValue().substring(
-								uri.getValue().indexOf("SvcInfoExt/")
-										+ "SvcInfoExt/".length()),
-								this.valueFont));
-					}
-				}
+				LOG.debug("URI : " + multiLangUri.getValue() + " (language: "
+						+ multiLangUri.getLang() + ")");
+				document.add(new Paragraph(multiLangUri.getValue().substring(
+						multiLangUri.getValue().indexOf("SvcInfoExt/")
+								+ "SvcInfoExt/".length()), this.valueFont));
 			} else if (content instanceof Element) {
 				addTitle("Qualifications", title4Font, Paragraph.ALIGN_LEFT, 0,
 						0, document);
@@ -472,16 +465,17 @@ public class Tsl2PdfExporter {
 																.length()),
 										this.valueFont));
 							}
-							String description = qualificationElement
-									.getDescription();
+
+							CriteriaListType criteriaList = qualificationElement
+									.getCriteriaList();
+							String description = criteriaList.getDescription();
 							if (null != description) {
-								document.add(new Paragraph("Description",
+								document.add(new Paragraph(
+										"Criterial List Description",
 										this.labelFont));
 								document.add(new Paragraph(description,
 										this.valueFont));
 							}
-							CriteriaListType criteriaList = qualificationElement
-									.getCriteriaList();
 							document
 									.add(new Paragraph("Assert: "
 											+ criteriaList.getAssert(),

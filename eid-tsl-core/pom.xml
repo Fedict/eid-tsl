@@ -24,8 +24,8 @@
 						</goals>
 						<configuration>
 							<schemaIncludes>
-								<schemaInclude>ts102231v030101xsd.xsd</schemaInclude>
-								<schemaInclude>ts102231v030101sie_xsd.xsd</schemaInclude>
+								<schemaInclude>ts_102231v030102_xsd.xsd</schemaInclude>
+								<schemaInclude>ts_102231v030102_sie_xsd.xsd</schemaInclude>
 							</schemaIncludes>
 							<debug>true</debug>
 							<verbose>true</verbose>

@@ -212,18 +212,13 @@ public class TrustService {
 
 			AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
 					.createAdditionalServiceInformationType();
-			NonEmptyMultiLangURIListType additionalServiceInformationUris = this.objectFactory
-					.createNonEmptyMultiLangURIListType();
-			List<NonEmptyMultiLangURIType> uriList = additionalServiceInformationUris
-					.getURI();
-			NonEmptyMultiLangURIType uri = this.objectFactory
+			NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
 					.createNonEmptyMultiLangURIType();
-			uri.setLang("en");
-			uri
+			additionalServiceInformationUri.setLang("en");
+			additionalServiceInformationUri
 					.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
-			uriList.add(uri);
 			additionalServiceInformation
-					.setURI(additionalServiceInformationUris);
+					.setURI(additionalServiceInformationUri);
 			extension
 					.getContent()
 					.add(
@@ -429,17 +424,12 @@ public class TrustService {
 
 		AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
 				.createAdditionalServiceInformationType();
-		NonEmptyMultiLangURIListType additionalServiceInformationUris = this.objectFactory
-				.createNonEmptyMultiLangURIListType();
-		List<NonEmptyMultiLangURIType> uriList = additionalServiceInformationUris
-				.getURI();
-		NonEmptyMultiLangURIType uri = this.objectFactory
+		NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
 				.createNonEmptyMultiLangURIType();
-		uri.setLang("en");
-		uri
+		additionalServiceInformationUri.setLang("en");
+		additionalServiceInformationUri
 				.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
-		uriList.add(uri);
-		additionalServiceInformation.setURI(additionalServiceInformationUris);
+		additionalServiceInformation.setURI(additionalServiceInformationUri);
 		extension
 				.getContent()
 				.add(
