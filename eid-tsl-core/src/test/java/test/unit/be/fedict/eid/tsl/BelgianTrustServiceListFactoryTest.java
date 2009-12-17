@@ -100,23 +100,28 @@ public class BelgianTrustServiceListFactoryTest {
 		// scheme operator name
 		String schemeOperatorNameEn = trustServiceList
 				.getSchemeOperatorName(Locale.ENGLISH);
-		assertEquals("Fedict", schemeOperatorNameEn);
+		assertEquals(
+				"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+				schemeOperatorNameEn);
 		LOG.debug("Locale.ENGLISH: " + Locale.ENGLISH.getLanguage());
-		assertEquals("Fedict", trustServiceList
-				.getSchemeOperatorName(Locale.FRENCH));
+		assertEquals(
+				"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité - Information Management",
+				trustServiceList.getSchemeOperatorName(Locale.FRENCH));
 
 		Node schemeOperatorNameEnNode = XPathAPI
 				.selectSingleNode(
 						document,
 						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='en']");
 		assertNotNull(schemeOperatorNameEnNode);
-		assertEquals("Fedict", schemeOperatorNameEnNode.getTextContent());
+		assertEquals(
+				"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+				schemeOperatorNameEnNode.getTextContent());
 
 		// scheme operator postal address
 		PostalAddressType resultPostalAddress = trustServiceList
 				.getSchemeOperatorPostalAddress(Locale.ENGLISH);
 		assertNotNull(resultPostalAddress);
-		assertEquals("Maria-Theresiastraat 1/3", resultPostalAddress
+		assertEquals("NG III - Koning Albert II-laan 16", resultPostalAddress
 				.getStreetAddress());
 		assertEquals("Brussels", resultPostalAddress.getLocality());
 		assertEquals("Brussel", trustServiceList
