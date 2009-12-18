@@ -91,7 +91,9 @@ public class BelgianTrustServiceListFactory {
 		schemeOperatorPostalAddress.setLocality("Brussels");
 		schemeOperatorPostalAddress.setStateOrProvince("Brussels");
 		schemeOperatorPostalAddress.setPostalCode("1000");
-		schemeOperatorPostalAddress.setCountryName("Belgium");
+		schemeOperatorPostalAddress.setCountryName("BE"); // this one containing
+															// an EU country
+															// code
 		trustServiceList.setSchemeOperatorPostalAddress(
 				schemeOperatorPostalAddress, Locale.ENGLISH);
 
@@ -100,7 +102,9 @@ public class BelgianTrustServiceListFactory {
 		schemeOperatorPostalAddress.setLocality("Brussel");
 		schemeOperatorPostalAddress.setStateOrProvince("Brussel");
 		schemeOperatorPostalAddress.setPostalCode("1000");
-		schemeOperatorPostalAddress.setCountryName("België");
+		schemeOperatorPostalAddress.setCountryName("BE"); // this one containing
+															// an EU country
+															// code
 		trustServiceList.setSchemeOperatorPostalAddress(
 				schemeOperatorPostalAddress, new Locale("nl"));
 
