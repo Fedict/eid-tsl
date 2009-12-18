@@ -42,8 +42,8 @@ public class BelgianTrustServiceListFactory {
 		super();
 	}
 
-	public static enum Semester {
-		FIRST, SECOND
+	public static enum Trimester {
+		FIRST, SECOND, THIRD
 	}
 
 	/**
@@ -52,14 +52,14 @@ public class BelgianTrustServiceListFactory {
 	 * 
 	 * @param year
 	 *            the year for which the TSL should be valid.
-	 * @param semester
-	 *            the semester for which the TSL should be valid.
+	 * @param trimester
+	 *            the trimester for which the TSL should be valid.
 	 * @return the trust service list object.
 	 */
-	public static TrustServiceList newInstance(int year, Semester semester) {
-		if (2010 != year || Semester.FIRST != semester) {
+	public static TrustServiceList newInstance(int year, Trimester trimester) {
+		if (2010 != year || Trimester.FIRST != trimester) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
-					+ year + " semester " + semester);
+					+ year + " trimester " + trimester);
 		}
 
 		// setup
@@ -92,8 +92,8 @@ public class BelgianTrustServiceListFactory {
 		schemeOperatorPostalAddress.setStateOrProvince("Brussels");
 		schemeOperatorPostalAddress.setPostalCode("1000");
 		schemeOperatorPostalAddress.setCountryName("BE"); // this one containing
-															// an EU country
-															// code
+		// an EU country
+		// code
 		trustServiceList.setSchemeOperatorPostalAddress(
 				schemeOperatorPostalAddress, Locale.ENGLISH);
 
@@ -103,8 +103,8 @@ public class BelgianTrustServiceListFactory {
 		schemeOperatorPostalAddress.setStateOrProvince("Brussel");
 		schemeOperatorPostalAddress.setPostalCode("1000");
 		schemeOperatorPostalAddress.setCountryName("BE"); // this one containing
-															// an EU country
-															// code
+		// an EU country
+		// code
 		trustServiceList.setSchemeOperatorPostalAddress(
 				schemeOperatorPostalAddress, new Locale("nl"));
 
@@ -174,7 +174,9 @@ public class BelgianTrustServiceListFactory {
 		trustServiceList.setListIssueDateTime(listIssueDateTime);
 
 		// next update
-		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(6);
+		int operationalOverlapWeeks = 2;
+		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(12 / 3)
+				.plusWeeks(operationalOverlapWeeks);
 		trustServiceList.setNextUpdate(nextUpdateDateTime);
 
 		trustServiceList

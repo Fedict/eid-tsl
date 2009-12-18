@@ -321,6 +321,13 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 		constraints.gridy++;
 		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Next update"), constraints);
+		constraints.gridx++;
+		dataPanel.add(new JLabel(this.trustServiceList.getNextUpdate()
+				.toString()), constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
 		dataPanel.add(new JLabel("TSL SHA1 fingerprint"), constraints);
 		constraints.gridx++;
 		dataPanel.add(new JLabel(getSha1Fingerprint()), constraints);

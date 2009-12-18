@@ -46,7 +46,7 @@ import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
-import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Semester;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 
 public class BelgianTrustServiceListFactoryTest {
 
@@ -62,7 +62,7 @@ public class BelgianTrustServiceListFactoryTest {
 	public void testBelgianTrustList() throws Exception {
 		// setup
 		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
-				.newInstance(2010, Semester.FIRST);
+				.newInstance(2010, Trimester.FIRST);
 
 		assertNotNull(trustServiceList.getType());
 
@@ -73,7 +73,7 @@ public class BelgianTrustServiceListFactoryTest {
 		KeyPair keyPair = TrustTestUtils.generateKeyPair(2048);
 		PrivateKey privateKey = keyPair.getPrivate();
 		DateTime notBefore = new DateTime();
-		DateTime notAfter = notBefore.plusYears(1);
+		DateTime notAfter = notBefore.plusYears(5);
 		X509Certificate certificate = TrustTestUtils
 				.generateSelfSignedCertificate(keyPair,
 						"C=BE, CN=Belgium Trust List Scheme Operator",
