@@ -217,7 +217,6 @@ then that text shall prevail as the authoritative source
 	<xsd:complexType name="AdditionalInformationType">
 		<xsd:choice maxOccurs="unbounded">
 			<xsd:element name="TextualInformation" type="tsl:MultiLangStringType"/>
-			<xsd:element ref="tsl:TSLType" />
 			<xsd:element name="OtherInformation" type="tsl:AnyType"/>
 		</xsd:choice>
 	</xsd:complexType>
