@@ -44,7 +44,7 @@ import org.openide.WizardDescriptor;
 import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
-import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Semester;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 
 /**
  * Trusted Service List Tool.
@@ -152,8 +152,8 @@ public class TslTool extends JFrame implements ActionListener {
 		JMenu _2010BelgiumMenu = new JMenu("2010");
 		belgiumMenu.add(_2010BelgiumMenu);
 
-		JMenuItem _2010_S1_BelgiumMenuItem = addActionMenuItem("Semester 1",
-				KeyEvent.VK_1, "TSL-BE-2010-S1", _2010BelgiumMenu, true);
+		JMenuItem _2010_S1_BelgiumMenuItem = addActionMenuItem("Trimester 1",
+				KeyEvent.VK_1, "TSL-BE-2010-T1", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_S1_BelgiumMenuItem);
 	}
 
@@ -293,10 +293,10 @@ public class TslTool extends JFrame implements ActionListener {
 					LOG.debug("IO error: " + e.getMessage(), e);
 				}
 			}
-		} else if ("TSL-BE-2010-S1".equals(command)) {
+		} else if ("TSL-BE-2010-T1".equals(command)) {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
-					.newInstance(2010, Semester.FIRST);
-			displayTsl("*TSL-BE-2010-S1.xml", trustServiceList);
+					.newInstance(2010, Trimester.FIRST);
+			displayTsl("*TSL-BE-2010-T1.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}
