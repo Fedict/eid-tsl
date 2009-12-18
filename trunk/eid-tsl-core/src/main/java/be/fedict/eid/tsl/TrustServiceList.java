@@ -125,7 +125,7 @@ public class TrustServiceList {
 
 	private static final Log LOG = LogFactory.getLog(TrustServiceList.class);
 
-	public static final String TSL_TAG = "http://uri.etsi.org/02231/TSLtag";
+	public static final String TSL_TAG = "http://uri.etsi.org/02231/TSLTag";
 
 	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic";
 
