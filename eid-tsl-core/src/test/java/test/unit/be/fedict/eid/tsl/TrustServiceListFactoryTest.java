@@ -245,7 +245,7 @@ public class TrustServiceListFactoryTest {
 				"tsl:TrustServiceStatusList/@TSLTag");
 		assertNotNull(tslTagNode);
 		LOG.debug("tsl tag node: " + tslTagNode.getNodeValue());
-		assertEquals("http://uri.etsi.org/02231/TSLtag", tslTagNode
+		assertEquals("http://uri.etsi.org/02231/TSLTag", tslTagNode
 				.getNodeValue());
 
 		// verify: version
