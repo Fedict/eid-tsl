@@ -47,7 +47,6 @@ import org.etsi.uri._02231.v2_.ExtensionType;
 import org.etsi.uri._02231.v2_.ExtensionsListType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.MultiLangNormStringType;
-import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
 import org.etsi.uri._02231.v2_.TSPServiceInformationType;
@@ -79,6 +78,8 @@ public class TrustService {
 	public static final String QC_NO_SSCD_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCNoSSCD";
 
 	public static final String QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCSSCDStatusAsInCert";
+
+	public static final String QC_FOR_LEGAL_PERSON_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson";
 
 	TrustService(TSPServiceType tspService) {
 		this.tspService = tspService;
@@ -436,5 +437,117 @@ public class TrustService {
 						this.objectFactory
 								.createAdditionalServiceInformation(additionalServiceInformation));
 
+	}
+
+	public void addOIDForQCForLegalPerson(String oid) {
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		ExtensionsListType extensionsList = tspServiceInformation
+				.getServiceInformationExtensions();
+		if (null == extensionsList) {
+			extensionsList = this.objectFactory.createExtensionsListType();
+			tspServiceInformation
+					.setServiceInformationExtensions(extensionsList);
+		}
+		List<ExtensionType> extensions = extensionsList.getExtension();
+		for (ExtensionType extension : extensions) {
+			if (false == extension.isCritical()) {
+				continue;
+			}
+			List<Object> extensionContent = extension.getContent();
+			for (Object extensionObject : extensionContent) {
+				JAXBElement<?> extensionElement = (JAXBElement<?>) extensionObject;
+				QName extensionName = extensionElement.getName();
+				LOG.debug("extension name: " + extensionName);
+				if (qualifiersName.equals(extensionName)) {
+					LOG.debug("extension found");
+					QualificationsType qualifications = (QualificationsType) extensionElement
+							.getValue();
+					List<QualificationElementType> qualificationElements = qualifications
+							.getQualificationElement();
+					for (QualificationElementType qualificationElement : qualificationElements) {
+						QualifiersType qualifiers = qualificationElement
+								.getQualifiers();
+						List<QualifierType> qualifierList = qualifiers
+								.getQualifier();
+						for (QualifierType qualifier : qualifierList) {
+							if (QC_FOR_LEGAL_PERSON_QUALIFIER_URI
+									.equals(qualifier.getUri())) {
+								CriteriaListType criteriaList = qualificationElement
+										.getCriteriaList();
+								List<PoliciesListType> policySet = criteriaList
+										.getPolicySet();
+								PoliciesListType policiesList = policySet
+										.get(0);
+
+								ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+										.createObjectIdentifierType();
+								IdentifierType identifier = this.xadesObjectFactory
+										.createIdentifierType();
+								identifier.setValue(oid);
+								objectIdentifier.setIdentifier(identifier);
+								policiesList.getPolicyIdentifier().add(
+										objectIdentifier);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		ExtensionType extension = this.objectFactory.createExtensionType();
+		extension.setCritical(true);
+		extensions.add(extension);
+
+		QualificationsType qualifications = this.eccObjectFactory
+				.createQualificationsType();
+		extension.getContent().add(
+				this.eccObjectFactory.createQualifications(qualifications));
+		List<QualificationElementType> qualificationElements = qualifications
+				.getQualificationElement();
+
+		QualificationElementType qualificationElement = this.eccObjectFactory
+				.createQualificationElementType();
+		qualificationElements.add(qualificationElement);
+
+		QualifiersType qualifiers = this.eccObjectFactory
+				.createQualifiersType();
+		List<QualifierType> qualifierList = qualifiers.getQualifier();
+		QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
+				.createQualifierType();
+		qualifierList.add(qcSscdStatusInCertqualifier);
+		qcSscdStatusInCertqualifier.setUri(QC_FOR_LEGAL_PERSON_QUALIFIER_URI);
+		qualificationElement.setQualifiers(qualifiers);
+
+		CriteriaListType criteriaList = this.eccObjectFactory
+				.createCriteriaListType();
+		qualificationElement.setCriteriaList(criteriaList);
+		criteriaList.setAssert("atLeastOne");
+
+		List<PoliciesListType> policySet = criteriaList.getPolicySet();
+		PoliciesListType policiesList = this.eccObjectFactory
+				.createPoliciesListType();
+		policySet.add(policiesList);
+		ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+				.createObjectIdentifierType();
+		IdentifierType identifier = this.xadesObjectFactory
+				.createIdentifierType();
+		identifier.setValue(oid);
+		objectIdentifier.setIdentifier(identifier);
+		policiesList.getPolicyIdentifier().add(objectIdentifier);
+
+		AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
+				.createAdditionalServiceInformationType();
+		NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		additionalServiceInformationUri.setLang("en");
+		additionalServiceInformationUri
+				.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+		additionalServiceInformation.setURI(additionalServiceInformationUri);
+		extension
+				.getContent()
+				.add(
+						this.objectFactory
+								.createAdditionalServiceInformation(additionalServiceInformation));
 	}
 }
