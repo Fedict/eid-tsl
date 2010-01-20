@@ -1,0 +1,5 @@
+#summary References
+
+= References =
+
+ * http://ec.europa.eu/information_society/policy/esignature/eu_legislation/trusted_list/index_en.htm
