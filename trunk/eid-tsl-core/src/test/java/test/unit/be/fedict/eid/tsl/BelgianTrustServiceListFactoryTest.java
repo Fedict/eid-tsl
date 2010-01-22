@@ -183,7 +183,7 @@ public class BelgianTrustServiceListFactoryTest {
 		assertEquals(1, trustServiceProviders.size());
 		TrustServiceProvider certipostTrustServiceProvider = trustServiceProviders
 				.get(0);
-		assertEquals("Certipost", certipostTrustServiceProvider
+		assertEquals("Certipost NV/SA", certipostTrustServiceProvider
 				.getName(Locale.ENGLISH));
 
 		// postal address

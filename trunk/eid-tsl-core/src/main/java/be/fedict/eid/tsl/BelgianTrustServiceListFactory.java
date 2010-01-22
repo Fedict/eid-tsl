@@ -182,9 +182,27 @@ public class BelgianTrustServiceListFactory {
 		trustServiceList
 				.addDistributionPoint("http://tsl.belgium.be/tsl-be.xml");
 
+		trustServiceList
+				.addOtherTSLPointer(
+						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-hr.pdf",
+						"application/pdf",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"EU",
+						"European Commission",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+		trustServiceList
+				.addOtherTSLPointer(
+						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
+						"application/vnd.etsi.tsl+xml",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"EU",
+						"European Commission",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+
 		// trust service provider list: certipost
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost NV/SA", "Certipost NV/SA");
+				.createTrustServiceProvider("Certipost NV/SA",
+						"Certipost NV/SA");
 		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
 				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",
