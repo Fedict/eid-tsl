@@ -211,9 +211,7 @@ public class Tsl2PdfExporter {
 
 			final List<String> schemeTypes = new ArrayList<String>();
 			for (final String schemeType : tsl.getSchemeTypes()) {
-				schemeTypes.add(schemeType.substring(schemeType
-						.indexOf("schemerules/")
-						+ "schemerules/".length()));
+				schemeTypes.add(schemeType);
 			}
 			addItemRow("Scheme type community rules", schemeTypes,
 					informationTable);
@@ -272,7 +270,7 @@ public class Tsl2PdfExporter {
 				addItemRow("Service provider trade name", trustServiceProvider
 						.getTradeName(), providerTable);
 				addItemRow("Information URI", trustServiceProvider
-						.getInformationUri(), providerTable);
+						.getInformationUris(), providerTable);
 				PostalAddressType postalAddress = trustServiceProvider
 						.getPostalAddress();
 				addItemRow("Service provider street address", postalAddress
@@ -365,7 +363,7 @@ public class Tsl2PdfExporter {
 
 			X509Certificate signerCertificate = tsl.verifySignature();
 			if (null != signerCertificate) {
-				Paragraph tslSignerTitle = new Paragraph("TSL Signer",
+				Paragraph tslSignerTitle = new Paragraph("Trusted List Signer",
 						title1Font);
 				tslSignerTitle.setAlignment(Paragraph.ALIGN_CENTER);
 				document.add(tslSignerTitle);

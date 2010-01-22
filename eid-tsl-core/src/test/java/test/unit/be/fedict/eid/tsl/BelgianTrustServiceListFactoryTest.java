@@ -200,10 +200,11 @@ public class BelgianTrustServiceListFactoryTest {
 		assertEquals(2, resultElectronicAddress.size());
 
 		// information uri
-		String resultInformationUri = certipostTrustServiceProvider
-				.getInformationUri(Locale.ENGLISH);
+		List<String> resultInformationUris = certipostTrustServiceProvider
+				.getInformationUris(Locale.ENGLISH);
+		assertEquals(2, resultInformationUris.size());
 		assertEquals("http://repository.eid.belgium.be/EN/Index.htm",
-				resultInformationUri);
+				resultInformationUris.get(0));
 
 		LOG.debug("unsigned TSL: " + unsignedTslFile.getAbsolutePath());
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
