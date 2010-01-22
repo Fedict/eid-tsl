@@ -19,6 +19,7 @@
 package be.fedict.eid.tsl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -38,6 +39,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.etsi.uri._01903.v1_3.IdentifierType;
 import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2_.AdditionalServiceInformationType;
@@ -147,7 +149,16 @@ public class TrustService {
 				.getSubjectX500Principal().getName());
 		byte[] skiValue = certificate
 				.getExtensionValue(X509Extensions.SubjectKeyIdentifier.getId());
-		digitalIdentity.setX509SKI(skiValue);
+		SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
+		try {
+			subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
+					skiValue);
+		} catch (IOException e) {
+			throw new RuntimeException("X509 SKI decoding error: "
+					+ e.getMessage(), e);
+		}
+		digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
+				.getKeyIdentifier());
 		digitalIdentities.add(digitalIdentity);
 		tspServiceInformation.setServiceDigitalIdentity(digitalIdentityList);
 
