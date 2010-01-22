@@ -92,15 +92,20 @@ import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
 import org.etsi.uri._01903.v1_3.QualifyingPropertiesType;
 import org.etsi.uri._01903.v1_3.SignedPropertiesType;
 import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
+import org.etsi.uri._02231.v2_.AdditionalInformationType;
 import org.etsi.uri._02231.v2_.AddressType;
+import org.etsi.uri._02231.v2_.AnyType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
+import org.etsi.uri._02231.v2_.MultiLangNormStringType;
 import org.etsi.uri._02231.v2_.MultiLangStringType;
 import org.etsi.uri._02231.v2_.NextUpdateType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
 import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2_.NonEmptyURIListType;
 import org.etsi.uri._02231.v2_.ObjectFactory;
+import org.etsi.uri._02231.v2_.OtherTSLPointerType;
+import org.etsi.uri._02231.v2_.OtherTSLPointersType;
 import org.etsi.uri._02231.v2_.PolicyOrLegalnoticeType;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
@@ -155,6 +160,8 @@ public class TrustServiceList {
 
 	private final org.w3._2000._09.xmldsig_.ObjectFactory xmldsigObjectFactory;
 
+	private final org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory tslxObjectFactory;
+
 	protected TrustServiceList() {
 		super();
 		this.changed = true;
@@ -162,6 +169,7 @@ public class TrustServiceList {
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
 		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
+		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -179,6 +187,7 @@ public class TrustServiceList {
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
 		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
+		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -507,7 +516,8 @@ public class TrustServiceList {
 			try {
 				marshall();
 			} catch (Exception e) {
-				throw new RuntimeException("marshall error: " + e.getMessage());
+				throw new RuntimeException("marshall error: " + e.getMessage(),
+						e);
 			}
 		}
 		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
@@ -657,7 +667,8 @@ public class TrustServiceList {
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance(
 						ObjectFactory.class,
-						org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class);
+						org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class,
+						org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		LOG.debug("marshaller type: " + marshaller.getClass().getName());
 		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
@@ -1264,5 +1275,75 @@ public class TrustServiceList {
 	public String getSha256Fingerprint() {
 		String fingerprint = DigestUtils.sha256Hex(toByteArray());
 		return fingerprint;
+	}
+
+	public void addOtherTSLPointer(String location, String mimeType,
+			String tslType, String schemeTerritory, String schemeOperatorName,
+			String schemeTypeCommunityRuleUri) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		OtherTSLPointersType otherTSLPointers = schemeInformation
+				.getPointersToOtherTSL();
+		if (null == otherTSLPointers) {
+			otherTSLPointers = this.objectFactory.createOtherTSLPointersType();
+			schemeInformation.setPointersToOtherTSL(otherTSLPointers);
+		}
+		List<OtherTSLPointerType> pointerList = otherTSLPointers
+				.getOtherTSLPointer();
+		OtherTSLPointerType otherTSLPointer = this.objectFactory
+				.createOtherTSLPointerType();
+		pointerList.add(otherTSLPointer);
+
+		otherTSLPointer.setTSLLocation(location);
+		AdditionalInformationType additionalInformation = this.objectFactory
+				.createAdditionalInformationType();
+		otherTSLPointer.setAdditionalInformation(additionalInformation);
+
+		List<Object> objects = additionalInformation
+				.getTextualInformationOrOtherInformation();
+		{
+			JAXBElement<String> mimeTypeElement = this.tslxObjectFactory
+					.createMimeType(mimeType);
+			AnyType anyType = this.objectFactory.createAnyType();
+			anyType.getContent().add(mimeTypeElement);
+			objects.add(anyType);
+		}
+		{
+			JAXBElement<String> tslTypeElement = this.objectFactory
+					.createTSLType(tslType);
+			AnyType anyType = this.objectFactory.createAnyType();
+			anyType.getContent().add(tslTypeElement);
+			objects.add(anyType);
+		}
+		{
+			JAXBElement<String> schemeTerritoryElement = this.objectFactory
+					.createSchemeTerritory(schemeTerritory);
+			AnyType anyType = this.objectFactory.createAnyType();
+			anyType.getContent().add(schemeTerritoryElement);
+			objects.add(anyType);
+		}
+		{
+			InternationalNamesType i18nNames = this.objectFactory
+					.createInternationalNamesType();
+			MultiLangNormStringType i18nName = this.objectFactory
+					.createMultiLangNormStringType();
+			i18nName.setLang("en");
+			i18nName.setValue(schemeOperatorName);
+			i18nNames.getName().add(i18nName);
+			JAXBElement<InternationalNamesType> schemeOperatorNameElement = this.objectFactory
+					.createSchemeOperatorName(i18nNames);
+			AnyType anyType = this.objectFactory.createAnyType();
+			anyType.getContent().add(schemeOperatorNameElement);
+			objects.add(anyType);
+		}
+		{
+			NonEmptyURIListType uriList = this.objectFactory
+					.createNonEmptyURIListType();
+			uriList.getURI().add(schemeTypeCommunityRuleUri);
+			JAXBElement<NonEmptyURIListType> schemeTypeCommunityRulesElement = this.objectFactory
+					.createSchemeTypeCommunityRules(uriList);
+			AnyType anyType = this.objectFactory.createAnyType();
+			anyType.getContent().add(schemeTypeCommunityRulesElement);
+			objects.add(anyType);
+		}
 	}
 }

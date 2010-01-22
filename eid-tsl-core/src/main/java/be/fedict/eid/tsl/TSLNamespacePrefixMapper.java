@@ -41,6 +41,7 @@ public class TSLNamespacePrefixMapper extends NamespacePrefixMapper {
 						"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
 						"ecc");
 		prefixes.put("http://uri.etsi.org/01903/v1.3.2#", "xades");
+		prefixes.put("http://uri.etsi.org/02231/v2/additionaltypes#", "tslx");
 	}
 
 	@Override
