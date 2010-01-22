@@ -195,7 +195,7 @@
 	<repositories>
 		<repository>
 			<id>netbeans-repository</id>
-			<url>http://bits.nbextras.org/maven2/</url>
+			<url>http://www.lag.net/repo/</url>
 		</repository>
 		<repository>
 			<id>maven1-java.net</id>

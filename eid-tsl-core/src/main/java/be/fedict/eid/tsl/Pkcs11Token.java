@@ -131,6 +131,9 @@ public class Pkcs11Token {
 		configWriter.println("name=SmartCard");
 		configWriter.println("library=" + this.pkcs11Library);
 		configWriter.println("slotListIndex= " + 0);
+		// configWriter.println("disabledMechanisms = {");
+		// configWriter.println("\tCKM_SHA1_RSA_PKCS");
+		// configWriter.println("}");
 		return tmpConfigFile.getAbsolutePath();
 	}
 }
