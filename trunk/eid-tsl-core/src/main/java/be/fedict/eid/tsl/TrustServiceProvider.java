@@ -196,19 +196,20 @@ public class TrustServiceProvider {
 		uris.add(uri);
 	}
 
-	public String getInformationUri() {
-		return getInformationUri(Locale.ENGLISH);
+	public List<String> getInformationUris() {
+		return getInformationUris(Locale.ENGLISH);
 	}
 
-	public String getInformationUri(Locale locale) {
+	public List<String> getInformationUris(Locale locale) {
+		List<String> results = new LinkedList<String>();
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
 		if (null == tspInformation) {
-			return null;
+			return results;
 		}
 		NonEmptyMultiLangURIListType tspInformationURI = tspInformation
 				.getTSPInformationURI();
 		if (null == tspInformationURI) {
-			return null;
+			return results;
 		}
 		List<NonEmptyMultiLangURIType> uris = tspInformationURI.getURI();
 		for (NonEmptyMultiLangURIType uri : uris) {
@@ -216,9 +217,9 @@ public class TrustServiceProvider {
 			if (0 != locale.getLanguage().compareToIgnoreCase(lang)) {
 				continue;
 			}
-			return uri.getValue();
+			results.add(uri.getValue());
 		}
-		return null;
+		return results;
 	}
 
 	public String getName(Locale locale) {
