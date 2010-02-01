@@ -86,6 +86,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
+import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.etsi.uri._01903.v1_3.CertIDListType;
 import org.etsi.uri._01903.v1_3.CertIDType;
 import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
@@ -95,6 +97,8 @@ import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
 import org.etsi.uri._02231.v2_.AdditionalInformationType;
 import org.etsi.uri._02231.v2_.AddressType;
 import org.etsi.uri._02231.v2_.AnyType;
+import org.etsi.uri._02231.v2_.DigitalIdentityListType;
+import org.etsi.uri._02231.v2_.DigitalIdentityType;
 import org.etsi.uri._02231.v2_.ElectronicAddressType;
 import org.etsi.uri._02231.v2_.InternationalNamesType;
 import org.etsi.uri._02231.v2_.MultiLangNormStringType;
@@ -109,6 +113,7 @@ import org.etsi.uri._02231.v2_.OtherTSLPointersType;
 import org.etsi.uri._02231.v2_.PolicyOrLegalnoticeType;
 import org.etsi.uri._02231.v2_.PostalAddressListType;
 import org.etsi.uri._02231.v2_.PostalAddressType;
+import org.etsi.uri._02231.v2_.ServiceDigitalIdentityListType;
 import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
 import org.etsi.uri._02231.v2_.TSPType;
 import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
@@ -1280,6 +1285,14 @@ public class TrustServiceList {
 	public void addOtherTSLPointer(String location, String mimeType,
 			String tslType, String schemeTerritory, String schemeOperatorName,
 			String schemeTypeCommunityRuleUri) {
+		addOtherTSLPointer(location, mimeType, tslType, schemeTerritory,
+				schemeOperatorName, schemeTypeCommunityRuleUri, null);
+	}
+
+	public void addOtherTSLPointer(String location, String mimeType,
+			String tslType, String schemeTerritory, String schemeOperatorName,
+			String schemeTypeCommunityRuleUri,
+			X509Certificate digitalIdentityCertificate) {
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
 		OtherTSLPointersType otherTSLPointers = schemeInformation
 				.getPointersToOtherTSL();
@@ -1344,6 +1357,46 @@ public class TrustServiceList {
 			AnyType anyType = this.objectFactory.createAnyType();
 			anyType.getContent().add(schemeTypeCommunityRulesElement);
 			objects.add(anyType);
+		}
+		if (null != digitalIdentityCertificate) {
+			ServiceDigitalIdentityListType serviceDigitalIdentityList = this.objectFactory
+					.createServiceDigitalIdentityListType();
+			DigitalIdentityListType digitalIdentityList = this.objectFactory
+					.createDigitalIdentityListType();
+			List<DigitalIdentityType> digitalIdentities = digitalIdentityList
+					.getDigitalId();
+			DigitalIdentityType digitalIdentity = this.objectFactory
+					.createDigitalIdentityType();
+
+			try {
+				digitalIdentity.setX509Certificate(digitalIdentityCertificate
+						.getEncoded());
+			} catch (CertificateEncodingException e) {
+				throw new RuntimeException("X509 encoding error: "
+						+ e.getMessage(), e);
+			}
+			digitalIdentity.setX509SubjectName(digitalIdentityCertificate
+					.getSubjectX500Principal().getName());
+			byte[] skiValue = digitalIdentityCertificate
+					.getExtensionValue(X509Extensions.SubjectKeyIdentifier
+							.getId());
+			SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
+			try {
+				subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
+						skiValue);
+			} catch (IOException e) {
+				throw new RuntimeException("X509 SKI decoding error: "
+						+ e.getMessage(), e);
+			}
+			digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
+					.getKeyIdentifier());
+			List<DigitalIdentityListType> digitalIdentityListList = serviceDigitalIdentityList
+					.getServiceDigitalIdentity();
+			digitalIdentityListList.add(digitalIdentityList);
+
+			digitalIdentities.add(digitalIdentity);
+			otherTSLPointer
+					.setServiceDigitalIdentities(serviceDigitalIdentityList);
 		}
 	}
 }
