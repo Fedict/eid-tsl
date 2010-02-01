@@ -18,6 +18,7 @@
 
 package be.fedict.eid.tsl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -26,9 +27,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.etsi.uri._02231.v2_.PostalAddressType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.w3c.dom.Document;
 
 /**
  * Factory for the Belgian Trust Service List.
@@ -37,6 +44,9 @@ import org.joda.time.DateTimeZone;
  * 
  */
 public class BelgianTrustServiceListFactory {
+
+	private static final Log LOG = LogFactory
+			.getLog(BelgianTrustServiceListFactory.class);
 
 	private BelgianTrustServiceListFactory() {
 		super();
@@ -190,6 +200,16 @@ public class BelgianTrustServiceListFactory {
 						"EU",
 						"European Commission",
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+		Document euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
+		TrustServiceList euTSL;
+		try {
+			euTSL = TrustServiceListFactory.newInstance(euTSLDocument);
+		} catch (IOException e) {
+			throw new RuntimeException("could not load EU trust list: "
+					+ e.getMessage(), e);
+		}
+		X509Certificate euCertificate = euTSL.verifySignature();
+		LOG.debug("EU certificate: " + euCertificate);
 		trustServiceList
 				.addOtherTSLPointer(
 						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
@@ -197,7 +217,8 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
 						"EU",
 						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						euCertificate);
 
 		// trust service provider list: certipost
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
@@ -246,6 +267,28 @@ public class BelgianTrustServiceListFactory {
 		certipostTrustServiceProvider.addTrustService(eTrustQCaTrustService);
 
 		return trustServiceList;
+	}
+
+	private static Document loadDocumentFromResource(String resourceName) {
+		Thread currentThread = Thread.currentThread();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
+		InputStream documentInputStream = classLoader
+				.getResourceAsStream(resourceName);
+		if (null == documentInputStream) {
+			throw new IllegalArgumentException("resource not found: "
+					+ resourceName);
+		}
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		try {
+			DocumentBuilder documentBuilder = documentBuilderFactory
+					.newDocumentBuilder();
+			Document tslDocument = documentBuilder.parse(documentInputStream);
+			return tslDocument;
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 
 	private static X509Certificate loadCertificateFromResource(
