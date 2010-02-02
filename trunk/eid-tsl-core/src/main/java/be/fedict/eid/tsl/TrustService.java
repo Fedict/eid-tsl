@@ -334,6 +334,10 @@ public class TrustService {
 			"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
 			"Qualifications");
 
+	public void addOIDForQCSSCDStatusAsInCert(String oid) {
+		addOIDForQCSSCDStatusAsInCert(oid, null);
+	}
+
 	public void addOIDForQCSSCDStatusAsInCert(String oid, String description) {
 		TSPServiceInformationType tspServiceInformation = this.tspService
 				.getServiceInformation();
@@ -365,27 +369,38 @@ public class TrustService {
 								.getQualifiers();
 						List<QualifierType> qualifierList = qualifiers
 								.getQualifier();
+						boolean qcSscdStatusAsInCertQualifier = false;
+						boolean qcForLegalPersonQualifier = false;
 						for (QualifierType qualifier : qualifierList) {
 							if (QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI
 									.equals(qualifier.getUri())) {
-								CriteriaListType criteriaList = qualificationElement
-										.getCriteriaList();
-								List<PoliciesListType> policySet = criteriaList
-										.getPolicySet();
-								PoliciesListType policiesList = policySet
-										.get(0);
-
-								ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
-										.createObjectIdentifierType();
-								IdentifierType identifier = this.xadesObjectFactory
-										.createIdentifierType();
-								identifier.setValue(oid);
-								objectIdentifier.setIdentifier(identifier);
-								objectIdentifier.setDescription(description);
-								policiesList.getPolicyIdentifier().add(
-										objectIdentifier);
-								return;
+								qcSscdStatusAsInCertQualifier = true;
 							}
+							if (QC_FOR_LEGAL_PERSON_QUALIFIER_URI
+									.equals(qualifier.getUri())) {
+								qcForLegalPersonQualifier = true;
+							}
+						}
+						if (qcSscdStatusAsInCertQualifier
+								&& !qcForLegalPersonQualifier) {
+							CriteriaListType criteriaList = qualificationElement
+									.getCriteriaList();
+							List<PoliciesListType> policySet = criteriaList
+									.getPolicySet();
+							PoliciesListType policiesList = policySet.get(0);
+
+							ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
+									.createObjectIdentifierType();
+							IdentifierType identifier = this.xadesObjectFactory
+									.createIdentifierType();
+							identifier.setValue(oid);
+							objectIdentifier.setIdentifier(identifier);
+							if (null != description) {
+								objectIdentifier.setDescription(description);
+							}
+							policiesList.getPolicyIdentifier().add(
+									objectIdentifier);
+							return;
 						}
 					}
 				}
@@ -524,10 +539,15 @@ public class TrustService {
 		QualifiersType qualifiers = this.eccObjectFactory
 				.createQualifiersType();
 		List<QualifierType> qualifierList = qualifiers.getQualifier();
+		QualifierType qcForLegalPersonqualifier = this.eccObjectFactory
+				.createQualifierType();
+		qualifierList.add(qcForLegalPersonqualifier);
+		qcForLegalPersonqualifier.setUri(QC_FOR_LEGAL_PERSON_QUALIFIER_URI);
 		QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
 				.createQualifierType();
 		qualifierList.add(qcSscdStatusInCertqualifier);
-		qcSscdStatusInCertqualifier.setUri(QC_FOR_LEGAL_PERSON_QUALIFIER_URI);
+		qcSscdStatusInCertqualifier
+				.setUri(QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI);
 		qualificationElement.setQualifiers(qualifiers);
 
 		CriteriaListType criteriaList = this.eccObjectFactory
