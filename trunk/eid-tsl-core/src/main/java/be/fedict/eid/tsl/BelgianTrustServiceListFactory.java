@@ -226,8 +226,7 @@ public class BelgianTrustServiceListFactory {
 						"Certipost NV/SA");
 		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Ninovesteenweg 196", "EREMBODEGEM", "Oost-Vlaanderen", "9320",
-				"BE");
+				"Centre Monnaie", "Brussels", "Brussels", "1000", "BE");
 		certipostTrustServiceProvider
 				.addElectronicAddress("http://www.certipost.be/",
 						"mailto:eid.csp@staff.certipost.be");
@@ -264,18 +263,20 @@ public class BelgianTrustServiceListFactory {
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.112.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.140.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.111.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.101.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.121.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.131.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.102.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.122.1");
-		eTrustQCaTrustService
-				.addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.132.1");
+
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.101.1");
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.121.1");
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.131.1");
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.102.1");
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.122.1");
+		// eTrustQCaTrustService
+		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.132.1");
+
 		certipostTrustServiceProvider.addTrustService(eTrustQCaTrustService);
 
 		return trustServiceList;
