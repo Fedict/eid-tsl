@@ -190,7 +190,7 @@ public class BelgianTrustServiceListFactoryTest {
 		PostalAddressType certipostPostalAddress = certipostTrustServiceProvider
 				.getPostalAddress(Locale.ENGLISH);
 		assertNotNull(certipostPostalAddress);
-		assertEquals("Ninovesteenweg 196", certipostPostalAddress
+		assertEquals("Centre Monnaie", certipostPostalAddress
 				.getStreetAddress());
 		assertEquals("BE", certipostPostalAddress.getCountryName());
 
