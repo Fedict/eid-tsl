@@ -543,11 +543,11 @@ public class TrustService {
 				.createQualifierType();
 		qualifierList.add(qcForLegalPersonqualifier);
 		qcForLegalPersonqualifier.setUri(QC_FOR_LEGAL_PERSON_QUALIFIER_URI);
-		QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
-				.createQualifierType();
-		qualifierList.add(qcSscdStatusInCertqualifier);
-		qcSscdStatusInCertqualifier
-				.setUri(QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI);
+		// QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
+		// .createQualifierType();
+		// qualifierList.add(qcSscdStatusInCertqualifier);
+		// qcSscdStatusInCertqualifier
+		// .setUri(QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI);
 		qualificationElement.setQualifiers(qualifiers);
 
 		CriteriaListType criteriaList = this.eccObjectFactory
