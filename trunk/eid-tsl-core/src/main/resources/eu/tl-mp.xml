@@ -2,7 +2,7 @@
 <tsl:TrustServiceStatusList Id="ID0001" TSLTag="http://uri.etsi.org/02231/TSLTag" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#">
 <tsl:SchemeInformation>
 <tsl:TSLVersionIdentifier>3</tsl:TSLVersionIdentifier>
-<tsl:TSLSequenceNumber>5</tsl:TSLSequenceNumber>
+<tsl:TSLSequenceNumber>7</tsl:TSLSequenceNumber>
 <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes</tsl:TSLType>
 <tsl:SchemeOperatorName>
 <tsl:Name xml:lang="en">European Commission</tsl:Name>
@@ -281,7 +281,47 @@ Denna ansvarsfriskrivning begränsar dock inte kommissionens ansvar i strid med 
                 </tsl:AdditionalInformation>
         </tsl:OtherTSLPointer>
         <tsl:OtherTSLPointer>
-                <tsl:TSLLocation>http://www.mcw.gov.cy/mcw/DEC/DEC.nsf/all/146E36DA8D517E04C22576A10040DE5E/$file/CY-TL-1.pdf?openelement</tsl:TSLLocation>
+                <tsl:TSLLocation>https://www.eett.gr/tsl/EL-TSL.pdf</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/EL</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>EL</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/pdf</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>https://www.eett.gr/tsl/EL-TSL.xml</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/EL</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>EL</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/vnd.etsi.tsl+xml</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.mcw.gov.cy/mcw/DEC/DEC.nsf/all/146E36DA8D517E04C22576A10040DE5E/$file/CY-TL-2.pdf?openelement</tsl:TSLLocation>
                 <tsl:AdditionalInformation>
                         <tsl:OtherInformation>
                                 <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
@@ -297,6 +337,46 @@ Denna ansvarsfriskrivning begränsar dock inte kommissionens ansvar i strid med 
                         </tsl:OtherInformation>
                         <tsl:OtherInformation>
                                 <tslx:MimeType>application/pdf</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.ilnas.public.lu/tsl-pdf</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/LU</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>LU</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/pdf</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.ilnas.public.lu/tsl-xml</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/LU</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>LU</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/vnd.etsi.tsl+xml</tslx:MimeType>
                         </tsl:OtherInformation>
                 </tsl:AdditionalInformation>
         </tsl:OtherTSLPointer>
@@ -337,6 +417,26 @@ Denna ansvarsfriskrivning begränsar dock inte kommissionens ansvar i strid med 
                         </tsl:OtherInformation>
                         <tsl:OtherInformation>
                                 <tslx:MimeType>application/vnd.etsi.tsl+xml</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>https://www.opta.nl/download/bestand/current-tsl.pdf</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/NL</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>NL</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/pdf</tslx:MimeType>
                         </tsl:OtherInformation>
                 </tsl:AdditionalInformation>
         </tsl:OtherTSLPointer>
@@ -460,9 +560,88 @@ Denna ansvarsfriskrivning begränsar dock inte kommissionens ansvar i strid med 
                         </tsl:OtherInformation>
                 </tsl:AdditionalInformation>
         </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.mvzt.gov.si/fileadmin/mvzt.gov.si/pageuploads/pdf/informacijska_druzba/SI-TL.pdf</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/SI</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>SI</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/pdf</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.mvzt.gov.si/fileadmin/mvzt.gov.si/pageuploads/pdf/informacijska_druzba/SI_TL.xml</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/SI</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>SI</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/vnd.etsi.tsl+xml</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.npt.no/TSL/NO_TSL.pdf</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/NO</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>NO</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/pdf</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
+        <tsl:OtherTSLPointer>
+                <tsl:TSLLocation>http://www.npt.no/TSL/NO_TSL.xml</tsl:TSLLocation>
+                <tsl:AdditionalInformation>
+                        <tsl:OtherInformation>
+                                <tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTypeCommunityRules>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common</tsl:URI>
+                                        <tsl:URI>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/NO</tsl:URI>
+                                </tsl:SchemeTypeCommunityRules>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tsl:SchemeTerritory>NO</tsl:SchemeTerritory>
+                        </tsl:OtherInformation>
+                        <tsl:OtherInformation>
+                                <tslx:MimeType>application/vnd.etsi.tsl+xml</tslx:MimeType>
+                        </tsl:OtherInformation>
+                </tsl:AdditionalInformation>
+        </tsl:OtherTSLPointer>
 </tsl:PointersToOtherTSL>
-
-<tsl:ListIssueDateTime>2010-01-21T16:00:00Z</tsl:ListIssueDateTime>
+<tsl:ListIssueDateTime>2010-02-16T16:00:00Z</tsl:ListIssueDateTime>
 <tsl:NextUpdate>
 <tsl:dateTime>2010-06-27T22:00:00Z</tsl:dateTime>
 </tsl:NextUpdate>
@@ -470,4 +649,4 @@ Denna ansvarsfriskrivning begränsar dock inte kommissionens ansvar i strid med 
 <tsl:URI>https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml</tsl:URI>
 </tsl:DistributionPoints>
 </tsl:SchemeInformation>
-<ds:Signature Id="Signature_1264079187605"><ds:SignedInfo Id="Signature_1264079187605-SignedInfo"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference Id="Signature_1264079187605-Reference-0" URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>BuF0etVA6IqnlYtfEtstfpsE+wY=</ds:DigestValue></ds:Reference><ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature_1264079187605_SignedProperties"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>fKOk3CRpABh2EnpKZ0g/uudo0rs=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue Id="Signature_1264079187605_Value">rBRXp6iOWWacL8k7+g77dsG5J+mjElxzVM1266VOoJ3UsNbsknRR7PcaomregtElp+3aRuKh2Hyj7kGHQteUNCLPO9Gbs/gzuon450bcTbJ9YzP9E1dGBk+pFe6G/vcY5n6kZvUVK1rRBnFoymIyjb6lj+G7rcR+3XakcI2ILZg=</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIFnDCCBISgAwIBAgIDAVZhMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNVBAYTAkxVMRYwFAYDVQQKEw1MdXhUcnVzdCBTLkEuMR4wHAYDVQQDExVMdXhUcnVzdCBRdWFsaWZpZWQgQ0EwHhcNMDkxMjIzMTAzNTU2WhcNMTIxMjIzMTAzNTU2WjCCAQYxCzAJBgNVBAYTAkJFMQswCQYDVQQHEwJCRTEcMBoGA1UEChMTRXVyb3BlYW4gQ29tbWlzc2lvbjELMAkGA1UECxMCTkExJDAiBgNVBAMTG0thcmVsIExvZGV3aWprIE0gRGUgVnJpZW5kdDETMBEGA1UEBBMKRGUgVnJpZW5kdDEZMBcGA1UEKhMQS2FyZWwgTG9kZXdpamsgTTEdMBsGA1UEBRMUMTAxMDAzMzIxMTAwMDQ3NDkzNzgxLDAqBgkqhkiG9w0BCQEWHUthcmVsLkRlLVZyaWVuZHRAZWMuZXVyb3BhLmV1MRwwGgYDVQQMExNQcm9mZXNzaW9uYWwgUGVyc29uMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC96JBqnjCmAk43LDuZDMu5lNGK7/UQnJBLDkUqN2Jb/STQSBJnRJchCY9DnKtqYG9cuSZDRxvIUkssqO/WpFu/I5fO9I4mvLGD9h4ot8/GkRntbEl3CnMlRKZJkAdcSHwuqnuNpfaZ4yGGIPslRy9pbRkfXSeeneJAo0Ixiu3QJwIDAQABo4ICVDCCAlAwDAYDVR0TAQH/BAIwADBgBggrBgEFBQcBAQRUMFIwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3NwLmx1eHRydXN0Lmx1MCsGCCsGAQUFBzAChh9odHRwOi8vY2EubHV4dHJ1c3QubHUvTFRRQ0EuY3J0MIIBHQYDVR0gBIIBFDCCARAwggECBggrgSsBAQIEATCB9TCBxwYIKwYBBQUHAgIwgboagbdMdXhUcnVzdCBRdWFsaWZpZWQgQ2VydGlmaWNhdGUgb24gQ0NTRCBjb21wbGlhbnQgd2l0aCBFVFNJIFRTIDEwMSA0NTYgUUNQKyBjZXJ0aWZpY2F0ZSBwb2xpY3kuIEtleSBHZW5lcmF0aW9uIGJ5IENTUC4gU29sZSBBdXRob3Jpc2VkIFVzYWdlOiBTdXBwb3J0IG9mIFF1YWxpZmllZCBFbGVjdHJvbmljIFNpZ25hdHVyZS4wKQYIKwYBBQUHAgEWHWh0dHA6Ly9yZXBvc2l0b3J5Lmx1eHRydXN0Lmx1MAgGBgQAizABATA2BggrBgEFBQcBAwQqMCgwCAYGBACORgEBMBIGBgQAjkYBAjAIEwACAQACAQAwCAYGBACORgEEMBEGCWCGSAGG+EIBAQQEAwIFIDALBgNVHQ8EBAMCBkAwHwYDVR0jBBgwFoAUjZCjB90aE3eZTJKrTUPeP80pZAUwMQYDVR0fBCowKDAmoCSgIoYgaHR0cDovL2NybC5sdXh0cnVzdC5sdS9MVFFDQS5jcmwwEQYDVR0OBAoECEwDOyVe3IV5MA0GCSqGSIb3DQEBBQUAA4IBAQBStS9gFx5BmEv5VciG7qEPR5VzqEpBElkjXDYe68Dw7Ol1nCt51CSuAB2/UcTkfCDh6022H7+EtiUpdM6GH/7qDqZdjqYpQznbu4xkrGTMLrTA1lalhgWugGQIpmCg69kiXns/AXcuJVQSR3mA3BMvJrN5PNaALoguynWCrxRHPTUS3pT5J93jCn90ZPAGhxELRxMdZuFZ2UAn8D8XLUxiz0IK9yqdysJiLzWsQazUkZ+lzDG0mPomyRkl3LzEK8HXO3HKGr+2n760N+StYyjwywP/kS/3LoPQWfUfjWQE8jDiTgodZT4ewVSxuNrBH5Ls29aBi0YsT9NYstznKgaR</ds:X509Certificate><ds:X509Certificate>MIID8DCCAtigAwIBAgICA+swDQYJKoZIhvcNAQEFBQAwQDELMAkGA1UEBhMCTFUxFjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3QgQ0EwHhcNMDgwNjA1MDkyNTI0WhcNMTYxMDE4MTA0MDM0WjBFMQswCQYDVQQGEwJMVTEWMBQGA1UEChMNTHV4VHJ1c3QgUy5BLjEeMBwGA1UEAxMVTHV4VHJ1c3QgUXVhbGlmaWVkIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAybFXzA+8RNnvlCd+sZ8BnH6WO3LmaLi419Ygd9VBYcIwLmMx9KgAKF3u4B87Hee5NL4Xvhm/B9DuDUH5OGZ3P2Dwf7putVEvATvW8jzYq6CzarUthzb9ux+KTdTT+d4y6tkgVggy9DBe+bz635oZm2PPQT9kzoR48RBN730KA/MJIa0Sa7ZDphL37WHSA4/TWh9F1/LBRVGC0F4Mg1hU/u+kovF5mTuUK+ncU7+FS0cQRhAD+C4WfLI/WuzuE+T6ZuZ6Iqg6+vqgf6iKwL6iVZmwKkJPvV3+3Wgy3zq5tpDvsIGj4kXd1riQGKsEeDfN8y71DG3OdBqF1Yd7ue7ziwIDAQABo4HuMIHrMA8GA1UdEwQIMAYBAf8CAQAwQgYDVR0gBDswOTA3BggrgSsBAQEBADArMCkGCCsGAQUFBwIBFh1odHRwOi8vcmVwb3NpdG9yeS5sdXh0cnVzdC5sdTARBglghkgBhvhCAQEEBAMCAAcwDgYDVR0PAQH/BAQDAgHGMB8GA1UdIwQYMBaAFN2K1zDx+ZFx6UdwDCXlrKGN34wlMDEGA1UdHwQqMCgwJqAkoCKGIGh0dHA6Ly9jcmwubHV4dHJ1c3QubHUvTFRSQ0EuY3JsMB0GA1UdDgQWBBSNkKMH3RoTd5lMkqtNQ94/zSlkBTANBgkqhkiG9w0BAQUFAAOCAQEAapxOpigXTejGgHBWMAwDBMdZQHpPyoCmw32OIj1qqezO5nDnjG5gfJni/rp5IFMpV//xmCkjqyO92PyYbcHNSUpP1SjCkyn10e6ipmzpXK0MbgFvIPglAgA5dXxTNf0Q77eWu36fz5VKQEmJzqoXTccq4nuLL9rLZ88YUlczMaWscETIZCB4kecKVyqHf4+T0JucZqX7zzfpiVyTr2M+OGl9qiOmKwBGkzseJt+MgYWrskJADKDZMr4bQxkxnhzCSQoraX7DugxM0fH47MitCc74uZrWIJ6qQjCLBtKzxUGy7B3pYOjLlThr7S64cd12yuR+NjHAFZ2DTXwxKg/FQg==</ds:X509Certificate><ds:X509Certificate>MIIENzCCA6CgAwIBAgIEBycQKzANBgkqhkiG9w0BAQUFADB1MQswCQYDVQQGEwJVUzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJUcnVzdCBTb2x1dGlvbnMsIEluYy4xIzAhBgNVBAMTGkdURSBDeWJlclRydXN0IEdsb2JhbCBSb290MB4XDTA2MTAxODEwNDEyOFoXDTE2MTAxODEwNDAzNFowQDELMAkGA1UEBhMCTFUxFjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcamOXUWU5F8yZTyz9hLfNpnp38nns/GNjgTcOXxOOOUMfBpLtaNOu5C6fM3BYH1h46ujuVrwoy+2fCIvGJglcs8PGuPhOs/V7mDmrZsDFop8RVL86bTBPGHFtYXlvy7adGbljS9j8i/DEF7y31mi9kBh/8DwqOawxiT/wv8naWAh9Om6mmBR0lVPDMYxMl4fyw3QWSoXFwrjj8qs3iYFwCRyxgTqP1meEChIQi26IswVQGPei43jl0e235/1okPmXLZOkrcRiOgL2sEITojeaRRfVymCkqnkLMfNQzNo2/kU9EO9wg6jnQXGPywqTo8e7ocVhA09R250Y4J/GCLGXAgMBAAGjggGDMIIBfzAPBgNVHRMECDAGAQH/AgEBMFMGA1UdIARMMEowSAYJKwYBBAGxPgEAMDswOQYIKwYBBQUHAgEWLWh0dHA6Ly93d3cucHVibGljLXRydXN0LmNvbS9DUFMvT21uaVJvb3QuaHRtbDAOBgNVHQ8BAf8EBAMCAcYwgaAGA1UdIwSBmDCBlYAUpgwdn2H/Bxe1vzhG20Mw1Y6wUgaheaR3MHUxCzAJBgNVBAYTAlVTMRgwFgYDVQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNvbHV0aW9ucywgSW5jLjEjMCEGA1UEAxMaR1RFIEN5YmVyVHJ1c3QgR2xvYmFsIFJvb3SCAgGlMEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6Ly93d3cucHVibGljLXRydXN0LmNvbS9jZ2ktYmluL0NSTC8yMDE4L2NkcC5jcmwwHQYDVR0OBBYEFN2K1zDx+ZFx6UdwDCXlrKGN34wlMA0GCSqGSIb3DQEBBQUAA4GBAHoPWr98Vgv+1n5smxx8OdRCRUqQnTLUEmIECRLeGsQpWG2hJJLNCMuUm9Q8WUiV1i8yps22J/8quHI7sHqcVuXZZ9LMbJ8xBBp5QaPUvQTwUJLjGjr7mpcVCDN5lazYWRqlJxEIhKYLPp+7Pe5oO6RUdnTXHGIvQdjXjEMQpxjy</ds:X509Certificate><ds:X509Certificate>MIICWjCCAcMCAgGlMA0GCSqGSIb3DQEBBAUAMHUxCzAJBgNVBAYTAlVTMRgwFgYDVQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNvbHV0aW9ucywgSW5jLjEjMCEGA1UEAxMaR1RFIEN5YmVyVHJ1c3QgR2xvYmFsIFJvb3QwHhcNOTgwODEzMDAyOTAwWhcNMTgwODEzMjM1OTAwWjB1MQswCQYDVQQGEwJVUzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJUcnVzdCBTb2x1dGlvbnMsIEluYy4xIzAhBgNVBAMTGkdURSBDeWJlclRydXN0IEdsb2JhbCBSb290MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVD6C28FCc6HrHiM3dFw4usJTQGz0O9pTAipTHBsiQl8i4ZBp6fmw8U+E3KHNgf7KXUwefU/ltWJTSr41tiGeA5u2ylc9yMcqlHHK6XALnZELn+aks1joNrI1CqiQBOeacPwGFVw1Yh0X404Wqk2kmhXBIgD8SFcd5tB8FLztimQIDAQABMA0GCSqGSIb3DQEBBAUAA4GBAG3rGwnpXtlR22ciYaQqPEh346B8pt5zohQDhT37qw4wxYMWM4ETCJ57NE7fQMh017l93PR2VX2bY1QY6fDq81yx2YtCHrnAlU66+tXifPVoYb+O7AWXX1uw16OFNMQkpw0PlZPvy5TYnh+dXIVtx6quTx8itc2VrbqnzPmrC3p/</ds:X509Certificate></ds:X509Data></ds:KeyInfo><ds:Object><xad:QualifyingProperties Target="#Signature_1264079187605" xmlns:xad="http://uri.etsi.org/01903/v1.3.2#"><xad:SignedProperties Id="Signature_1264079187605_SignedProperties"><xad:SignedSignatureProperties><xad:SigningCertificate><xad:Cert><xad:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>Zgy9YsQuoo2LmDdUu+exSoZOAWQ=</ds:DigestValue></xad:CertDigest><xad:IssuerSerial><ds:X509IssuerName>CN=LuxTrust Qualified CA,O=LuxTrust S.A.,C=LU</ds:X509IssuerName><ds:X509SerialNumber>87649</ds:X509SerialNumber></xad:IssuerSerial></xad:Cert></xad:SigningCertificate></xad:SignedSignatureProperties></xad:SignedProperties></xad:QualifyingProperties></ds:Object></ds:Signature></tsl:TrustServiceStatusList>
+<ds:Signature Id="Signature_1266329179251"><ds:SignedInfo Id="Signature_1266329179251-SignedInfo"><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><ds:Reference Id="Signature_1266329179251-Reference-0" URI=""><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>doAhTai2/G3BMHqvvQ2cpyS1Kbc=</ds:DigestValue></ds:Reference><ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature_1266329179251_SignedProperties"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>vZ2GO/f/YU0EEJgz32Zi+AeVcig=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue Id="Signature_1266329179251_Value">piY2eU4Oi35AnA+isBL8Uol/xof86pPF4X8Pb3QN2VFjbB0XVy9PGBQ0wmcFXG0Ms6cisLQXTN7FamZ3owRsaIuxrCDjQbEk37aZex1jHuFm+XvADTaksdu5VVrAJxdSsSVGivehDRfMbV69KJy9UNoio+NYNddjzqfCsRga4Z4=</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIFnDCCBISgAwIBAgIDAVZhMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNVBAYTAkxVMRYwFAYDVQQKEw1MdXhUcnVzdCBTLkEuMR4wHAYDVQQDExVMdXhUcnVzdCBRdWFsaWZpZWQgQ0EwHhcNMDkxMjIzMTAzNTU2WhcNMTIxMjIzMTAzNTU2WjCCAQYxCzAJBgNVBAYTAkJFMQswCQYDVQQHEwJCRTEcMBoGA1UEChMTRXVyb3BlYW4gQ29tbWlzc2lvbjELMAkGA1UECxMCTkExJDAiBgNVBAMTG0thcmVsIExvZGV3aWprIE0gRGUgVnJpZW5kdDETMBEGA1UEBBMKRGUgVnJpZW5kdDEZMBcGA1UEKhMQS2FyZWwgTG9kZXdpamsgTTEdMBsGA1UEBRMUMTAxMDAzMzIxMTAwMDQ3NDkzNzgxLDAqBgkqhkiG9w0BCQEWHUthcmVsLkRlLVZyaWVuZHRAZWMuZXVyb3BhLmV1MRwwGgYDVQQMExNQcm9mZXNzaW9uYWwgUGVyc29uMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC96JBqnjCmAk43LDuZDMu5lNGK7/UQnJBLDkUqN2Jb/STQSBJnRJchCY9DnKtqYG9cuSZDRxvIUkssqO/WpFu/I5fO9I4mvLGD9h4ot8/GkRntbEl3CnMlRKZJkAdcSHwuqnuNpfaZ4yGGIPslRy9pbRkfXSeeneJAo0Ixiu3QJwIDAQABo4ICVDCCAlAwDAYDVR0TAQH/BAIwADBgBggrBgEFBQcBAQRUMFIwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3NwLmx1eHRydXN0Lmx1MCsGCCsGAQUFBzAChh9odHRwOi8vY2EubHV4dHJ1c3QubHUvTFRRQ0EuY3J0MIIBHQYDVR0gBIIBFDCCARAwggECBggrgSsBAQIEATCB9TCBxwYIKwYBBQUHAgIwgboagbdMdXhUcnVzdCBRdWFsaWZpZWQgQ2VydGlmaWNhdGUgb24gQ0NTRCBjb21wbGlhbnQgd2l0aCBFVFNJIFRTIDEwMSA0NTYgUUNQKyBjZXJ0aWZpY2F0ZSBwb2xpY3kuIEtleSBHZW5lcmF0aW9uIGJ5IENTUC4gU29sZSBBdXRob3Jpc2VkIFVzYWdlOiBTdXBwb3J0IG9mIFF1YWxpZmllZCBFbGVjdHJvbmljIFNpZ25hdHVyZS4wKQYIKwYBBQUHAgEWHWh0dHA6Ly9yZXBvc2l0b3J5Lmx1eHRydXN0Lmx1MAgGBgQAizABATA2BggrBgEFBQcBAwQqMCgwCAYGBACORgEBMBIGBgQAjkYBAjAIEwACAQACAQAwCAYGBACORgEEMBEGCWCGSAGG+EIBAQQEAwIFIDALBgNVHQ8EBAMCBkAwHwYDVR0jBBgwFoAUjZCjB90aE3eZTJKrTUPeP80pZAUwMQYDVR0fBCowKDAmoCSgIoYgaHR0cDovL2NybC5sdXh0cnVzdC5sdS9MVFFDQS5jcmwwEQYDVR0OBAoECEwDOyVe3IV5MA0GCSqGSIb3DQEBBQUAA4IBAQBStS9gFx5BmEv5VciG7qEPR5VzqEpBElkjXDYe68Dw7Ol1nCt51CSuAB2/UcTkfCDh6022H7+EtiUpdM6GH/7qDqZdjqYpQznbu4xkrGTMLrTA1lalhgWugGQIpmCg69kiXns/AXcuJVQSR3mA3BMvJrN5PNaALoguynWCrxRHPTUS3pT5J93jCn90ZPAGhxELRxMdZuFZ2UAn8D8XLUxiz0IK9yqdysJiLzWsQazUkZ+lzDG0mPomyRkl3LzEK8HXO3HKGr+2n760N+StYyjwywP/kS/3LoPQWfUfjWQE8jDiTgodZT4ewVSxuNrBH5Ls29aBi0YsT9NYstznKgaR</ds:X509Certificate><ds:X509Certificate>MIID8DCCAtigAwIBAgICA+swDQYJKoZIhvcNAQEFBQAwQDELMAkGA1UEBhMCTFUxFjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3QgQ0EwHhcNMDgwNjA1MDkyNTI0WhcNMTYxMDE4MTA0MDM0WjBFMQswCQYDVQQGEwJMVTEWMBQGA1UEChMNTHV4VHJ1c3QgUy5BLjEeMBwGA1UEAxMVTHV4VHJ1c3QgUXVhbGlmaWVkIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAybFXzA+8RNnvlCd+sZ8BnH6WO3LmaLi419Ygd9VBYcIwLmMx9KgAKF3u4B87Hee5NL4Xvhm/B9DuDUH5OGZ3P2Dwf7putVEvATvW8jzYq6CzarUthzb9ux+KTdTT+d4y6tkgVggy9DBe+bz635oZm2PPQT9kzoR48RBN730KA/MJIa0Sa7ZDphL37WHSA4/TWh9F1/LBRVGC0F4Mg1hU/u+kovF5mTuUK+ncU7+FS0cQRhAD+C4WfLI/WuzuE+T6ZuZ6Iqg6+vqgf6iKwL6iVZmwKkJPvV3+3Wgy3zq5tpDvsIGj4kXd1riQGKsEeDfN8y71DG3OdBqF1Yd7ue7ziwIDAQABo4HuMIHrMA8GA1UdEwQIMAYBAf8CAQAwQgYDVR0gBDswOTA3BggrgSsBAQEBADArMCkGCCsGAQUFBwIBFh1odHRwOi8vcmVwb3NpdG9yeS5sdXh0cnVzdC5sdTARBglghkgBhvhCAQEEBAMCAAcwDgYDVR0PAQH/BAQDAgHGMB8GA1UdIwQYMBaAFN2K1zDx+ZFx6UdwDCXlrKGN34wlMDEGA1UdHwQqMCgwJqAkoCKGIGh0dHA6Ly9jcmwubHV4dHJ1c3QubHUvTFRSQ0EuY3JsMB0GA1UdDgQWBBSNkKMH3RoTd5lMkqtNQ94/zSlkBTANBgkqhkiG9w0BAQUFAAOCAQEAapxOpigXTejGgHBWMAwDBMdZQHpPyoCmw32OIj1qqezO5nDnjG5gfJni/rp5IFMpV//xmCkjqyO92PyYbcHNSUpP1SjCkyn10e6ipmzpXK0MbgFvIPglAgA5dXxTNf0Q77eWu36fz5VKQEmJzqoXTccq4nuLL9rLZ88YUlczMaWscETIZCB4kecKVyqHf4+T0JucZqX7zzfpiVyTr2M+OGl9qiOmKwBGkzseJt+MgYWrskJADKDZMr4bQxkxnhzCSQoraX7DugxM0fH47MitCc74uZrWIJ6qQjCLBtKzxUGy7B3pYOjLlThr7S64cd12yuR+NjHAFZ2DTXwxKg/FQg==</ds:X509Certificate><ds:X509Certificate>MIIENzCCA6CgAwIBAgIEBycQKzANBgkqhkiG9w0BAQUFADB1MQswCQYDVQQGEwJVUzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJUcnVzdCBTb2x1dGlvbnMsIEluYy4xIzAhBgNVBAMTGkdURSBDeWJlclRydXN0IEdsb2JhbCBSb290MB4XDTA2MTAxODEwNDEyOFoXDTE2MTAxODEwNDAzNFowQDELMAkGA1UEBhMCTFUxFjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcamOXUWU5F8yZTyz9hLfNpnp38nns/GNjgTcOXxOOOUMfBpLtaNOu5C6fM3BYH1h46ujuVrwoy+2fCIvGJglcs8PGuPhOs/V7mDmrZsDFop8RVL86bTBPGHFtYXlvy7adGbljS9j8i/DEF7y31mi9kBh/8DwqOawxiT/wv8naWAh9Om6mmBR0lVPDMYxMl4fyw3QWSoXFwrjj8qs3iYFwCRyxgTqP1meEChIQi26IswVQGPei43jl0e235/1okPmXLZOkrcRiOgL2sEITojeaRRfVymCkqnkLMfNQzNo2/kU9EO9wg6jnQXGPywqTo8e7ocVhA09R250Y4J/GCLGXAgMBAAGjggGDMIIBfzAPBgNVHRMECDAGAQH/AgEBMFMGA1UdIARMMEowSAYJKwYBBAGxPgEAMDswOQYIKwYBBQUHAgEWLWh0dHA6Ly93d3cucHVibGljLXRydXN0LmNvbS9DUFMvT21uaVJvb3QuaHRtbDAOBgNVHQ8BAf8EBAMCAcYwgaAGA1UdIwSBmDCBlYAUpgwdn2H/Bxe1vzhG20Mw1Y6wUgaheaR3MHUxCzAJBgNVBAYTAlVTMRgwFgYDVQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNvbHV0aW9ucywgSW5jLjEjMCEGA1UEAxMaR1RFIEN5YmVyVHJ1c3QgR2xvYmFsIFJvb3SCAgGlMEUGA1UdHwQ+MDwwOqA4oDaGNGh0dHA6Ly93d3cucHVibGljLXRydXN0LmNvbS9jZ2ktYmluL0NSTC8yMDE4L2NkcC5jcmwwHQYDVR0OBBYEFN2K1zDx+ZFx6UdwDCXlrKGN34wlMA0GCSqGSIb3DQEBBQUAA4GBAHoPWr98Vgv+1n5smxx8OdRCRUqQnTLUEmIECRLeGsQpWG2hJJLNCMuUm9Q8WUiV1i8yps22J/8quHI7sHqcVuXZZ9LMbJ8xBBp5QaPUvQTwUJLjGjr7mpcVCDN5lazYWRqlJxEIhKYLPp+7Pe5oO6RUdnTXHGIvQdjXjEMQpxjy</ds:X509Certificate><ds:X509Certificate>MIICWjCCAcMCAgGlMA0GCSqGSIb3DQEBBAUAMHUxCzAJBgNVBAYTAlVTMRgwFgYDVQQKEw9HVEUgQ29ycG9yYXRpb24xJzAlBgNVBAsTHkdURSBDeWJlclRydXN0IFNvbHV0aW9ucywgSW5jLjEjMCEGA1UEAxMaR1RFIEN5YmVyVHJ1c3QgR2xvYmFsIFJvb3QwHhcNOTgwODEzMDAyOTAwWhcNMTgwODEzMjM1OTAwWjB1MQswCQYDVQQGEwJVUzEYMBYGA1UEChMPR1RFIENvcnBvcmF0aW9uMScwJQYDVQQLEx5HVEUgQ3liZXJUcnVzdCBTb2x1dGlvbnMsIEluYy4xIzAhBgNVBAMTGkdURSBDeWJlclRydXN0IEdsb2JhbCBSb290MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCVD6C28FCc6HrHiM3dFw4usJTQGz0O9pTAipTHBsiQl8i4ZBp6fmw8U+E3KHNgf7KXUwefU/ltWJTSr41tiGeA5u2ylc9yMcqlHHK6XALnZELn+aks1joNrI1CqiQBOeacPwGFVw1Yh0X404Wqk2kmhXBIgD8SFcd5tB8FLztimQIDAQABMA0GCSqGSIb3DQEBBAUAA4GBAG3rGwnpXtlR22ciYaQqPEh346B8pt5zohQDhT37qw4wxYMWM4ETCJ57NE7fQMh017l93PR2VX2bY1QY6fDq81yx2YtCHrnAlU66+tXifPVoYb+O7AWXX1uw16OFNMQkpw0PlZPvy5TYnh+dXIVtx6quTx8itc2VrbqnzPmrC3p/</ds:X509Certificate></ds:X509Data></ds:KeyInfo><ds:Object><xad:QualifyingProperties Target="#Signature_1266329179251" xmlns:xad="http://uri.etsi.org/01903/v1.3.2#"><xad:SignedProperties Id="Signature_1266329179251_SignedProperties"><xad:SignedSignatureProperties><xad:SigningCertificate><xad:Cert><xad:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>Zgy9YsQuoo2LmDdUu+exSoZOAWQ=</ds:DigestValue></xad:CertDigest><xad:IssuerSerial><ds:X509IssuerName>CN=LuxTrust Qualified CA,O=LuxTrust S.A.,C=LU</ds:X509IssuerName><ds:X509SerialNumber>87649</ds:X509SerialNumber></xad:IssuerSerial></xad:Cert></xad:SigningCertificate></xad:SignedSignatureProperties></xad:SignedProperties></xad:QualifyingProperties></ds:Object></ds:Signature></tsl:TrustServiceStatusList>
