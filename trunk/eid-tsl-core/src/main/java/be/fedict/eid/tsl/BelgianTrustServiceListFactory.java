@@ -128,7 +128,7 @@ public class BelgianTrustServiceListFactory {
 		// scheme name
 		trustServiceList
 				.setSchemeName(
-						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator Member State for compliance with the relevant provisions laid down in  Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures",
+						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator Member State for compliance with the relevant provisions laid down in  Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in the referenced Member State’s laws.",
 						Locale.ENGLISH);
 
 		// scheme information URIs
