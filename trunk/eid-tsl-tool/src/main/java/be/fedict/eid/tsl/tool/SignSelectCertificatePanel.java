@@ -113,9 +113,10 @@ public class SignSelectCertificatePanel implements ValidatingPanel<Object> {
 		LOG.debug("get component");
 		if (null == this.pkcs11Token) {
 			String pkcs11Library = this.pkcs11Panel.getPkcs11Library();
+			int slotIdx = this.pkcs11Panel.getSlotIdx();
 			LOG.debug("PKCS#11 library: " + pkcs11Library);
 			try {
-				this.pkcs11Token = new Pkcs11Token(pkcs11Library);
+				this.pkcs11Token = new Pkcs11Token(pkcs11Library, slotIdx);
 				List<String> aliases = this.pkcs11Token.getAliases();
 				DefaultListModel listModel = (DefaultListModel) this.certificateList
 						.getModel();

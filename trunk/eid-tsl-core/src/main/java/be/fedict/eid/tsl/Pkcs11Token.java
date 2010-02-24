@@ -51,10 +51,17 @@ public class Pkcs11Token {
 
 	private final SunPKCS11 pkcs11Provider;
 
+	private final int slotIdx;
+	
 	private KeyStore keyStore;
 
 	public Pkcs11Token(String pkcs11Library) throws IOException {
+		this(pkcs11Library, 0);
+	}
+	
+	public Pkcs11Token(String pkcs11Library, int slotIdx) throws IOException {
 		this.pkcs11Library = pkcs11Library;
+		this.slotIdx = slotIdx;
 		LOG.debug("PKCS#11 library: " + this.pkcs11Library);
 		String pkcs11ConfigFile = createPkcs11ProviderConfigFile();
 		this.pkcs11Provider = new SunPKCS11(pkcs11ConfigFile);
@@ -130,7 +137,7 @@ public class Pkcs11Token {
 				tmpConfigFile), true);
 		configWriter.println("name=SmartCard");
 		configWriter.println("library=" + this.pkcs11Library);
-		configWriter.println("slotListIndex= " + 0);
+		configWriter.println("slotListIndex= " + this.slotIdx);
 		// configWriter.println("disabledMechanisms = {");
 		// configWriter.println("\tCKM_SHA1_RSA_PKCS");
 		// configWriter.println("}");

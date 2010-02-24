@@ -29,7 +29,10 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +48,8 @@ public class SignSelectPkcs11FinishablePanel implements
 			.getLog(SignSelectPkcs11FinishablePanel.class);
 
 	private JTextField pkcs11TextField;
+
+	private JSpinner slotIdxSpinner;
 
 	private Component component;
 
@@ -71,6 +76,14 @@ public class SignSelectPkcs11FinishablePanel implements
 			JButton browseButton = new JButton("Browse...");
 			browseButton.addActionListener(this);
 			browsePanel.add(browseButton);
+
+			JPanel slotIdxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			panel.add(slotIdxPanel);
+			slotIdxPanel.add(new JLabel("Slot index:"));
+			SpinnerModel spinnerModel = new SpinnerNumberModel(0, 0, 10, 1);
+			this.slotIdxSpinner = new JSpinner(spinnerModel);
+			slotIdxPanel.add(this.slotIdxSpinner);
+
 			this.component = panel;
 		}
 		return this.component;
@@ -131,5 +144,9 @@ public class SignSelectPkcs11FinishablePanel implements
 
 	public String getPkcs11Library() {
 		return this.pkcs11TextField.getText();
+	}
+
+	public int getSlotIdx() {
+		return (Integer) this.slotIdxSpinner.getValue();
 	}
 }
