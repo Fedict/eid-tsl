@@ -655,7 +655,9 @@ public class TrustServiceList {
 		/*
 		 * Scheme Information - TSL sequence number
 		 */
-		schemeInformation.setTSLSequenceNumber(BigInteger.valueOf(1));
+		if (null == schemeInformation.getTSLSequenceNumber()) {
+			schemeInformation.setTSLSequenceNumber(BigInteger.valueOf(1));
+		}
 
 		/*
 		 * Scheme Information - TSL Type
@@ -1186,6 +1188,11 @@ public class TrustServiceList {
 		}
 		nextUpdate.setDateTime(this.datatypeFactory
 				.newXMLGregorianCalendar(nextUpdateCalendar));
+	}
+
+	public void setTSLSequenceNumber(BigInteger sequenceNumber) {
+		TSLSchemeInformationType schemeInformation = getSchemeInformation();
+		schemeInformation.setTSLSequenceNumber(sequenceNumber);
 	}
 
 	public DateTime getNextUpdate() {
