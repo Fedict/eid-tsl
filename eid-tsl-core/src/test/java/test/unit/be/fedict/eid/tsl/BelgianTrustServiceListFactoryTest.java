@@ -211,4 +211,15 @@ public class BelgianTrustServiceListFactoryTest {
 		LOG.debug("PDF: " + pdfExportFile.getAbsolutePath());
 	}
 
+	@Test
+	public void testBelgianTrustListTrimester2_2010() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2010, Trimester.SECOND);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
+
 }

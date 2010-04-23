@@ -20,6 +20,7 @@ package be.fedict.eid.tsl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -67,7 +68,8 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year || Trimester.FIRST != trimester) {
+		if (2010 != year
+				|| (Trimester.FIRST != trimester && Trimester.SECOND != trimester)) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -75,6 +77,10 @@ public class BelgianTrustServiceListFactory {
 		// setup
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance();
+
+		if (Trimester.SECOND == trimester) {
+			trustServiceList.setTSLSequenceNumber(BigInteger.valueOf(2));
+		}
 
 		// scheme operator name
 		trustServiceList
@@ -121,7 +127,7 @@ public class BelgianTrustServiceListFactory {
 		// scheme operator electronic address
 		List<String> electronicAddresses = new LinkedList<String>();
 		electronicAddresses.add("http://economie.fgov.be");
-		electronicAddresses.add("mailto://be.sign@economie.fgov.be");
+		electronicAddresses.add("mailto:be.sign@economie.fgov.be");
 		trustServiceList
 				.setSchemeOperatorElectronicAddresses(electronicAddresses);
 
@@ -179,8 +185,20 @@ public class BelgianTrustServiceListFactory {
 		trustServiceList.setHistoricalInformationPeriod(3653 * 3);
 
 		// list issue date time
-		DateTime listIssueDateTime = new DateTime(2010, 1, 1, 0, 0, 0, 0,
-				DateTimeZone.UTC);
+		DateTime listIssueDateTime;
+		switch (trimester) {
+		case FIRST:
+			listIssueDateTime = new DateTime(2010, 1, 1, 0, 0, 0, 0,
+					DateTimeZone.UTC);
+			break;
+		case SECOND:
+			listIssueDateTime = new DateTime(2010, 5, 1, 0, 0, 0, 0,
+					DateTimeZone.UTC);
+			break;
+		default:
+			throw new RuntimeException("unsupported trimester: " + trimester);
+		}
+
 		trustServiceList.setListIssueDateTime(listIssueDateTime);
 
 		// next update
@@ -200,7 +218,18 @@ public class BelgianTrustServiceListFactory {
 						"EU",
 						"European Commission",
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
-		Document euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
+		Document euTSLDocument;
+		switch (trimester) {
+		case FIRST:
+			euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
+			break;
+		case SECOND:
+			euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+			break;
+		default:
+			throw new RuntimeException("unsupported trimester: " + trimester);
+		}
+
 		TrustServiceList euTSL;
 		try {
 			euTSL = TrustServiceListFactory.newInstance(euTSLDocument);
