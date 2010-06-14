@@ -1289,6 +1289,29 @@ public class TrustServiceList {
 		return fingerprint;
 	}
 
+	public List<OtherTSLPointerType> getOtherTSLPointers() {
+		if (null == this.trustStatusList) {
+			return null;
+		}
+		TSLSchemeInformationType tslSchemeInformation = this.trustStatusList
+				.getSchemeInformation();
+		if (null == tslSchemeInformation) {
+			return null;
+		}
+		OtherTSLPointersType otherTSLpointers = tslSchemeInformation
+				.getPointersToOtherTSL();
+		if (null == otherTSLpointers) {
+			return null;
+		}
+		List<OtherTSLPointerType> otherTSLpointer = otherTSLpointers
+				.getOtherTSLPointer();
+
+		if (null == otherTSLpointer) {
+			return null;
+		}
+		return otherTSLpointer;
+	}
+
 	public void addOtherTSLPointer(String location, String mimeType,
 			String tslType, String schemeTerritory, String schemeOperatorName,
 			String schemeTypeCommunityRuleUri) {
