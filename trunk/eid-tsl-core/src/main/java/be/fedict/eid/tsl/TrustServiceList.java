@@ -1405,8 +1405,14 @@ public class TrustServiceList {
 				throw new RuntimeException("X509 encoding error: "
 						+ e.getMessage(), e);
 			}
+			digitalIdentities.add(digitalIdentity);
+
+			digitalIdentity = this.objectFactory.createDigitalIdentityType();
 			digitalIdentity.setX509SubjectName(digitalIdentityCertificate
 					.getSubjectX500Principal().getName());
+			digitalIdentities.add(digitalIdentity);
+
+			digitalIdentity = this.objectFactory.createDigitalIdentityType();
 			byte[] skiValue = digitalIdentityCertificate
 					.getExtensionValue(X509Extensions.SubjectKeyIdentifier
 							.getId());
@@ -1420,11 +1426,12 @@ public class TrustServiceList {
 			}
 			digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
 					.getKeyIdentifier());
+			digitalIdentities.add(digitalIdentity);
+
 			List<DigitalIdentityListType> digitalIdentityListList = serviceDigitalIdentityList
 					.getServiceDigitalIdentity();
 			digitalIdentityListList.add(digitalIdentityList);
 
-			digitalIdentities.add(digitalIdentity);
 			otherTSLPointer
 					.setServiceDigitalIdentities(serviceDigitalIdentityList);
 		}

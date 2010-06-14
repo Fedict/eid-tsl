@@ -133,33 +133,7 @@ public class TrustService {
 		serviceName.setValue(certificate.getSubjectX500Principal().toString());
 		tspServiceInformation.setServiceName(i18nServiceName);
 
-		DigitalIdentityListType digitalIdentityList = this.objectFactory
-				.createDigitalIdentityListType();
-		List<DigitalIdentityType> digitalIdentities = digitalIdentityList
-				.getDigitalId();
-		DigitalIdentityType digitalIdentity = this.objectFactory
-				.createDigitalIdentityType();
-		try {
-			digitalIdentity.setX509Certificate(certificate.getEncoded());
-		} catch (CertificateEncodingException e) {
-			throw new RuntimeException(
-					"X509 encoding error: " + e.getMessage(), e);
-		}
-		digitalIdentity.setX509SubjectName(certificate
-				.getSubjectX500Principal().getName());
-		byte[] skiValue = certificate
-				.getExtensionValue(X509Extensions.SubjectKeyIdentifier.getId());
-		SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
-		try {
-			subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
-					skiValue);
-		} catch (IOException e) {
-			throw new RuntimeException("X509 SKI decoding error: "
-					+ e.getMessage(), e);
-		}
-		digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
-				.getKeyIdentifier());
-		digitalIdentities.add(digitalIdentity);
+		DigitalIdentityListType digitalIdentityList = createDigitalIdentity(certificate);
 		tspServiceInformation.setServiceDigitalIdentity(digitalIdentityList);
 
 		tspServiceInformation
@@ -237,6 +211,45 @@ public class TrustService {
 							this.objectFactory
 									.createAdditionalServiceInformation(additionalServiceInformation));
 		}
+	}
+
+	private DigitalIdentityListType createDigitalIdentity(
+			X509Certificate certificate) {
+		DigitalIdentityListType digitalIdentityList = this.objectFactory
+				.createDigitalIdentityListType();
+		List<DigitalIdentityType> digitalIdentities = digitalIdentityList
+				.getDigitalId();
+		DigitalIdentityType digitalIdentity = this.objectFactory
+				.createDigitalIdentityType();
+		try {
+			digitalIdentity.setX509Certificate(certificate.getEncoded());
+		} catch (CertificateEncodingException e) {
+			throw new RuntimeException(
+					"X509 encoding error: " + e.getMessage(), e);
+		}
+		digitalIdentities.add(digitalIdentity);
+
+		digitalIdentity = this.objectFactory.createDigitalIdentityType();
+		digitalIdentity.setX509SubjectName(certificate
+				.getSubjectX500Principal().getName());
+		digitalIdentities.add(digitalIdentity);
+
+		digitalIdentity = this.objectFactory.createDigitalIdentityType();
+		byte[] skiValue = certificate
+				.getExtensionValue(X509Extensions.SubjectKeyIdentifier.getId());
+		SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
+		try {
+			subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
+					skiValue);
+		} catch (IOException e) {
+			throw new RuntimeException("X509 SKI decoding error: "
+					+ e.getMessage(), e);
+		}
+		digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
+				.getKeyIdentifier());
+		digitalIdentities.add(digitalIdentity);
+
+		return digitalIdentityList;
 	}
 
 	TSPServiceType getTSPService() {
