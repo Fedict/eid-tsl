@@ -147,7 +147,7 @@ public class TrustServiceList {
 
 	private TrustStatusListType trustStatusList;
 
-	private Document tslDocument;
+	public Document tslDocument;
 
 	private File tslFile;
 
