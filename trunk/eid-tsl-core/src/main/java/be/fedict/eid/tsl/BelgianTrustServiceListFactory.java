@@ -68,8 +68,7 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year
-				|| (Trimester.FIRST != trimester && Trimester.SECOND != trimester)) {
+		if (2010 != year) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -78,9 +77,21 @@ public class BelgianTrustServiceListFactory {
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance();
 
-		if (Trimester.SECOND == trimester) {
-			trustServiceList.setTSLSequenceNumber(BigInteger.valueOf(2));
+		BigInteger tslSequenceNumber;
+		switch (trimester) {
+		case FIRST:
+			tslSequenceNumber = BigInteger.valueOf(1);
+			break;
+		case SECOND:
+			tslSequenceNumber = BigInteger.valueOf(2);
+			break;
+		case THIRD:
+			tslSequenceNumber = BigInteger.valueOf(3);
+			break;
+		default:
+			throw new IllegalArgumentException(trimester.toString());
 		}
+		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
 
 		// scheme operator name
 		trustServiceList
@@ -195,6 +206,10 @@ public class BelgianTrustServiceListFactory {
 			listIssueDateTime = new DateTime(2010, 5, 1, 0, 0, 0, 0,
 					DateTimeZone.UTC);
 			break;
+		case THIRD:
+			listIssueDateTime = new DateTime(2010, 9, 1, 0, 0, 0, 0,
+					DateTimeZone.UTC);
+			break;
 		default:
 			throw new RuntimeException("unsupported trimester: " + trimester);
 		}
@@ -224,6 +239,9 @@ public class BelgianTrustServiceListFactory {
 			euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
 			break;
 		case SECOND:
+			euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+			break;
+		case THIRD:
 			euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
 			break;
 		default:

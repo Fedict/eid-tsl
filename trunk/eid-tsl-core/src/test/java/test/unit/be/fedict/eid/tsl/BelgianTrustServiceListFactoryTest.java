@@ -22,7 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -30,7 +35,15 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
@@ -41,6 +54,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
 
 import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceList;
@@ -88,6 +104,44 @@ public class BelgianTrustServiceListFactoryTest {
 		// --------------- VERIFY TRUST LIST --------------------
 		LOG.debug("TSL: " + FileUtils.readFileToString(tmpTslFile));
 		Document document = TrustTestUtils.loadDocument(tmpTslFile);
+
+		// XML schema validation
+		SchemaFactory factory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		LSResourceResolver resourceResolver = new TSLLSResourceResolver();
+		factory.setResourceResolver(resourceResolver);
+		InputStream tslSchemaInputStream = BelgianTrustServiceListFactoryTest.class
+				.getResourceAsStream("/ts_102231v030102_xsd.xsd");
+		Source tslSchemaSource = new StreamSource(tslSchemaInputStream);
+		Schema tslSchema = factory.newSchema(tslSchemaSource);
+		Validator tslValidator = tslSchema.newValidator();
+		tslValidator.validate(new DOMSource(document));
+
+		Validator eccValidator = factory.newSchema(
+				BelgianTrustServiceListFactoryTest.class
+						.getResource("/ts_102231v030102_sie_xsd.xsd"))
+				.newValidator();
+		NodeList eccQualificationsNodeList = document
+				.getElementsByTagNameNS(
+						"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
+						"Qualifications");
+		for (int idx = 0; idx < eccQualificationsNodeList.getLength(); idx++) {
+			Node eccQualificationsNode = eccQualificationsNodeList.item(idx);
+			eccValidator.validate(new DOMSource(eccQualificationsNode));
+		}
+
+		Validator xadesValidator = factory.newSchema(
+				BelgianTrustServiceListFactoryTest.class
+						.getResource("/XAdES.xsd")).newValidator();
+		NodeList xadesQualifyingPropertiesNodeList = document
+				.getElementsByTagNameNS("http://uri.etsi.org/01903/v1.3.2#",
+						"QualifyingProperties");
+		for (int idx = 0; idx < xadesQualifyingPropertiesNodeList.getLength(); idx++) {
+			Node xadesQualifyingPropertiesNode = xadesQualifyingPropertiesNodeList
+					.item(idx);
+			xadesValidator
+					.validate(new DOMSource(xadesQualifyingPropertiesNode));
+		}
 
 		// signature
 		trustServiceList = TrustServiceListFactory.newInstance(tmpTslFile);
@@ -222,4 +276,138 @@ public class BelgianTrustServiceListFactoryTest {
 		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
 	}
 
+	@Test
+	public void testBelgianTrustListTrimester3_2010() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2010, Trimester.THIRD);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
+
+	private static class TSLLSResourceResolver implements LSResourceResolver {
+
+		private static final Log LOG = LogFactory
+				.getLog(TSLLSResourceResolver.class);
+
+		public LSInput resolveResource(String type, String namespaceURI,
+				String publicId, String systemId, String baseURI) {
+			LOG.debug("resolve resource");
+			LOG.debug("type: " + type);
+			LOG.debug("namespace URI: " + namespaceURI);
+			LOG.debug("publicId: " + publicId);
+			LOG.debug("systemId: " + systemId);
+			LOG.debug("base URI: " + baseURI);
+			if ("http://www.w3.org/2001/xml.xsd".equals(systemId)) {
+				return new LocalLSInput(publicId, systemId, baseURI, "/xml.xsd");
+			}
+			if ("http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"
+					.equals(systemId)) {
+				return new LocalLSInput(publicId, systemId, baseURI,
+						"/xmldsig-core-schema.xsd");
+			}
+			if ("http://uri.etsi.org/01903/v1.3.2/XAdES.xsd".equals(systemId)) {
+				return new LocalLSInput(publicId, systemId, baseURI,
+						"/XAdES.xsd");
+			}
+			return null;
+		}
+	}
+
+	private static class LocalLSInput implements LSInput {
+
+		private String publicId;
+
+		private String systemId;
+
+		private String baseURI;
+
+		private final String schemaResourceName;
+
+		public LocalLSInput(String publicId, String systemId, String baseURI,
+				String schemaResourceName) {
+			this.publicId = publicId;
+			this.systemId = systemId;
+			this.baseURI = baseURI;
+			this.schemaResourceName = schemaResourceName;
+		}
+
+		public String getBaseURI() {
+			return this.baseURI;
+		}
+
+		public InputStream getByteStream() {
+			InputStream inputStream = BelgianTrustServiceListFactoryTest.class
+					.getResourceAsStream(this.schemaResourceName);
+			return inputStream;
+		}
+
+		public boolean getCertifiedText() {
+			return true;
+		}
+
+		public Reader getCharacterStream() {
+			InputStream inputStream = getByteStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					inputStream));
+			return reader;
+		}
+
+		public String getEncoding() {
+			return "UTF-8";
+		}
+
+		public String getPublicId() {
+			return this.publicId;
+		}
+
+		public String getStringData() {
+			InputStream inputStream = getByteStream();
+			String stringData;
+			try {
+				stringData = IOUtils.toString(inputStream);
+			} catch (IOException e) {
+				throw new RuntimeException("I/O error: " + e.getMessage(), e);
+			}
+			return stringData;
+		}
+
+		public String getSystemId() {
+			return this.systemId;
+		}
+
+		public void setBaseURI(String baseURI) {
+			this.baseURI = baseURI;
+		}
+
+		public void setByteStream(InputStream byteStream) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setCertifiedText(boolean certifiedText) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setCharacterStream(Reader characterStream) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setEncoding(String encoding) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setPublicId(String publicId) {
+			this.publicId = publicId;
+		}
+
+		public void setStringData(String stringData) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void setSystemId(String systemId) {
+			this.systemId = systemId;
+		}
+	}
 }
