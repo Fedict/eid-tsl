@@ -155,9 +155,14 @@ public class TslTool extends JFrame implements ActionListener {
 		JMenuItem _2010_T1_BelgiumMenuItem = addActionMenuItem("Trimester 1",
 				KeyEvent.VK_1, "TSL-BE-2010-T1", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_T1_BelgiumMenuItem);
+
 		JMenuItem _2010_T2_BelgiumMenuItem = addActionMenuItem("Trimester 2",
 				KeyEvent.VK_1, "TSL-BE-2010-T2", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_T2_BelgiumMenuItem);
+
+		JMenuItem _2010_T3_BelgiumMenuItem = addActionMenuItem("Trimester 3",
+				KeyEvent.VK_1, "TSL-BE-2010-T3", _2010BelgiumMenu, true);
+		_2010BelgiumMenu.add(_2010_T3_BelgiumMenuItem);
 	}
 
 	private JMenuItem addActionMenuItem(String text, int mnemonic,
@@ -190,7 +195,7 @@ public class TslTool extends JFrame implements ActionListener {
 			}
 		} else if (ABOUT_ACTION_COMMAND.equals(command)) {
 			JOptionPane.showMessageDialog(this, "eID TSL Tool\n"
-					+ "Copyright (C) 2009 FedICT\n"
+					+ "Copyright (C) 2009-2010 FedICT\n"
 					+ "http://code.google.com/p/eid-tsl/", "About",
 					JOptionPane.INFORMATION_MESSAGE);
 		} else if (CLOSE_ACTION_COMMAND.equals(command)) {
@@ -305,6 +310,11 @@ public class TslTool extends JFrame implements ActionListener {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 					.newInstance(2010, Trimester.SECOND);
 			displayTsl("*TSL-BE-2010-T2.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
+		} else if ("TSL-BE-2010-T3".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2010, Trimester.THIRD);
+			displayTsl("*TSL-BE-2010-T3.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}
