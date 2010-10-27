@@ -40,8 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
-import org.etsi.uri._01903.v1_3.IdentifierType;
-import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2.AdditionalServiceInformationType;
 import org.etsi.uri._02231.v2.DigitalIdentityListType;
 import org.etsi.uri._02231.v2.DigitalIdentityType;
@@ -53,13 +51,16 @@ import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2.ObjectFactory;
 import org.etsi.uri._02231.v2.TSPServiceInformationType;
 import org.etsi.uri._02231.v2.TSPServiceType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.CriteriaListType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.PoliciesListType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationElementType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationsType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifierType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifiersType;
 import org.joda.time.DateTime;
+
+import be.fedict.eid.tsl.jaxb.ecc.CriteriaListType;
+import be.fedict.eid.tsl.jaxb.ecc.PoliciesListType;
+import be.fedict.eid.tsl.jaxb.ecc.QualificationElementType;
+import be.fedict.eid.tsl.jaxb.ecc.QualificationsType;
+import be.fedict.eid.tsl.jaxb.ecc.QualifierType;
+import be.fedict.eid.tsl.jaxb.ecc.QualifiersType;
+import be.fedict.eid.tsl.jaxb.xades.IdentifierType;
+import be.fedict.eid.tsl.jaxb.xades.ObjectIdentifierType;
 
 public class TrustService {
 
@@ -71,9 +72,9 @@ public class TrustService {
 
 	private final DatatypeFactory datatypeFactory;
 
-	private final org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory eccObjectFactory;
+	private final be.fedict.eid.tsl.jaxb.ecc.ObjectFactory eccObjectFactory;
 
-	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
+	private final be.fedict.eid.tsl.jaxb.xades.ObjectFactory xadesObjectFactory;
 
 	private final List<String> qcSSCDStatusAsInCertOids;
 
@@ -93,8 +94,8 @@ public class TrustService {
 					+ e.getMessage(), e);
 		}
 		this.qcSSCDStatusAsInCertOids = new LinkedList<String>();
-		this.eccObjectFactory = new org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory();
-		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
+		this.eccObjectFactory = new be.fedict.eid.tsl.jaxb.ecc.ObjectFactory();
+		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 	}
 
 	public TrustService(X509Certificate certificate) {
@@ -114,8 +115,8 @@ public class TrustService {
 			throw new RuntimeException("datatype config error: "
 					+ e.getMessage(), e);
 		}
-		this.eccObjectFactory = new org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory();
-		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
+		this.eccObjectFactory = new be.fedict.eid.tsl.jaxb.ecc.ObjectFactory();
+		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 
 		this.tspService = this.objectFactory.createTSPServiceType();
 		TSPServiceInformationType tspServiceInformation = this.objectFactory
@@ -139,8 +140,8 @@ public class TrustService {
 		tspServiceInformation
 				.setServiceStatus("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision");
 
-		GregorianCalendar statusStartingCalendar = new DateTime(certificate
-				.getNotBefore()).toGregorianCalendar();
+		GregorianCalendar statusStartingCalendar = new DateTime(
+				certificate.getNotBefore()).toGregorianCalendar();
 		statusStartingCalendar.setTimeZone(TimeZone.getTimeZone("Z"));
 		XMLGregorianCalendar statusStartingTime = this.datatypeFactory
 				.newXMLGregorianCalendar(statusStartingCalendar);
@@ -207,9 +208,8 @@ public class TrustService {
 					.setURI(additionalServiceInformationUri);
 			extension
 					.getContent()
-					.add(
-							this.objectFactory
-									.createAdditionalServiceInformation(additionalServiceInformation));
+					.add(this.objectFactory
+							.createAdditionalServiceInformation(additionalServiceInformation));
 		}
 	}
 
@@ -502,9 +502,8 @@ public class TrustService {
 		additionalServiceInformation.setURI(additionalServiceInformationUri);
 		extension
 				.getContent()
-				.add(
-						this.objectFactory
-								.createAdditionalServiceInformation(additionalServiceInformation));
+				.add(this.objectFactory
+						.createAdditionalServiceInformation(additionalServiceInformation));
 
 	}
 
@@ -620,8 +619,7 @@ public class TrustService {
 		additionalServiceInformation.setURI(additionalServiceInformationUri);
 		extension
 				.getContent()
-				.add(
-						this.objectFactory
-								.createAdditionalServiceInformation(additionalServiceInformation));
+				.add(this.objectFactory
+						.createAdditionalServiceInformation(additionalServiceInformation));
 	}
 }

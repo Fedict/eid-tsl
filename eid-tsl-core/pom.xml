@@ -24,9 +24,6 @@
 						</goals>
 						<configuration>
 							<schemaIncludes>
-								<!-- 
-								<schemaInclude>ts_102231v030102_xsd.xsd</schemaInclude>
-								-->
 								<schemaInclude>ts_102231v030102_sie_xsd.xsd</schemaInclude>
 								<schemaInclude>ts_102231v030102_additionaltypes_xsd.xsd</schemaInclude>
 							</schemaIncludes>
@@ -34,7 +31,7 @@
 							<verbose>true</verbose>
 							<catalog>src/main/resources/catalog.cat</catalog>
 							<bindingIncludes>
-								<include>bindings.xjb</include>
+								<include>bindings.xjb.xml</include>
 							</bindingIncludes>
 						</configuration>
 					</execution>

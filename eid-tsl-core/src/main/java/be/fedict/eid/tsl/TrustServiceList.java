@@ -90,12 +90,6 @@ import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
-import org.etsi.uri._01903.v1_3.CertIDListType;
-import org.etsi.uri._01903.v1_3.CertIDType;
-import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
-import org.etsi.uri._01903.v1_3.QualifyingPropertiesType;
-import org.etsi.uri._01903.v1_3.SignedPropertiesType;
-import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
 import org.etsi.uri._02231.v2.AdditionalInformationType;
 import org.etsi.uri._02231.v2.AddressType;
 import org.etsi.uri._02231.v2.AnyType;
@@ -121,11 +115,18 @@ import org.etsi.uri._02231.v2.TSPType;
 import org.etsi.uri._02231.v2.TrustServiceProviderListType;
 import org.etsi.uri._02231.v2.TrustStatusListType;
 import org.joda.time.DateTime;
-import org.w3._2000._09.xmldsig.DigestMethodType;
-import org.w3._2000._09.xmldsig.X509IssuerSerialType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import be.fedict.eid.tsl.jaxb.xades.CertIDListType;
+import be.fedict.eid.tsl.jaxb.xades.CertIDType;
+import be.fedict.eid.tsl.jaxb.xades.DigestAlgAndValueType;
+import be.fedict.eid.tsl.jaxb.xades.QualifyingPropertiesType;
+import be.fedict.eid.tsl.jaxb.xades.SignedPropertiesType;
+import be.fedict.eid.tsl.jaxb.xades.SignedSignaturePropertiesType;
+import be.fedict.eid.tsl.jaxb.xmldsig.DigestMethodType;
+import be.fedict.eid.tsl.jaxb.xmldsig.X509IssuerSerialType;
 
 /**
  * Trust Service List.
@@ -163,9 +164,9 @@ public class TrustServiceList {
 
 	private final DatatypeFactory datatypeFactory;
 
-	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
+	private final be.fedict.eid.tsl.jaxb.xades.ObjectFactory xadesObjectFactory;
 
-	private final org.w3._2000._09.xmldsig.ObjectFactory xmldsigObjectFactory;
+	private final be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory xmldsigObjectFactory;
 
 	private final org.etsi.uri._02231.v2.additionaltypes.ObjectFactory tslxObjectFactory;
 
@@ -174,8 +175,8 @@ public class TrustServiceList {
 		this.changed = true;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
-		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
-		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig.ObjectFactory();
+		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
+		this.xmldsigObjectFactory = new be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory();
 		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
@@ -192,8 +193,8 @@ public class TrustServiceList {
 		this.tslFile = tslFile;
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
-		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
-		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig.ObjectFactory();
+		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
+		this.xmldsigObjectFactory = new be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory();
 		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
@@ -673,11 +674,9 @@ public class TrustServiceList {
 				.newDocumentBuilder();
 		Document document = documentBuilder.newDocument();
 
-		JAXBContext jaxbContext = JAXBContext
-				.newInstance(
-						ObjectFactory.class,
-						org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class,
-						org.etsi.uri._02231.v2.additionaltypes.ObjectFactory.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class,
+				be.fedict.eid.tsl.jaxb.ecc.ObjectFactory.class,
+				org.etsi.uri._02231.v2.additionaltypes.ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		LOG.debug("marshaller type: " + marshaller.getClass().getName());
 		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
@@ -883,7 +882,7 @@ public class TrustServiceList {
 
 		DigestAlgAndValueType certDigest = this.xadesObjectFactory
 				.createDigestAlgAndValueType();
-		DigestMethodType jaxbDigestMethod = xmldsigObjectFactory
+		DigestMethodType jaxbDigestMethod = this.xmldsigObjectFactory
 				.createDigestMethodType();
 		jaxbDigestMethod.setAlgorithm(DigestMethod.SHA256);
 		certDigest.setDigestMethod(jaxbDigestMethod);
@@ -931,7 +930,7 @@ public class TrustServiceList {
 		Node marshallNode = document.createElement("marshall-node");
 		try {
 			JAXBContext jaxbContext = JAXBContext
-					.newInstance(org.etsi.uri._01903.v1_3.ObjectFactory.class);
+					.newInstance(be.fedict.eid.tsl.jaxb.xades.ObjectFactory.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",
 					new TSLNamespacePrefixMapper());
