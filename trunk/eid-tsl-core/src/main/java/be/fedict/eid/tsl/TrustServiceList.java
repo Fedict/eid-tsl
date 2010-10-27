@@ -20,6 +20,8 @@ package be.fedict.eid.tsl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -328,8 +330,8 @@ public class TrustServiceList {
 		PostalAddressType existingPostalAddress = null;
 		for (PostalAddressType currentPostalAddress : postalAddresses
 				.getPostalAddress()) {
-			if (currentPostalAddress.getLang().toLowerCase().equals(
-					locale.getLanguage())) {
+			if (currentPostalAddress.getLang().toLowerCase()
+					.equals(locale.getLanguage())) {
 				existingPostalAddress = currentPostalAddress;
 				break;
 			}
@@ -815,8 +817,8 @@ public class TrustServiceList {
 		String updateVersion = javaVersion.substring("1.6.0_".length());
 		LOG.debug("update version: " + updateVersion);
 		if (-1 != updateVersion.indexOf("-")) {
-			updateVersion = updateVersion.substring(0, updateVersion
-					.indexOf("-"));
+			updateVersion = updateVersion.substring(0,
+					updateVersion.indexOf("-"));
 		}
 		try {
 			Integer updateVersionNumber = Integer.parseInt(updateVersion);
@@ -983,9 +985,15 @@ public class TrustServiceList {
 
 	private void toFile(File tslFile)
 			throws TransformerFactoryConfigurationError,
-			TransformerConfigurationException, TransformerException {
+			TransformerConfigurationException, TransformerException,
+			FileNotFoundException {
 		Source source = new DOMSource(this.tslDocument);
-		Result result = new StreamResult(tslFile);
+		/*
+		 * new StreamResult(tslFile) doesn't work on Windows when there are
+		 * spaces in the filename.
+		 */
+		FileOutputStream outputStream = new FileOutputStream(tslFile);
+		Result result = new StreamResult(outputStream);
 		TransformerFactory transformerFactory = TransformerFactory
 				.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -1019,8 +1027,8 @@ public class TrustServiceList {
 		}
 		for (PostalAddressType postalAddress : postalAddresses
 				.getPostalAddress()) {
-			if (postalAddress.getLang().toLowerCase().equals(
-					locale.getLanguage())) {
+			if (postalAddress.getLang().toLowerCase()
+					.equals(locale.getLanguage())) {
 				return postalAddress;
 			}
 		}
@@ -1210,8 +1218,8 @@ public class TrustServiceList {
 			return null;
 		}
 		XMLGregorianCalendar nextUpdateXmlCalendar = nextUpdate.getDateTime();
-		DateTime nextUpdateDateTime = new DateTime(nextUpdateXmlCalendar
-				.toGregorianCalendar());
+		DateTime nextUpdateDateTime = new DateTime(
+				nextUpdateXmlCalendar.toGregorianCalendar());
 		return nextUpdateDateTime;
 	}
 
