@@ -96,33 +96,33 @@ import org.etsi.uri._01903.v1_3.DigestAlgAndValueType;
 import org.etsi.uri._01903.v1_3.QualifyingPropertiesType;
 import org.etsi.uri._01903.v1_3.SignedPropertiesType;
 import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
-import org.etsi.uri._02231.v2_.AdditionalInformationType;
-import org.etsi.uri._02231.v2_.AddressType;
-import org.etsi.uri._02231.v2_.AnyType;
-import org.etsi.uri._02231.v2_.DigitalIdentityListType;
-import org.etsi.uri._02231.v2_.DigitalIdentityType;
-import org.etsi.uri._02231.v2_.ElectronicAddressType;
-import org.etsi.uri._02231.v2_.InternationalNamesType;
-import org.etsi.uri._02231.v2_.MultiLangNormStringType;
-import org.etsi.uri._02231.v2_.MultiLangStringType;
-import org.etsi.uri._02231.v2_.NextUpdateType;
-import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIListType;
-import org.etsi.uri._02231.v2_.NonEmptyMultiLangURIType;
-import org.etsi.uri._02231.v2_.NonEmptyURIListType;
-import org.etsi.uri._02231.v2_.ObjectFactory;
-import org.etsi.uri._02231.v2_.OtherTSLPointerType;
-import org.etsi.uri._02231.v2_.OtherTSLPointersType;
-import org.etsi.uri._02231.v2_.PolicyOrLegalnoticeType;
-import org.etsi.uri._02231.v2_.PostalAddressListType;
-import org.etsi.uri._02231.v2_.PostalAddressType;
-import org.etsi.uri._02231.v2_.ServiceDigitalIdentityListType;
-import org.etsi.uri._02231.v2_.TSLSchemeInformationType;
-import org.etsi.uri._02231.v2_.TSPType;
-import org.etsi.uri._02231.v2_.TrustServiceProviderListType;
-import org.etsi.uri._02231.v2_.TrustStatusListType;
+import org.etsi.uri._02231.v2.AdditionalInformationType;
+import org.etsi.uri._02231.v2.AddressType;
+import org.etsi.uri._02231.v2.AnyType;
+import org.etsi.uri._02231.v2.DigitalIdentityListType;
+import org.etsi.uri._02231.v2.DigitalIdentityType;
+import org.etsi.uri._02231.v2.ElectronicAddressType;
+import org.etsi.uri._02231.v2.InternationalNamesType;
+import org.etsi.uri._02231.v2.MultiLangNormStringType;
+import org.etsi.uri._02231.v2.MultiLangStringType;
+import org.etsi.uri._02231.v2.NextUpdateType;
+import org.etsi.uri._02231.v2.NonEmptyMultiLangURIListType;
+import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
+import org.etsi.uri._02231.v2.NonEmptyURIListType;
+import org.etsi.uri._02231.v2.ObjectFactory;
+import org.etsi.uri._02231.v2.OtherTSLPointerType;
+import org.etsi.uri._02231.v2.OtherTSLPointersType;
+import org.etsi.uri._02231.v2.PolicyOrLegalnoticeType;
+import org.etsi.uri._02231.v2.PostalAddressListType;
+import org.etsi.uri._02231.v2.PostalAddressType;
+import org.etsi.uri._02231.v2.ServiceDigitalIdentityListType;
+import org.etsi.uri._02231.v2.TSLSchemeInformationType;
+import org.etsi.uri._02231.v2.TSPType;
+import org.etsi.uri._02231.v2.TrustServiceProviderListType;
+import org.etsi.uri._02231.v2.TrustStatusListType;
 import org.joda.time.DateTime;
-import org.w3._2000._09.xmldsig_.DigestMethodType;
-import org.w3._2000._09.xmldsig_.X509IssuerSerialType;
+import org.w3._2000._09.xmldsig.DigestMethodType;
+import org.w3._2000._09.xmldsig.X509IssuerSerialType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -165,9 +165,9 @@ public class TrustServiceList {
 
 	private final org.etsi.uri._01903.v1_3.ObjectFactory xadesObjectFactory;
 
-	private final org.w3._2000._09.xmldsig_.ObjectFactory xmldsigObjectFactory;
+	private final org.w3._2000._09.xmldsig.ObjectFactory xmldsigObjectFactory;
 
-	private final org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory tslxObjectFactory;
+	private final org.etsi.uri._02231.v2.additionaltypes.ObjectFactory tslxObjectFactory;
 
 	protected TrustServiceList() {
 		super();
@@ -175,8 +175,8 @@ public class TrustServiceList {
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
-		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
-		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory();
+		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig.ObjectFactory();
+		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -193,8 +193,8 @@ public class TrustServiceList {
 		this.changeListeners = new LinkedList<ChangeListener>();
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new org.etsi.uri._01903.v1_3.ObjectFactory();
-		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig_.ObjectFactory();
-		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory();
+		this.xmldsigObjectFactory = new org.w3._2000._09.xmldsig.ObjectFactory();
+		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -677,7 +677,7 @@ public class TrustServiceList {
 				.newInstance(
 						ObjectFactory.class,
 						org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class,
-						org.etsi.uri._02231.v2.additionaltypes_.ObjectFactory.class);
+						org.etsi.uri._02231.v2.additionaltypes.ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		LOG.debug("marshaller type: " + marshaller.getClass().getName());
 		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",

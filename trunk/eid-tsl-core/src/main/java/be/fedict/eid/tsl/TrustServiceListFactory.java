@@ -32,8 +32,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.etsi.uri._02231.v2_.ObjectFactory;
-import org.etsi.uri._02231.v2_.TrustStatusListType;
+import org.etsi.uri._02231.v2.ObjectFactory;
+import org.etsi.uri._02231.v2.TrustStatusListType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
