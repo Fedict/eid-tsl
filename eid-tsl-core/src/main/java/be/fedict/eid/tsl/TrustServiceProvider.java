@@ -22,18 +22,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.etsi.uri._02231.v2.AddressType;
-import org.etsi.uri._02231.v2.ElectronicAddressType;
-import org.etsi.uri._02231.v2.InternationalNamesType;
-import org.etsi.uri._02231.v2.NonEmptyMultiLangURIListType;
-import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
-import org.etsi.uri._02231.v2.ObjectFactory;
-import org.etsi.uri._02231.v2.PostalAddressListType;
-import org.etsi.uri._02231.v2.PostalAddressType;
-import org.etsi.uri._02231.v2.TSPInformationType;
-import org.etsi.uri._02231.v2.TSPServiceType;
-import org.etsi.uri._02231.v2.TSPServicesListType;
-import org.etsi.uri._02231.v2.TSPType;
+import be.fedict.eid.tsl.jaxb.tsl.AddressType;
+import be.fedict.eid.tsl.jaxb.tsl.ElectronicAddressType;
+import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIListType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
+import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressListType;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPInformationType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPServiceType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPServicesListType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPType;
 
 public class TrustServiceProvider {
 

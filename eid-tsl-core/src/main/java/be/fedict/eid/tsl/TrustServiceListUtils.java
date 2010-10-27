@@ -23,9 +23,10 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.etsi.uri._02231.v2.InternationalNamesType;
-import org.etsi.uri._02231.v2.MultiLangNormStringType;
-import org.etsi.uri._02231.v2.ObjectFactory;
+
+import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
+import be.fedict.eid.tsl.jaxb.tsl.MultiLangNormStringType;
+import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
 
 /**
  * Utility class for trust service lists.
