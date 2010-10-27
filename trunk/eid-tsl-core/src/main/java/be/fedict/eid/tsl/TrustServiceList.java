@@ -90,35 +90,35 @@ import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
-import org.etsi.uri._02231.v2.AdditionalInformationType;
-import org.etsi.uri._02231.v2.AddressType;
-import org.etsi.uri._02231.v2.AnyType;
-import org.etsi.uri._02231.v2.DigitalIdentityListType;
-import org.etsi.uri._02231.v2.DigitalIdentityType;
-import org.etsi.uri._02231.v2.ElectronicAddressType;
-import org.etsi.uri._02231.v2.InternationalNamesType;
-import org.etsi.uri._02231.v2.MultiLangNormStringType;
-import org.etsi.uri._02231.v2.MultiLangStringType;
-import org.etsi.uri._02231.v2.NextUpdateType;
-import org.etsi.uri._02231.v2.NonEmptyMultiLangURIListType;
-import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
-import org.etsi.uri._02231.v2.NonEmptyURIListType;
-import org.etsi.uri._02231.v2.ObjectFactory;
-import org.etsi.uri._02231.v2.OtherTSLPointerType;
-import org.etsi.uri._02231.v2.OtherTSLPointersType;
-import org.etsi.uri._02231.v2.PolicyOrLegalnoticeType;
-import org.etsi.uri._02231.v2.PostalAddressListType;
-import org.etsi.uri._02231.v2.PostalAddressType;
-import org.etsi.uri._02231.v2.ServiceDigitalIdentityListType;
-import org.etsi.uri._02231.v2.TSLSchemeInformationType;
-import org.etsi.uri._02231.v2.TSPType;
-import org.etsi.uri._02231.v2.TrustServiceProviderListType;
-import org.etsi.uri._02231.v2.TrustStatusListType;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import be.fedict.eid.tsl.jaxb.tsl.AdditionalInformationType;
+import be.fedict.eid.tsl.jaxb.tsl.AddressType;
+import be.fedict.eid.tsl.jaxb.tsl.AnyType;
+import be.fedict.eid.tsl.jaxb.tsl.DigitalIdentityListType;
+import be.fedict.eid.tsl.jaxb.tsl.DigitalIdentityType;
+import be.fedict.eid.tsl.jaxb.tsl.ElectronicAddressType;
+import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
+import be.fedict.eid.tsl.jaxb.tsl.MultiLangNormStringType;
+import be.fedict.eid.tsl.jaxb.tsl.MultiLangStringType;
+import be.fedict.eid.tsl.jaxb.tsl.NextUpdateType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIListType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyURIListType;
+import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
+import be.fedict.eid.tsl.jaxb.tsl.OtherTSLPointerType;
+import be.fedict.eid.tsl.jaxb.tsl.OtherTSLPointersType;
+import be.fedict.eid.tsl.jaxb.tsl.PolicyOrLegalnoticeType;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressListType;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceDigitalIdentityListType;
+import be.fedict.eid.tsl.jaxb.tsl.TSLSchemeInformationType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPType;
+import be.fedict.eid.tsl.jaxb.tsl.TrustServiceProviderListType;
+import be.fedict.eid.tsl.jaxb.tsl.TrustStatusListType;
 import be.fedict.eid.tsl.jaxb.xades.CertIDListType;
 import be.fedict.eid.tsl.jaxb.xades.CertIDType;
 import be.fedict.eid.tsl.jaxb.xades.DigestAlgAndValueType;
@@ -168,7 +168,7 @@ public class TrustServiceList {
 
 	private final be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory xmldsigObjectFactory;
 
-	private final org.etsi.uri._02231.v2.additionaltypes.ObjectFactory tslxObjectFactory;
+	private final be.fedict.eid.tsl.jaxb.tslx.ObjectFactory tslxObjectFactory;
 
 	protected TrustServiceList() {
 		super();
@@ -177,7 +177,7 @@ public class TrustServiceList {
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 		this.xmldsigObjectFactory = new be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory();
-		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
+		this.tslxObjectFactory = new be.fedict.eid.tsl.jaxb.tslx.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -195,7 +195,7 @@ public class TrustServiceList {
 		this.objectFactory = new ObjectFactory();
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 		this.xmldsigObjectFactory = new be.fedict.eid.tsl.jaxb.xmldsig.ObjectFactory();
-		this.tslxObjectFactory = new org.etsi.uri._02231.v2.additionaltypes.ObjectFactory();
+		this.tslxObjectFactory = new be.fedict.eid.tsl.jaxb.tslx.ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
 		} catch (DatatypeConfigurationException e) {
@@ -676,7 +676,7 @@ public class TrustServiceList {
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class,
 				be.fedict.eid.tsl.jaxb.ecc.ObjectFactory.class,
-				org.etsi.uri._02231.v2.additionaltypes.ObjectFactory.class);
+				be.fedict.eid.tsl.jaxb.tslx.ObjectFactory.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		LOG.debug("marshaller type: " + marshaller.getClass().getName());
 		marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper",

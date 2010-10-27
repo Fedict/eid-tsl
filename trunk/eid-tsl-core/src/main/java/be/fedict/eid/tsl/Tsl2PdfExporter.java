@@ -58,10 +58,6 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.openssl.PEMWriter;
-import org.etsi.uri._02231.v2.AdditionalServiceInformationType;
-import org.etsi.uri._02231.v2.ExtensionType;
-import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
-import org.etsi.uri._02231.v2.PostalAddressType;
 import org.w3c.dom.Element;
 
 import be.fedict.eid.tsl.jaxb.ecc.CriteriaListType;
@@ -70,6 +66,10 @@ import be.fedict.eid.tsl.jaxb.ecc.QualificationElementType;
 import be.fedict.eid.tsl.jaxb.ecc.QualificationsType;
 import be.fedict.eid.tsl.jaxb.ecc.QualifierType;
 import be.fedict.eid.tsl.jaxb.ecc.QualifiersType;
+import be.fedict.eid.tsl.jaxb.tsl.AdditionalServiceInformationType;
+import be.fedict.eid.tsl.jaxb.tsl.ExtensionType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 import be.fedict.eid.tsl.jaxb.xades.ObjectIdentifierType;
 
 import com.lowagie.text.Document;

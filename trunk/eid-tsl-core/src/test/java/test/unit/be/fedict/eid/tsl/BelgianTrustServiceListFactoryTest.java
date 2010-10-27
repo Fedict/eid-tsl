@@ -48,7 +48,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.etsi.uri._02231.v2.PostalAddressType;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +62,7 @@ import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
 import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
+import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 
 public class BelgianTrustServiceListFactoryTest {
 
