@@ -28,7 +28,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.etsi.uri._02231.v2_.PostalAddressType;
+import org.etsi.uri._02231.v2.PostalAddressType;
 import org.joda.time.DateTime;
 import org.junit.Test;
 

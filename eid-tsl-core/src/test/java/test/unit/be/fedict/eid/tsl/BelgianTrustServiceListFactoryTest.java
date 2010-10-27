@@ -48,7 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.etsi.uri._02231.v2_.PostalAddressType;
+import org.etsi.uri._02231.v2.PostalAddressType;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;

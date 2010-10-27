@@ -23,9 +23,9 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.etsi.uri._02231.v2_.InternationalNamesType;
-import org.etsi.uri._02231.v2_.MultiLangNormStringType;
-import org.etsi.uri._02231.v2_.ObjectFactory;
+import org.etsi.uri._02231.v2.InternationalNamesType;
+import org.etsi.uri._02231.v2.MultiLangNormStringType;
+import org.etsi.uri._02231.v2.ObjectFactory;
 
 /**
  * Utility class for trust service lists.
