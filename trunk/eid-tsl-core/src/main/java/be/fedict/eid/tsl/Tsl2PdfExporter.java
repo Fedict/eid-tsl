@@ -58,18 +58,19 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.openssl.PEMWriter;
-import org.etsi.uri._01903.v1_3.ObjectIdentifierType;
 import org.etsi.uri._02231.v2.AdditionalServiceInformationType;
 import org.etsi.uri._02231.v2.ExtensionType;
 import org.etsi.uri._02231.v2.NonEmptyMultiLangURIType;
 import org.etsi.uri._02231.v2.PostalAddressType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.CriteriaListType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.PoliciesListType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationElementType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualificationsType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifierType;
-import org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.QualifiersType;
 import org.w3c.dom.Element;
+
+import be.fedict.eid.tsl.jaxb.ecc.CriteriaListType;
+import be.fedict.eid.tsl.jaxb.ecc.PoliciesListType;
+import be.fedict.eid.tsl.jaxb.ecc.QualificationElementType;
+import be.fedict.eid.tsl.jaxb.ecc.QualificationsType;
+import be.fedict.eid.tsl.jaxb.ecc.QualifierType;
+import be.fedict.eid.tsl.jaxb.ecc.QualifiersType;
+import be.fedict.eid.tsl.jaxb.xades.ObjectIdentifierType;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -501,7 +502,7 @@ public class Tsl2PdfExporter {
 	private QualificationsType unmarshallQualifications(Element element)
 			throws JAXBException {
 		JAXBContext jaxbContext = JAXBContext
-				.newInstance(org.etsi.uri.trstsvc.svcinfoext.esigdir_1999_93_ec_trustedlist.ObjectFactory.class);
+				.newInstance(be.fedict.eid.tsl.jaxb.ecc.ObjectFactory.class);
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		JAXBElement<QualificationsType> jaxbElement = (JAXBElement<QualificationsType>) unmarshaller
 				.unmarshal(element);
