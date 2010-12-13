@@ -1,6 +1,6 @@
 /*
  * eID TSL Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2009-2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -49,7 +49,7 @@ import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 /**
  * Trusted Service List Tool.
  * 
- * @author fcorneli
+ * @author Frank Cornelis
  * 
  */
 public class TslTool extends JFrame implements ActionListener {
@@ -163,6 +163,12 @@ public class TslTool extends JFrame implements ActionListener {
 		JMenuItem _2010_T3_BelgiumMenuItem = addActionMenuItem("Trimester 3",
 				KeyEvent.VK_1, "TSL-BE-2010-T3", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_T3_BelgiumMenuItem);
+
+		JMenu _2011BelgiumMenu = new JMenu("2011");
+		belgiumMenu.add(_2011BelgiumMenu);
+
+		addActionMenuItem("Trimester 1", KeyEvent.VK_1, "TSL-BE-2011-T1",
+				_2011BelgiumMenu, true);
 	}
 
 	private JMenuItem addActionMenuItem(String text, int mnemonic,
@@ -262,7 +268,8 @@ public class TslTool extends JFrame implements ActionListener {
 			if (JFileChooser.APPROVE_OPTION == result) {
 				File tslFile = fileChooser.getSelectedFile();
 				if (tslFile.exists()) {
-					int confirmResult = JOptionPane.showConfirmDialog(this,
+					int confirmResult = JOptionPane.showConfirmDialog(
+							this,
 							"File already exists.\n"
 									+ tslFile.getAbsolutePath() + "\n"
 									+ "Overwrite file?", "Overwrite",
@@ -286,7 +293,8 @@ public class TslTool extends JFrame implements ActionListener {
 			if (JFileChooser.APPROVE_OPTION == result) {
 				File pdfFile = fileChooser.getSelectedFile();
 				if (pdfFile.exists()) {
-					int confirmResult = JOptionPane.showConfirmDialog(this,
+					int confirmResult = JOptionPane.showConfirmDialog(
+							this,
 							"File already exists.\n"
 									+ pdfFile.getAbsolutePath() + "\n"
 									+ "Overwrite file?", "Overwrite",
@@ -315,6 +323,11 @@ public class TslTool extends JFrame implements ActionListener {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 					.newInstance(2010, Trimester.THIRD);
 			displayTsl("*TSL-BE-2010-T3.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
+		} else if ("TSL-BE-2011-T1".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2011, Trimester.FIRST);
+			displayTsl("*TSL-BE-2011-T1.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}
