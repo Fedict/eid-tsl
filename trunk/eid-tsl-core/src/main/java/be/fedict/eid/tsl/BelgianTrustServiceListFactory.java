@@ -69,7 +69,7 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year) {
+		if (2010 != year && 2011 != year) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -79,20 +79,50 @@ public class BelgianTrustServiceListFactory {
 				.newInstance();
 
 		BigInteger tslSequenceNumber;
-		switch (trimester) {
-		case FIRST:
-			tslSequenceNumber = BigInteger.valueOf(1);
-			break;
-		case SECOND:
-			tslSequenceNumber = BigInteger.valueOf(2);
-			break;
-		case THIRD:
-			tslSequenceNumber = BigInteger.valueOf(3);
-			break;
-		default:
-			throw new IllegalArgumentException(trimester.toString());
+		DateTime listIssueDateTime;
+		Document euTSLDocument;
+		X509Certificate euSSLCertificate = null;
+		if (2010 == year) {
+			switch (trimester) {
+			case FIRST:
+				tslSequenceNumber = BigInteger.valueOf(1);
+				listIssueDateTime = new DateTime(2010, 1, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
+				break;
+			case SECOND:
+				tslSequenceNumber = BigInteger.valueOf(2);
+				listIssueDateTime = new DateTime(2010, 5, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+				break;
+			case THIRD:
+				tslSequenceNumber = BigInteger.valueOf(3);
+				listIssueDateTime = new DateTime(2010, 9, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+				break;
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
+		} else {
+			// year == 2011
+			switch (trimester) {
+			case FIRST:
+				tslSequenceNumber = BigInteger.valueOf(4);
+				listIssueDateTime = new DateTime(2011, 1, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				break;
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
 		}
 		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
+
+		// list issue date time
+		trustServiceList.setListIssueDateTime(listIssueDateTime);
 
 		// scheme operator name
 		trustServiceList
@@ -152,10 +182,10 @@ public class BelgianTrustServiceListFactory {
 		// scheme information URIs
 		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/",
 				Locale.ENGLISH);
-		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/nl/",
-				new Locale("nl"));
-		trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/fr/",
-				Locale.FRENCH);
+		// trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/nl/",
+		// new Locale("nl"));
+		// trustServiceList.addSchemeInformationUri("http://tsl.belgium.be/fr/",
+		// Locale.FRENCH);
 
 		// status determination approach
 		trustServiceList
@@ -196,27 +226,6 @@ public class BelgianTrustServiceListFactory {
 		 */
 		trustServiceList.setHistoricalInformationPeriod(3653 * 3);
 
-		// list issue date time
-		DateTime listIssueDateTime;
-		switch (trimester) {
-		case FIRST:
-			listIssueDateTime = new DateTime(2010, 1, 1, 0, 0, 0, 0,
-					DateTimeZone.UTC);
-			break;
-		case SECOND:
-			listIssueDateTime = new DateTime(2010, 5, 1, 0, 0, 0, 0,
-					DateTimeZone.UTC);
-			break;
-		case THIRD:
-			listIssueDateTime = new DateTime(2010, 9, 1, 0, 0, 0, 0,
-					DateTimeZone.UTC);
-			break;
-		default:
-			throw new RuntimeException("unsupported trimester: " + trimester);
-		}
-
-		trustServiceList.setListIssueDateTime(listIssueDateTime);
-
 		// next update
 		int operationalOverlapWeeks = 2;
 		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(12 / 3)
@@ -233,21 +242,8 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
 						"EU",
 						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
-		Document euTSLDocument;
-		switch (trimester) {
-		case FIRST:
-			euTSLDocument = loadDocumentFromResource("eu/tl-mp.xml");
-			break;
-		case SECOND:
-			euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
-			break;
-		case THIRD:
-			euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
-			break;
-		default:
-			throw new RuntimeException("unsupported trimester: " + trimester);
-		}
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						euSSLCertificate);
 
 		TrustServiceList euTSL;
 		try {

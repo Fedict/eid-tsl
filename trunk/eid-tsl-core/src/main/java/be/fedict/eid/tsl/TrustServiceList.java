@@ -1419,21 +1419,24 @@ public class TrustServiceList {
 					.getSubjectX500Principal().getName());
 			digitalIdentities.add(digitalIdentity);
 
-			digitalIdentity = this.objectFactory.createDigitalIdentityType();
 			byte[] skiValue = digitalIdentityCertificate
 					.getExtensionValue(X509Extensions.SubjectKeyIdentifier
 							.getId());
-			SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
-			try {
-				subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
-						skiValue);
-			} catch (IOException e) {
-				throw new RuntimeException("X509 SKI decoding error: "
-						+ e.getMessage(), e);
+			if (null != skiValue) {
+				digitalIdentity = this.objectFactory
+						.createDigitalIdentityType();
+				SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
+				try {
+					subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
+							skiValue);
+				} catch (IOException e) {
+					throw new RuntimeException("X509 SKI decoding error: "
+							+ e.getMessage(), e);
+				}
+				digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
+						.getKeyIdentifier());
+				digitalIdentities.add(digitalIdentity);
 			}
-			digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
-					.getKeyIdentifier());
-			digitalIdentities.add(digitalIdentity);
 
 			List<DigitalIdentityListType> digitalIdentityListList = serviceDigitalIdentityList
 					.getServiceDigitalIdentity();
