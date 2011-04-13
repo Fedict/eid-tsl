@@ -115,6 +115,13 @@ public class BelgianTrustServiceListFactory {
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
 				break;
+			case SECOND:
+				tslSequenceNumber = BigInteger.valueOf(5);
+				listIssueDateTime = new DateTime(2011, 5, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				break;
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
