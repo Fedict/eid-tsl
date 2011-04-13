@@ -297,6 +297,17 @@ public class BelgianTrustServiceListFactoryTest {
 		trustServiceList.saveAs(unsignedTslFile);
 		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
 	}
+	
+	@Test
+	public void testBelgianTrustListTrimester2_2011() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2011, Trimester.SECOND);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
 
 	private static class TSLLSResourceResolver implements LSResourceResolver {
 

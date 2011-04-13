@@ -157,17 +157,20 @@ public class TslTool extends JFrame implements ActionListener {
 		_2010BelgiumMenu.add(_2010_T1_BelgiumMenuItem);
 
 		JMenuItem _2010_T2_BelgiumMenuItem = addActionMenuItem("Trimester 2",
-				KeyEvent.VK_1, "TSL-BE-2010-T2", _2010BelgiumMenu, true);
+				KeyEvent.VK_2, "TSL-BE-2010-T2", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_T2_BelgiumMenuItem);
 
 		JMenuItem _2010_T3_BelgiumMenuItem = addActionMenuItem("Trimester 3",
-				KeyEvent.VK_1, "TSL-BE-2010-T3", _2010BelgiumMenu, true);
+				KeyEvent.VK_3, "TSL-BE-2010-T3", _2010BelgiumMenu, true);
 		_2010BelgiumMenu.add(_2010_T3_BelgiumMenuItem);
 
 		JMenu _2011BelgiumMenu = new JMenu("2011");
 		belgiumMenu.add(_2011BelgiumMenu);
 
 		addActionMenuItem("Trimester 1", KeyEvent.VK_1, "TSL-BE-2011-T1",
+				_2011BelgiumMenu, true);
+
+		addActionMenuItem("Trimester 2", KeyEvent.VK_2, "TSL-BE-2011-T2",
 				_2011BelgiumMenu, true);
 	}
 
@@ -328,6 +331,11 @@ public class TslTool extends JFrame implements ActionListener {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 					.newInstance(2011, Trimester.FIRST);
 			displayTsl("*TSL-BE-2011-T1.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
+		} else if ("TSL-BE-2011-T2".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2011, Trimester.SECOND);
+			displayTsl("*TSL-BE-2011-T2.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}
