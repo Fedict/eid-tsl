@@ -37,36 +37,18 @@
 	<profiles>
 		<profile>
 			<id>tests</id>
-			<activation>
-				<property>
-					<name>env</name>
-					<value>tests</value>
-				</property>
-			</activation>
 			<modules>
 				<module>eid-tsl-tests</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>package</id>
-			<activation>
-				<property>
-					<name>env</name>
-					<value>package</value>
-				</property>
-			</activation>
 			<modules>
 				<module>eid-tsl-tool-package</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>all</id>
-			<activation>
-				<property>
-					<name>env</name>
-					<value>all</value>
-				</property>
-			</activation>
 			<modules>
 				<module>eid-tsl-tests</module>
 				<module>eid-tsl-tool-package</module>
