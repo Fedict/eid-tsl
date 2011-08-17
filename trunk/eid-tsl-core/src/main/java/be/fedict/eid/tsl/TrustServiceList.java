@@ -66,6 +66,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
@@ -864,8 +865,10 @@ public class TrustServiceList {
 		// SigningTime
 		GregorianCalendar signingTime = new GregorianCalendar();
 		signingTime.setTimeZone(TimeZone.getTimeZone("Z"));
-		signedSignatureProperties.setSigningTime(this.datatypeFactory
-				.newXMLGregorianCalendar(signingTime));
+		XMLGregorianCalendar xmlSigningTime = this.datatypeFactory
+				.newXMLGregorianCalendar(signingTime);
+		xmlSigningTime.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+		signedSignatureProperties.setSigningTime(xmlSigningTime);
 
 		// SigningCertificate
 		CertIDListType signingCertificates = this.xadesObjectFactory
