@@ -3,6 +3,10 @@ README for the FedICT eID TSL Tool
 
 === 1. Introduction
 
+Requirements:
+	Oracle Java 1.6.0_18+
+	Also tested using Java 1.7.0
+
 Run the tool via:
 	java -jar eid-tsl-tool-1.0.0-SNAPSHOT.jar
 
