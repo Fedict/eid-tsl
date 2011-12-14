@@ -22,13 +22,18 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -43,6 +48,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,7 +58,7 @@ import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceProvider;
 
 class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
-		InternalFrameListener, ChangeListener {
+		InternalFrameListener, ChangeListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -81,6 +87,10 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	private JLabel signerSha1Fingerprint;
 
 	private JLabel signerSha256Fingerprint;
+
+	private X509Certificate signerCertificate;
+
+	private JButton saveSignerCertificateButton;
 
 	TslInternalFrame(File tslFile, TrustServiceList trustServiceList,
 			TslTool tslTool) {
@@ -166,25 +176,33 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		dataPanel.add(this.signerSha256Fingerprint, constraints);
 
+		this.saveSignerCertificateButton = new JButton("Save Certificate...");
+		constraints.gridx = 0;
+		constraints.gridy++;
+		dataPanel.add(this.saveSignerCertificateButton, constraints);
+		this.saveSignerCertificateButton.addActionListener(this);
+		this.saveSignerCertificateButton.setEnabled(false);
+
 		updateView();
 	}
 
 	private void updateView() {
-		X509Certificate signerCertificate = this.trustServiceList
-				.verifySignature();
-		if (null != signerCertificate) {
-			this.signer.setText(signerCertificate.getSubjectX500Principal()
-					.toString());
-			byte[] encodedPublicKey = signerCertificate.getPublicKey()
+		this.signerCertificate = this.trustServiceList.verifySignature();
+		if (null != this.signerCertificate) {
+			this.signer.setText(this.signerCertificate
+					.getSubjectX500Principal().toString());
+			byte[] encodedPublicKey = this.signerCertificate.getPublicKey()
 					.getEncoded();
 			this.signerSha1Fingerprint.setText(DigestUtils
 					.shaHex(encodedPublicKey));
 			this.signerSha256Fingerprint.setText(DigestUtils
 					.sha256Hex(encodedPublicKey));
+			this.saveSignerCertificateButton.setEnabled(true);
 		} else {
 			this.signer.setText("[TSL is not signed]");
 			this.signerSha1Fingerprint.setText("");
 			this.signerSha256Fingerprint.setText("");
+			this.saveSignerCertificateButton.setEnabled(false);
 		}
 	}
 
@@ -292,8 +310,8 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridy++;
 		constraints.gridx = 0;
 		dataPanel.add(schemeOperatorNameLabel, constraints);
-		JLabel schemeOperatorName = new JLabel(this.trustServiceList
-				.getSchemeOperatorName());
+		JLabel schemeOperatorName = new JLabel(
+				this.trustServiceList.getSchemeOperatorName());
 		constraints.gridx++;
 		dataPanel.add(schemeOperatorName, constraints);
 
@@ -301,9 +319,10 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx = 0;
 		dataPanel.add(new JLabel("Type"), constraints);
 		constraints.gridx++;
-		dataPanel.add(new JLabel(this.trustServiceList.getType().substring(
-				this.trustServiceList.getType().indexOf("TSLType/")
-						+ "TSLType/".length())), constraints);
+		dataPanel.add(
+				new JLabel(this.trustServiceList.getType().substring(
+						this.trustServiceList.getType().indexOf("TSLType/")
+								+ "TSLType/".length())), constraints);
 
 		constraints.gridy++;
 		constraints.gridx = 0;
@@ -450,5 +469,31 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 	public void export(File pdfFile) throws IOException {
 		LOG.debug("exporting to PDF: " + pdfFile.getAbsolutePath());
 		this.trustServiceList.humanReadableExport(pdfFile);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Signer Certificate");
+		int result = fileChooser.showSaveDialog(this);
+		if (JFileChooser.APPROVE_OPTION == result) {
+			File file = fileChooser.getSelectedFile();
+			if (file.exists()) {
+				int confirmResult = JOptionPane.showConfirmDialog(this,
+						"File already exists.\n" + file.getAbsolutePath()
+								+ "\n" + "Overwrite file?", "Overwrite",
+						JOptionPane.OK_CANCEL_OPTION);
+				if (JOptionPane.CANCEL_OPTION == confirmResult) {
+					return;
+				}
+			}
+			try {
+				FileUtils.writeByteArrayToFile(file,
+						this.signerCertificate.getEncoded());
+			} catch (Exception e) {
+				throw new RuntimeException("error writing file: "
+						+ e.getMessage(), e);
+			}
+		}
 	}
 }

@@ -33,28 +33,9 @@
 	<modules>
 		<module>eid-tsl-core</module>
 		<module>eid-tsl-tool</module>
+		<module>eid-tsl-tests</module>
+		<module>eid-tsl-tool-package</module>
 	</modules>
-	<profiles>
-		<profile>
-			<id>tests</id>
-			<modules>
-				<module>eid-tsl-tests</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>package</id>
-			<modules>
-				<module>eid-tsl-tool-package</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>all</id>
-			<modules>
-				<module>eid-tsl-tests</module>
-				<module>eid-tsl-tool-package</module>
-			</modules>
-		</profile>
-	</profiles>
 	<build>
 		<plugins>
 			<plugin>

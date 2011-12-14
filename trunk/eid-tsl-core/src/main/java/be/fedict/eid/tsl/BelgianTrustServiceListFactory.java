@@ -69,7 +69,7 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year && 2011 != year) {
+		if (2010 != year && 2011 != year && 2012 != year) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -105,7 +105,7 @@ public class BelgianTrustServiceListFactory {
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
-		} else {
+		} else if (2011 == year) {
 			// year == 2011
 			switch (trimester) {
 			case FIRST:
@@ -125,6 +125,19 @@ public class BelgianTrustServiceListFactory {
 			case THIRD:
 				tslSequenceNumber = BigInteger.valueOf(6);
 				listIssueDateTime = new DateTime(2011, 9, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				break;
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
+		} else {
+			// year == 2012
+			switch (trimester) {
+			case FIRST:
+				tslSequenceNumber = BigInteger.valueOf(7);
+				listIssueDateTime = new DateTime(2012, 1, 1, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");

@@ -299,6 +299,17 @@ public class BelgianTrustServiceListFactoryTest {
 	}
 	
 	@Test
+	public void testBelgianTrustListTrimester1_2012() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2012, Trimester.FIRST);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
+	
+	@Test
 	public void testBelgianTrustListTrimester2_2011() throws Exception {
 		// setup
 		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
