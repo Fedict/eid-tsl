@@ -244,7 +244,7 @@ public class BelgianTrustServiceListFactoryTest {
 		PostalAddressType certipostPostalAddress = certipostTrustServiceProvider
 				.getPostalAddress(Locale.ENGLISH);
 		assertNotNull(certipostPostalAddress);
-		assertEquals("Centre Monnaie",
+		assertEquals("Muntcentrum",
 				certipostPostalAddress.getStreetAddress());
 		assertEquals("BE", certipostPostalAddress.getCountryName());
 
@@ -303,6 +303,17 @@ public class BelgianTrustServiceListFactoryTest {
 		// setup
 		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 				.newInstance(2012, Trimester.FIRST);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
+	
+	@Test
+	public void testBelgianTrustListTrimester2_2012() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2012, Trimester.SECOND);
 
 		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
 		trustServiceList.saveAs(unsignedTslFile);

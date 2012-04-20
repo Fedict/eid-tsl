@@ -82,6 +82,8 @@ public class BelgianTrustServiceListFactory {
 		DateTime listIssueDateTime;
 		Document euTSLDocument;
 		X509Certificate euSSLCertificate = null;
+		String certipostInformationUri = "http://repository.eid.belgium.be/EN/Index.htm";
+		List<TrustService> additionalCertipostTrustServices = new LinkedList<TrustService>();
 		if (2010 == year) {
 			switch (trimester) {
 			case FIRST:
@@ -141,6 +143,19 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				break;
+			case SECOND:
+				tslSequenceNumber = BigInteger.valueOf(8);
+				listIssueDateTime = new DateTime(2012, 5, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				certipostInformationUri = "http://repository.eid.belgium.be/";
+				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
+				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
+				TrustService caQS_TrustService = TrustServiceListFactory
+						.createTrustService(caQS_VG, caQS_BCT);
+				additionalCertipostTrustServices.add(caQS_TrustService);
 				break;
 			default:
 				throw new IllegalArgumentException(trimester.toString());
@@ -297,13 +312,12 @@ public class BelgianTrustServiceListFactory {
 						"Certipost NV/SA");
 		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Centre Monnaie", "Brussels", "Brussels", "1000", "BE");
-		certipostTrustServiceProvider
-				.addElectronicAddress("http://www.certipost.be/",
-						"mailto:eid.csp@staff.certipost.be");
+				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
+		certipostTrustServiceProvider.addElectronicAddress(
+				"http://www.certipost.be/", "mailto:eid.csp@certipost.be");
 
 		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				"http://repository.eid.belgium.be/EN/Index.htm");
+				certipostInformationUri);
 		certipostTrustServiceProvider
 				.addInformationUri(Locale.ENGLISH,
 						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
@@ -349,6 +363,11 @@ public class BelgianTrustServiceListFactory {
 		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.132.1");
 
 		certipostTrustServiceProvider.addTrustService(eTrustQCaTrustService);
+
+		for (TrustService additionalCertipostTrustService : additionalCertipostTrustServices) {
+			certipostTrustServiceProvider
+					.addTrustService(additionalCertipostTrustService);
+		}
 
 		return trustServiceList;
 	}
