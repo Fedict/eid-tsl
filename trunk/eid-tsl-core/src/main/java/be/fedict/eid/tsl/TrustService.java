@@ -98,15 +98,8 @@ public class TrustService {
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 	}
 
-	public TrustService(X509Certificate certificate) {
-		this(certificate, new String[] {});
-	}
-
-	public TrustService(X509Certificate certificate, String... noSscdOids) {
+	public TrustService(X509Certificate... certificates) {
 		this.qcSSCDStatusAsInCertOids = new LinkedList<String>();
-		for (String oid : noSscdOids) {
-			this.qcSSCDStatusAsInCertOids.add(oid);
-		}
 
 		this.objectFactory = new ObjectFactory();
 		try {
@@ -131,10 +124,11 @@ public class TrustService {
 				.createMultiLangNormStringType();
 		serviceNames.add(serviceName);
 		serviceName.setLang(Locale.ENGLISH.getLanguage());
+		X509Certificate certificate = certificates[0];
 		serviceName.setValue(certificate.getSubjectX500Principal().toString());
 		tspServiceInformation.setServiceName(i18nServiceName);
 
-		DigitalIdentityListType digitalIdentityList = createDigitalIdentity(certificate);
+		DigitalIdentityListType digitalIdentityList = createDigitalIdentityList(certificates);
 		tspServiceInformation.setServiceDigitalIdentity(digitalIdentityList);
 
 		tspServiceInformation
@@ -213,29 +207,33 @@ public class TrustService {
 		}
 	}
 
-	private DigitalIdentityListType createDigitalIdentity(
-			X509Certificate certificate) {
+	private DigitalIdentityListType createDigitalIdentityList(
+			X509Certificate... certificates) {
 		DigitalIdentityListType digitalIdentityList = this.objectFactory
 				.createDigitalIdentityListType();
 		List<DigitalIdentityType> digitalIdentities = digitalIdentityList
 				.getDigitalId();
+
+		for (X509Certificate certificate : certificates) {
+			DigitalIdentityType digitalIdentity = this.objectFactory
+					.createDigitalIdentityType();
+			try {
+				digitalIdentity.setX509Certificate(certificate.getEncoded());
+			} catch (CertificateEncodingException e) {
+				throw new RuntimeException("X509 encoding error: "
+						+ e.getMessage(), e);
+			}
+			digitalIdentities.add(digitalIdentity);
+		}
+
 		DigitalIdentityType digitalIdentity = this.objectFactory
 				.createDigitalIdentityType();
-		try {
-			digitalIdentity.setX509Certificate(certificate.getEncoded());
-		} catch (CertificateEncodingException e) {
-			throw new RuntimeException(
-					"X509 encoding error: " + e.getMessage(), e);
-		}
-		digitalIdentities.add(digitalIdentity);
-
-		digitalIdentity = this.objectFactory.createDigitalIdentityType();
-		digitalIdentity.setX509SubjectName(certificate
+		digitalIdentity.setX509SubjectName(certificates[0]
 				.getSubjectX500Principal().getName());
 		digitalIdentities.add(digitalIdentity);
 
 		digitalIdentity = this.objectFactory.createDigitalIdentityType();
-		byte[] skiValue = certificate
+		byte[] skiValue = certificates[0]
 				.getExtensionValue(X509Extensions.SubjectKeyIdentifier.getId());
 		SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
 		try {
