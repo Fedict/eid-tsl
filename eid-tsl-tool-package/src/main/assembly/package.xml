@@ -6,7 +6,6 @@
 	<id>package</id>
 	<formats>
 		<format>zip</format>
-		<format>tar.gz</format>
 	</formats>
 	<baseDirectory>eid-tsl-tool-package</baseDirectory>
 	<files>
@@ -17,9 +16,6 @@
 		<file>
 			<source>../LICENSE.txt</source>
 			<fileMode>0644</fileMode>
-		</file>
-		<file>
-			<source>target/eid-tsl-tool.exe</source>
 		</file>
 		<file>
 			<source>src/main/assembly/eid-tsl-tool.sh</source>
