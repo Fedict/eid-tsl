@@ -27,38 +27,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-				<artifactId>launch4j-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<headerType>gui</headerType>
-							<jre>
-								<minVersion>1.6.0</minVersion>
-							</jre>
-							<jar>target/dependency/eid-tsl-tool-1.0.0-SNAPSHOT.jar</jar>
-							<dontWrapJar>false</dontWrapJar>
-							<outfile>target/eid-tsl-tool.exe</outfile>
-							<versionInfo>
-								<fileVersion>1.0.0.0</fileVersion>
-								<txtFileVersion>eID TSL Tool v1.0.0.0</txtFileVersion>
-								<fileDescription>eID TSL Tool</fileDescription>
-								<copyright>Copyright (C) 2009 FedICT</copyright>
-								<productVersion>1.0.0.0</productVersion>
-								<txtProductVersion>eID TSL Tool v1.0.0.0</txtProductVersion>
-								<productName>eID TSL Tool</productName>
-								<internalName>eid-tsl-tool</internalName>
-								<originalFilename>eid-tsl-tool.exe</originalFilename>
-							</versionInfo>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
