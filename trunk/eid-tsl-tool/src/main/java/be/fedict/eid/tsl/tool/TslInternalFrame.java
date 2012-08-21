@@ -78,6 +78,10 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 	private JLabel serviceSha256Thumbprint;
 
+	private JLabel validityBegin;
+
+	private JLabel validityEnd;
+
 	private final TslTool tslTool;
 
 	private JLabel signer;
@@ -285,6 +289,22 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 		constraints.gridx++;
 		this.serviceSha256Thumbprint = new JLabel();
 		dataPanel.add(this.serviceSha256Thumbprint, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Validity begin"), constraints);
+
+		constraints.gridx++;
+		this.validityBegin = new JLabel();
+		dataPanel.add(this.validityBegin, constraints);
+
+		constraints.gridy++;
+		constraints.gridx = 0;
+		dataPanel.add(new JLabel("Validity end"), constraints);
+
+		constraints.gridx++;
+		this.validityEnd = new JLabel();
+		dataPanel.add(this.validityEnd, constraints);
 	}
 
 	private void addGenericTab(JTabbedPane tabbedPane) {
@@ -396,12 +416,17 @@ class TslInternalFrame extends JInternalFrame implements TreeSelectionListener,
 
 			String sha256Thumbprint = DigestUtils.sha256Hex(encodedCertificate);
 			this.serviceSha256Thumbprint.setText(sha256Thumbprint);
+
+			this.validityBegin.setText(certificate.getNotBefore().toString());
+			this.validityEnd.setText(certificate.getNotAfter().toString());
 		} else {
 			this.serviceName.setText("");
 			this.serviceType.setText("");
 			this.serviceStatus.setText("");
 			this.serviceSha1Thumbprint.setText("");
 			this.serviceSha256Thumbprint.setText("");
+			this.validityBegin.setText("");
+			this.validityEnd.setText("");
 		}
 	}
 

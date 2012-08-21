@@ -144,7 +144,7 @@ public class BelgianTrustServiceListFactory {
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-2.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
 				break;
-			case SECOND:
+			case SECOND: {
 				tslSequenceNumber = BigInteger.valueOf(8);
 				listIssueDateTime = new DateTime(2012, 5, 1, 0, 0, 0, 0,
 						DateTimeZone.UTC);
@@ -157,6 +157,21 @@ public class BelgianTrustServiceListFactory {
 						.createTrustService(caQS_VG, caQS_BCT);
 				additionalCertipostTrustServices.add(caQS_TrustService);
 				break;
+			}
+			case THIRD: {
+				tslSequenceNumber = BigInteger.valueOf(9);
+				listIssueDateTime = new DateTime(2012, 9, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				certipostInformationUri = "http://repository.eid.belgium.be/";
+				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
+				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
+				TrustService caQS_TrustService = TrustServiceListFactory
+						.createTrustService(caQS_VG, caQS_BCT);
+				additionalCertipostTrustServices.add(caQS_TrustService);
+				break;
+			}
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
