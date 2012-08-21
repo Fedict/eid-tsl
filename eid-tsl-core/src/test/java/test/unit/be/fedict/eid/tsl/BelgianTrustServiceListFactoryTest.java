@@ -58,10 +58,10 @@ import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
 import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
 import be.fedict.eid.tsl.TrustServiceProvider;
-import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 
 public class BelgianTrustServiceListFactoryTest {
@@ -195,7 +195,7 @@ public class BelgianTrustServiceListFactoryTest {
 		List<String> schemeInformationUris = trustServiceList
 				.getSchemeInformationUris();
 		assertNotNull(schemeInformationUris);
-		//assertEquals(3, schemeInformationUris.size());
+		// assertEquals(3, schemeInformationUris.size());
 		assertEquals("http://tsl.belgium.be/", schemeInformationUris.get(0));
 
 		// status determination approach
@@ -244,8 +244,7 @@ public class BelgianTrustServiceListFactoryTest {
 		PostalAddressType certipostPostalAddress = certipostTrustServiceProvider
 				.getPostalAddress(Locale.ENGLISH);
 		assertNotNull(certipostPostalAddress);
-		assertEquals("Muntcentrum",
-				certipostPostalAddress.getStreetAddress());
+		assertEquals("Muntcentrum", certipostPostalAddress.getStreetAddress());
 		assertEquals("BE", certipostPostalAddress.getCountryName());
 
 		// electronic address
@@ -297,7 +296,7 @@ public class BelgianTrustServiceListFactoryTest {
 		trustServiceList.saveAs(unsignedTslFile);
 		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
 	}
-	
+
 	@Test
 	public void testBelgianTrustListTrimester1_2012() throws Exception {
 		// setup
@@ -308,7 +307,7 @@ public class BelgianTrustServiceListFactoryTest {
 		trustServiceList.saveAs(unsignedTslFile);
 		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
 	}
-	
+
 	@Test
 	public void testBelgianTrustListTrimester2_2012() throws Exception {
 		// setup
@@ -319,7 +318,18 @@ public class BelgianTrustServiceListFactoryTest {
 		trustServiceList.saveAs(unsignedTslFile);
 		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
 	}
-	
+
+	@Test
+	public void testBelgianTrustListTrimester3_2012() throws Exception {
+		// setup
+		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+				.newInstance(2012, Trimester.THIRD);
+
+		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		trustServiceList.saveAs(unsignedTslFile);
+		LOG.debug("unsigned TSL file: " + unsignedTslFile.getAbsolutePath());
+	}
+
 	@Test
 	public void testBelgianTrustListTrimester2_2011() throws Exception {
 		// setup
