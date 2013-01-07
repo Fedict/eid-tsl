@@ -1,6 +1,6 @@
 /*
  * eID TSL Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2009-2013 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -69,7 +69,7 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year && 2011 != year && 2012 != year) {
+		if (2010 != year && 2011 != year && 2012 != year && 2013 != year) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -134,7 +134,7 @@ public class BelgianTrustServiceListFactory {
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
-		} else {
+		} else if (2012 == year) {
 			// year == 2012
 			switch (trimester) {
 			case FIRST:
@@ -175,6 +175,26 @@ public class BelgianTrustServiceListFactory {
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
+		} else if (2013 == year) {
+			switch (trimester) {
+			case FIRST:
+				tslSequenceNumber = BigInteger.valueOf(10);
+				listIssueDateTime = new DateTime(2013, 1, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				certipostInformationUri = "http://repository.eid.belgium.be/";
+				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
+				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
+				TrustService caQS_TrustService = TrustServiceListFactory
+						.createTrustService(caQS_VG, caQS_BCT);
+				additionalCertipostTrustServices.add(caQS_TrustService);
+				break;
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
+		} else {
+			throw new IllegalArgumentException("unsupported year");
 		}
 		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
 
