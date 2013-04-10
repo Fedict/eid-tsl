@@ -42,9 +42,9 @@ import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 
 import be.fedict.eid.tsl.BelgianTrustServiceListFactory;
+import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 import be.fedict.eid.tsl.TrustServiceList;
 import be.fedict.eid.tsl.TrustServiceListFactory;
-import be.fedict.eid.tsl.BelgianTrustServiceListFactory.Trimester;
 
 /**
  * Trusted Service List Tool.
@@ -188,6 +188,8 @@ public class TslTool extends JFrame implements ActionListener {
 		belgiumMenu.add(_2013BelgiumMenu);
 
 		addActionMenuItem("Trimester 1", KeyEvent.VK_1, "TSL-BE-2013-T1",
+				_2013BelgiumMenu, true);
+		addActionMenuItem("Trimester 2", KeyEvent.VK_2, "TSL-BE-2013-T2",
 				_2013BelgiumMenu, true);
 	}
 
@@ -378,6 +380,11 @@ public class TslTool extends JFrame implements ActionListener {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 					.newInstance(2013, Trimester.FIRST);
 			displayTsl("*TSL-BE-2013-T1.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
+		} else if ("TSL-BE-2013-T2".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2013, Trimester.SECOND);
+			displayTsl("*TSL-BE-2013-T2.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}
