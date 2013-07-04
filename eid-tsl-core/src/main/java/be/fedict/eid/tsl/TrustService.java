@@ -76,8 +76,6 @@ public class TrustService {
 
 	private final be.fedict.eid.tsl.jaxb.xades.ObjectFactory xadesObjectFactory;
 
-	private final List<String> qcSSCDStatusAsInCertOids;
-
 	public static final String QC_NO_SSCD_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCNoSSCD";
 
 	public static final String QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCSSCDStatusAsInCert";
@@ -93,14 +91,11 @@ public class TrustService {
 			throw new RuntimeException("datatype config error: "
 					+ e.getMessage(), e);
 		}
-		this.qcSSCDStatusAsInCertOids = new LinkedList<String>();
 		this.eccObjectFactory = new be.fedict.eid.tsl.jaxb.ecc.ObjectFactory();
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 	}
 
 	public TrustService(X509Certificate... certificates) {
-		this.qcSSCDStatusAsInCertOids = new LinkedList<String>();
-
 		this.objectFactory = new ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
@@ -140,71 +135,6 @@ public class TrustService {
 		XMLGregorianCalendar statusStartingTime = this.datatypeFactory
 				.newXMLGregorianCalendar(statusStartingCalendar);
 		tspServiceInformation.setStatusStartingTime(statusStartingTime);
-
-		if (false == this.qcSSCDStatusAsInCertOids.isEmpty()) {
-			ExtensionsListType extensionsList = this.objectFactory
-					.createExtensionsListType();
-			tspServiceInformation
-					.setServiceInformationExtensions(extensionsList);
-			List<ExtensionType> extensions = extensionsList.getExtension();
-			ExtensionType extension = this.objectFactory.createExtensionType();
-			extension.setCritical(true);
-			extensions.add(extension);
-
-			QualificationsType qualifications = this.eccObjectFactory
-					.createQualificationsType();
-			extension.getContent().add(
-					this.eccObjectFactory.createQualifications(qualifications));
-			List<QualificationElementType> qualificationElements = qualifications
-					.getQualificationElement();
-
-			QualificationElementType qualificationElement = this.eccObjectFactory
-					.createQualificationElementType();
-			qualificationElements.add(qualificationElement);
-
-			QualifiersType qualifiers = this.eccObjectFactory
-					.createQualifiersType();
-			List<QualifierType> qualifierList = qualifiers.getQualifier();
-			QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
-					.createQualifierType();
-			qualifierList.add(qcSscdStatusInCertqualifier);
-			qcSscdStatusInCertqualifier
-					.setUri(QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI);
-			qualificationElement.setQualifiers(qualifiers);
-
-			CriteriaListType criteriaList = this.eccObjectFactory
-					.createCriteriaListType();
-			qualificationElement.setCriteriaList(criteriaList);
-			criteriaList.setAssert("atLeastOne");
-
-			List<PoliciesListType> policySet = criteriaList.getPolicySet();
-			PoliciesListType policiesList = this.eccObjectFactory
-					.createPoliciesListType();
-			policySet.add(policiesList);
-			for (String oid : this.qcSSCDStatusAsInCertOids) {
-				ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
-						.createObjectIdentifierType();
-				IdentifierType identifier = this.xadesObjectFactory
-						.createIdentifierType();
-				identifier.setValue(oid);
-				objectIdentifier.setIdentifier(identifier);
-				policiesList.getPolicyIdentifier().add(objectIdentifier);
-			}
-
-			AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
-					.createAdditionalServiceInformationType();
-			NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
-					.createNonEmptyMultiLangURIType();
-			additionalServiceInformationUri.setLang("en");
-			additionalServiceInformationUri
-					.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
-			additionalServiceInformation
-					.setURI(additionalServiceInformationUri);
-			extension
-					.getContent()
-					.add(this.objectFactory
-							.createAdditionalServiceInformation(additionalServiceInformation));
-		}
 	}
 
 	private DigitalIdentityListType createDigitalIdentityList(
@@ -411,24 +341,21 @@ public class TrustService {
 						List<QualifierType> qualifierList = qualifiers
 								.getQualifier();
 						boolean qcSscdStatusAsInCertQualifier = false;
-						boolean qcForLegalPersonQualifier = false;
 						for (QualifierType qualifier : qualifierList) {
 							if (QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI
 									.equals(qualifier.getUri())) {
 								qcSscdStatusAsInCertQualifier = true;
 							}
-							if (QC_FOR_LEGAL_PERSON_QUALIFIER_URI
-									.equals(qualifier.getUri())) {
-								qcForLegalPersonQualifier = true;
-							}
 						}
-						if (qcSscdStatusAsInCertQualifier
-								&& !qcForLegalPersonQualifier) {
+						if (qcSscdStatusAsInCertQualifier) {
 							CriteriaListType criteriaList = qualificationElement
 									.getCriteriaList();
 							List<PoliciesListType> policySet = criteriaList
 									.getPolicySet();
-							PoliciesListType policiesList = policySet.get(0);
+
+							PoliciesListType policiesList = this.eccObjectFactory
+									.createPoliciesListType();
+							policySet.add(policiesList);
 
 							ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
 									.createObjectIdentifierType();
@@ -543,8 +470,10 @@ public class TrustService {
 										.getCriteriaList();
 								List<PoliciesListType> policySet = criteriaList
 										.getPolicySet();
-								PoliciesListType policiesList = policySet
-										.get(0);
+
+								PoliciesListType policiesList = this.eccObjectFactory
+										.createPoliciesListType();
+								policySet.add(policiesList);
 
 								ObjectIdentifierType objectIdentifier = this.xadesObjectFactory
 										.createObjectIdentifierType();
@@ -583,11 +512,6 @@ public class TrustService {
 				.createQualifierType();
 		qualifierList.add(qcForLegalPersonqualifier);
 		qcForLegalPersonqualifier.setUri(QC_FOR_LEGAL_PERSON_QUALIFIER_URI);
-		// QualifierType qcSscdStatusInCertqualifier = this.eccObjectFactory
-		// .createQualifierType();
-		// qualifierList.add(qcSscdStatusInCertqualifier);
-		// qcSscdStatusInCertqualifier
-		// .setUri(QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI);
 		qualificationElement.setQualifiers(qualifiers);
 
 		CriteriaListType criteriaList = this.eccObjectFactory
