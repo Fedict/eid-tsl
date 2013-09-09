@@ -77,12 +77,47 @@ public class BelgianTrustServiceListFactory {
 		// setup
 		TrustServiceList trustServiceList = TrustServiceListFactory
 				.newInstance();
+		String certipostInformationUri = "http://repository.eid.belgium.be/EN/Index.htm";
+
+		// trust service provider list: certipost
+		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
+				.createTrustServiceProvider("Certipost NV/SA",
+						"Certipost NV/SA");
+		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
+		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
+		certipostTrustServiceProvider.addElectronicAddress(
+				"http://www.certipost.be/", "mailto:eid.csp@certipost.be");
+
+		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				certipostInformationUri);
+		certipostTrustServiceProvider
+				.addInformationUri(Locale.ENGLISH,
+						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
+
+		// Certipost trust services: Root CA and Root CA2
+		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
+		TrustService rootCaTrustService = TrustServiceListFactory
+				.createTrustService(rootCaCertificate);
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
+				"urn:be:qc:natural:citizen");
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
+				"urn:be:qc:natural:foreigner");
+		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
+
+		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
+		TrustService rootCa2TrustService = TrustServiceListFactory
+				.createTrustService(rootCa2Certificate);
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
+				"urn:be:qc:natural:citizen");
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
+				"urn:be:qc:natural:foreigner");
+		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		BigInteger tslSequenceNumber;
 		DateTime listIssueDateTime;
 		Document euTSLDocument;
 		X509Certificate euSSLCertificate = null;
-		String certipostInformationUri = "http://repository.eid.belgium.be/EN/Index.htm";
 		List<TrustService> additionalCertipostTrustServices = new LinkedList<TrustService>();
 		if (2010 == year) {
 			switch (trimester) {
@@ -217,6 +252,34 @@ public class BelgianTrustServiceListFactory {
 				TrustService caQS_TrustService = TrustServiceListFactory
 						.createTrustService(caQS_VG, caQS_BCT);
 				additionalCertipostTrustServices.add(caQS_TrustService);
+
+				{
+					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
+					TrustService rootCa3TrustService = TrustServiceListFactory
+							.createTrustService(rootCa3Certificate);
+					rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
+							"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
+					rootCa3TrustService
+							.addOIDForQCSSCDStatusAsInCert(
+									"2.16.56.10.1.1.7.1",
+									"urn:be:qc:natural:foreigner");
+					certipostTrustServiceProvider
+							.addTrustService(rootCa3TrustService);
+				}
+
+				{
+					X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
+					TrustService rootCa4TrustService = TrustServiceListFactory
+							.createTrustService(rootCa4Certificate);
+					rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
+							"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
+					rootCa4TrustService
+							.addOIDForQCSSCDStatusAsInCert(
+									"2.16.56.12.1.1.7.1",
+									"urn:be:qc:natural:foreigner");
+					certipostTrustServiceProvider
+							.addTrustService(rootCa4TrustService);
+				}
 				break;
 			}
 			default:
@@ -369,41 +432,6 @@ public class BelgianTrustServiceListFactory {
 						"European Commission",
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
 						euCertificate);
-
-		// trust service provider list: certipost
-		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost NV/SA",
-						"Certipost NV/SA");
-		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
-		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
-		certipostTrustServiceProvider.addElectronicAddress(
-				"http://www.certipost.be/", "mailto:eid.csp@certipost.be");
-
-		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				certipostInformationUri);
-		certipostTrustServiceProvider
-				.addInformationUri(Locale.ENGLISH,
-						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
-
-		// Certipost trust services: Root CA and Root CA2
-		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
-		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate);
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
-				"urn:be:qc:natural:citizen");
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
-				"urn:be:qc:natural:foreigner");
-		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
-
-		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
-		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate);
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
-				"urn:be:qc:natural:citizen");
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
-				"urn:be:qc:natural:foreigner");
-		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
 
 		// Certipost eTrust trust services
 		X509Certificate eTrustQCaCertificate = loadCertificateFromResource("eu/be/etrust/QCA_Self_Signed.crt");
