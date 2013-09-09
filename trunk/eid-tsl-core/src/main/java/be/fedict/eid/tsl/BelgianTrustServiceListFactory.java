@@ -245,7 +245,7 @@ public class BelgianTrustServiceListFactory {
 				listIssueDateTime = new DateTime(2013, 9, 1, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
-				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
 				certipostInformationUri = "http://repository.eid.belgium.be/";
 				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
 				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
