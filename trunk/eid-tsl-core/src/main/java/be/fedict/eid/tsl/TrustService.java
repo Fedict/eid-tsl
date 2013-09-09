@@ -82,6 +82,10 @@ public class TrustService {
 
 	public static final String QC_FOR_LEGAL_PERSON_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson";
 
+	private String serviceName;
+
+	private DateTime statusStartingDate;
+
 	TrustService(TSPServiceType tspService) {
 		this.tspService = tspService;
 		this.objectFactory = new ObjectFactory();
@@ -95,7 +99,10 @@ public class TrustService {
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 	}
 
-	public TrustService(X509Certificate... certificates) {
+	public TrustService(String serviceName, DateTime statusStartingDate,
+			X509Certificate... certificates) {
+		this.serviceName = serviceName;
+		this.statusStartingDate = statusStartingDate;
 		this.objectFactory = new ObjectFactory();
 		try {
 			this.datatypeFactory = DatatypeFactory.newInstance();
@@ -115,12 +122,17 @@ public class TrustService {
 		InternationalNamesType i18nServiceName = this.objectFactory
 				.createInternationalNamesType();
 		List<MultiLangNormStringType> serviceNames = i18nServiceName.getName();
-		MultiLangNormStringType serviceName = this.objectFactory
+		MultiLangNormStringType serviceNameJaxb = this.objectFactory
 				.createMultiLangNormStringType();
-		serviceNames.add(serviceName);
-		serviceName.setLang(Locale.ENGLISH.getLanguage());
+		serviceNames.add(serviceNameJaxb);
+		serviceNameJaxb.setLang(Locale.ENGLISH.getLanguage());
 		X509Certificate certificate = certificates[0];
-		serviceName.setValue(certificate.getSubjectX500Principal().toString());
+		if (null == this.serviceName) {
+			serviceNameJaxb.setValue(certificate.getSubjectX500Principal()
+					.toString());
+		} else {
+			serviceNameJaxb.setValue(this.serviceName);
+		}
 		tspServiceInformation.setServiceName(i18nServiceName);
 
 		DigitalIdentityListType digitalIdentityList = createDigitalIdentityList(certificates);
@@ -129,12 +141,22 @@ public class TrustService {
 		tspServiceInformation
 				.setServiceStatus("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision");
 
-		GregorianCalendar statusStartingCalendar = new DateTime(
-				certificate.getNotBefore()).toGregorianCalendar();
+		GregorianCalendar statusStartingCalendar;
+		if (null == this.statusStartingDate) {
+			statusStartingCalendar = new DateTime(certificate.getNotBefore())
+					.toGregorianCalendar();
+		} else {
+			statusStartingCalendar = this.statusStartingDate
+					.toGregorianCalendar();
+		}
 		statusStartingCalendar.setTimeZone(TimeZone.getTimeZone("Z"));
 		XMLGregorianCalendar statusStartingTime = this.datatypeFactory
 				.newXMLGregorianCalendar(statusStartingCalendar);
 		tspServiceInformation.setStatusStartingTime(statusStartingTime);
+	}
+
+	public TrustService(X509Certificate... certificates) {
+		this(null, null, certificates);
 	}
 
 	private DigitalIdentityListType createDigitalIdentityList(

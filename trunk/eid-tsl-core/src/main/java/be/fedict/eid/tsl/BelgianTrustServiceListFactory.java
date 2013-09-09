@@ -254,6 +254,7 @@ public class BelgianTrustServiceListFactory {
 				additionalCertipostTrustServices.add(caQS_TrustService);
 
 				{
+					// Belgian Root CA 3
 					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
 					TrustService rootCa3TrustService = TrustServiceListFactory
 							.createTrustService(rootCa3Certificate);
@@ -268,6 +269,7 @@ public class BelgianTrustServiceListFactory {
 				}
 
 				{
+					// Belgian Root CA 4
 					X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
 					TrustService rootCa4TrustService = TrustServiceListFactory
 							.createTrustService(rootCa4Certificate);
@@ -279,6 +281,38 @@ public class BelgianTrustServiceListFactory {
 									"urn:be:qc:natural:foreigner");
 					certipostTrustServiceProvider
 							.addTrustService(rootCa4TrustService);
+				}
+
+				{
+					// SWIFT
+					TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
+							.createTrustServiceProvider("SWIFT SCRL",
+									"SWIFT SCRL");
+					trustServiceList
+							.addTrustServiceProvider(swiftTrustServiceProvider);
+					swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+							"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
+							"BE");
+					swiftTrustServiceProvider.addElectronicAddress(
+							"http://www.swift.com/",
+							"mailto:swift-pma@swift.com ");
+
+					swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+							"http://www.swift.com/pkirepository");
+
+					{
+						X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
+						TrustService swiftTrustService = TrustServiceListFactory
+								.createTrustService(
+										"SWIFTNet PKI Certification Authority",
+										new DateTime(2013, 5, 15, 0, 0, 0, 0,
+												DateTimeZone.UTC),
+										swiftRootCertificate);
+						swiftTrustService
+								.addOIDForQCForLegalPerson("1.3.21.6.3.10.200.3");
+						swiftTrustServiceProvider
+								.addTrustService(swiftTrustService);
+					}
 				}
 				break;
 			}
