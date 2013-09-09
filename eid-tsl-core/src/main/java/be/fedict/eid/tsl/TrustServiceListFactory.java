@@ -32,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -148,6 +149,13 @@ public class TrustServiceListFactory {
 	public static TrustService createTrustService(
 			X509Certificate... certificates) {
 		TrustService trustService = new TrustService(certificates);
+		return trustService;
+	}
+
+	public static TrustService createTrustService(String serviceName,
+			DateTime statusStartingDate, X509Certificate... certificates) {
+		TrustService trustService = new TrustService(serviceName,
+				statusStartingDate, certificates);
 		return trustService;
 	}
 }
