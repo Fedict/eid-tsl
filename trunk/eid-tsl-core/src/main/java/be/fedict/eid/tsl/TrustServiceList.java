@@ -132,6 +132,18 @@ import be.fedict.eid.tsl.jaxb.xmldsig.X509IssuerSerialType;
 /**
  * Trust Service List.
  * 
+ * According to: ETSI TS 102 231 V3.1.2 (2009-12) and COMMISSION DECISION
+ * 2009/767/EC.
+ * 
+ * <ul>
+ * <li><a href=
+ * "http://www.etsi.org/deliver/etsi_ts/102200_102299/102231/03.01.02_60/ts_102231v030102p.pdf"
+ * >ETSI TS 102 231 v3.1.2</a></li>
+ * <li><a href=
+ * "http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:299:0018:0054:EN:PDF"
+ * >Corrigendum to Commission Decision 2009/767/EC of 16 October 2009</a></li>
+ * </ul>
+ * 
  * @author fcorneli
  * 
  */

@@ -455,6 +455,10 @@ public class TrustService {
 	}
 
 	public void addOIDForQCForLegalPerson(String oid) {
+		addOIDForQCForLegalPerson(oid, false);
+	}
+
+	public void addOIDForQCForLegalPerson(String oid, boolean noRoot) {
 		TSPServiceInformationType tspServiceInformation = this.tspService
 				.getServiceInformation();
 		ExtensionsListType extensionsList = tspServiceInformation
@@ -553,17 +557,20 @@ public class TrustService {
 		objectIdentifier.setIdentifier(identifier);
 		policiesList.getPolicyIdentifier().add(objectIdentifier);
 
-		AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
-				.createAdditionalServiceInformationType();
-		NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
-				.createNonEmptyMultiLangURIType();
-		additionalServiceInformationUri.setLang("en");
-		additionalServiceInformationUri
-				.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
-		additionalServiceInformation.setURI(additionalServiceInformationUri);
-		extension
-				.getContent()
-				.add(this.objectFactory
-						.createAdditionalServiceInformation(additionalServiceInformation));
+		if (noRoot == false) {
+			AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
+					.createAdditionalServiceInformationType();
+			NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
+					.createNonEmptyMultiLangURIType();
+			additionalServiceInformationUri.setLang("en");
+			additionalServiceInformationUri
+					.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+			additionalServiceInformation
+					.setURI(additionalServiceInformationUri);
+			extension
+					.getContent()
+					.add(this.objectFactory
+							.createAdditionalServiceInformation(additionalServiceInformation));
+		}
 	}
 }
