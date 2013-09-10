@@ -296,7 +296,7 @@ public class BelgianTrustServiceListFactory {
 							"BE");
 					swiftTrustServiceProvider.addElectronicAddress(
 							"http://www.swift.com/",
-							"mailto:swift-pma@swift.com ");
+							"mailto:swift-pma@swift.com");
 
 					swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
 							"http://www.swift.com/pkirepository");
@@ -309,8 +309,8 @@ public class BelgianTrustServiceListFactory {
 										new DateTime(2013, 5, 15, 0, 0, 0, 0,
 												DateTimeZone.UTC),
 										swiftRootCertificate);
-						swiftTrustService
-								.addOIDForQCForLegalPerson("1.3.21.6.3.10.200.3");
+						swiftTrustService.addOIDForQCForLegalPerson(
+								"1.3.21.6.3.10.200.3", true);
 						swiftTrustServiceProvider
 								.addTrustService(swiftTrustService);
 					}
