@@ -286,8 +286,9 @@ public class BelgianTrustServiceListFactory {
 				{
 					// SWIFT
 					TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
-							.createTrustServiceProvider("SWIFT SCRL",
-									"SWIFT SCRL");
+							.createTrustServiceProvider(
+									"Society for Worldwide Interbank Financial Telecommunication SCRL",
+									"S.W.I.F.T. SCRL");
 					trustServiceList
 							.addTrustServiceProvider(swiftTrustServiceProvider);
 					swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
