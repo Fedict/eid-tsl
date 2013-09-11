@@ -89,12 +89,6 @@ public class BelgianTrustServiceListFactory {
 		certipostTrustServiceProvider.addElectronicAddress(
 				"http://www.certipost.be/", "mailto:eid.csp@certipost.be");
 
-		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				certipostInformationUri);
-		certipostTrustServiceProvider
-				.addInformationUri(Locale.ENGLISH,
-						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
-
 		// Certipost trust services: Root CA and Root CA2
 		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
@@ -253,6 +247,8 @@ public class BelgianTrustServiceListFactory {
 						.createTrustService(caQS_VG, caQS_BCT);
 				additionalCertipostTrustServices.add(caQS_TrustService);
 
+				certipostInformationUri = "http://repository.eid.belgium.be";
+
 				{
 					// Belgian Root CA 3
 					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
@@ -324,6 +320,12 @@ public class BelgianTrustServiceListFactory {
 			throw new IllegalArgumentException("unsupported year");
 		}
 		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
+
+		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				certipostInformationUri);
+		certipostTrustServiceProvider
+				.addInformationUri(Locale.ENGLISH,
+						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
 
 		// list issue date time
 		trustServiceList.setListIssueDateTime(listIssueDateTime);
