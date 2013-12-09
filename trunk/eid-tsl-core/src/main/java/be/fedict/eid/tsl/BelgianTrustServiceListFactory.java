@@ -69,7 +69,7 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year && 2011 != year && 2012 != year && 2013 != year) {
+		if (2010 != year && 2011 != year && 2012 != year && 2013 != year && 2014 != year) {
 			throw new IllegalArgumentException("cannot create a TSL for year: "
 					+ year + " trimester " + trimester);
 		}
@@ -113,6 +113,9 @@ public class BelgianTrustServiceListFactory {
 		Document euTSLDocument;
 		X509Certificate euSSLCertificate = null;
 		List<TrustService> additionalCertipostTrustServices = new LinkedList<TrustService>();
+		
+		
+		
 		if (2010 == year) {
 			switch (trimester) {
 			case FIRST:
@@ -316,9 +319,99 @@ public class BelgianTrustServiceListFactory {
 			default:
 				throw new IllegalArgumentException(trimester.toString());
 			}
-		} else {
+		} else if (2014 == year){
+			switch (trimester){
+			case FIRST:{
+				tslSequenceNumber = BigInteger.valueOf(13);
+				listIssueDateTime = new DateTime(2014, 1, 1, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
+				certipostInformationUri = "http://repository.eid.belgium.be/";
+				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
+				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
+				TrustService caQS_TrustService = TrustServiceListFactory
+						.createTrustService(caQS_VG, caQS_BCT);
+				additionalCertipostTrustServices.add(caQS_TrustService);
+
+				certipostInformationUri = "http://repository.eid.belgium.be";
+
+				{
+					// Belgian Root CA 3
+					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
+					TrustService rootCa3TrustService = TrustServiceListFactory
+							.createTrustService(rootCa3Certificate);
+					rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
+							"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
+					rootCa3TrustService
+							.addOIDForQCSSCDStatusAsInCert(
+									"2.16.56.10.1.1.7.1",
+									"urn:be:qc:natural:foreigner");
+					certipostTrustServiceProvider
+							.addTrustService(rootCa3TrustService);
+				}
+
+				{
+					// Belgian Root CA 4
+					X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
+					TrustService rootCa4TrustService = TrustServiceListFactory
+							.createTrustService(rootCa4Certificate);
+					rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
+							"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
+					rootCa4TrustService
+							.addOIDForQCSSCDStatusAsInCert(
+									"2.16.56.12.1.1.7.1",
+									"urn:be:qc:natural:foreigner");
+					certipostTrustServiceProvider
+							.addTrustService(rootCa4TrustService);
+				}
+
+				{
+					// SWIFT
+					TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
+							.createTrustServiceProvider(
+									"Society for Worldwide Interbank Financial Telecommunication SCRL",
+									"S.W.I.F.T. SCRL");
+					trustServiceList
+							.addTrustServiceProvider(swiftTrustServiceProvider);
+					swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+							"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
+							"BE");
+					swiftTrustServiceProvider.addElectronicAddress(
+							"http://www.swift.com/",
+							"mailto:swift-pma@swift.com");
+
+					swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+							"http://www.swift.com/pkirepository");
+
+					{
+						X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
+						TrustService swiftTrustService = TrustServiceListFactory
+								.createTrustService(
+										"SWIFTNet PKI Certification Authority",
+										new DateTime(2013, 5, 15, 0, 0, 0, 0,
+												DateTimeZone.UTC),
+										swiftRootCertificate);
+						swiftTrustService.addOIDForQCForLegalPerson(
+								"1.3.21.6.3.10.200.3", true);
+						swiftTrustServiceProvider
+								.addTrustService(swiftTrustService);
+					}
+				}
+				break;
+			}
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
+		}else {
 			throw new IllegalArgumentException("unsupported year");
 		}
+		
+		
+		
+		
+		
+		
 		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
 
 		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
