@@ -111,7 +111,7 @@ public class BelgianTrustServiceListFactoryTest {
 		LSResourceResolver resourceResolver = new TSLLSResourceResolver();
 		factory.setResourceResolver(resourceResolver);
 		InputStream tslSchemaInputStream = BelgianTrustServiceListFactoryTest.class
-				.getResourceAsStream("/ts_102231v030102_xsd.xsd");
+				.getResourceAsStream("/ts_119612v010101_xsd.xsd");
 		Source tslSchemaSource = new StreamSource(tslSchemaInputStream);
 		Schema tslSchema = factory.newSchema(tslSchemaSource);
 		Validator tslValidator = tslSchema.newValidator();
@@ -119,7 +119,7 @@ public class BelgianTrustServiceListFactoryTest {
 
 		Validator eccValidator = factory.newSchema(
 				BelgianTrustServiceListFactoryTest.class
-						.getResource("/ts_102231v030102_sie_xsd.xsd"))
+						.getResource("/ts_119612v010101_sie_xsd.xsd"))
 				.newValidator();
 		NodeList eccQualificationsNodeList = document
 				.getElementsByTagNameNS(
