@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-tsl</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<name>FedICT eID TSL Tests</name>
 	<description>TSL Integration tests.</description>
 	<groupId>be.fedict.eid-tsl</groupId>
 	<artifactId>eid-tsl-tests</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>be.fedict.eid-tsl</groupId>
 			<artifactId>eid-tsl-core</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>

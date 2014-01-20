@@ -5,7 +5,7 @@
 	<name>FedICT eID TSL Project</name>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-tsl</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2009</inceptionYear>
 	<licenses>
