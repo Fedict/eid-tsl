@@ -151,15 +151,15 @@ public class TrustServiceList {
 
 	private static final Log LOG = LogFactory.getLog(TrustServiceList.class);
 
-	public static final String TSL_TAG = "http://uri.etsi.org/02231/TSLTag";
+	public static final String TSL_TAG = "http://uri.etsi.org/19612/TSLTag";
 
-	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic";
+	public static final String TSL_TYPE = "http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric";
 
 	private static final String XADES_TYPE = "http://uri.etsi.org/01903#SignedProperties";
 
-	public static final String STATUS_DETERMINATION_APPROPRIATE = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate";
+	public static final String STATUS_DETERMINATION_APPROPRIATE = "http://uri.etsi.org/TrstSvc/TrustedList/TSLType/StatusDetn/EUappropriate";
 
-	public static final String SCHEME_RULE_COMMON = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/common";
+	public static final String SCHEME_RULE_COMMON = "http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUcommon";
 
 	private TrustStatusListType trustStatusList;
 
@@ -666,7 +666,7 @@ public class TrustServiceList {
 					.createTSLSchemeInformationType();
 			trustStatusList.setSchemeInformation(schemeInformation);
 		}
-		schemeInformation.setTSLVersionIdentifier(BigInteger.valueOf(3));
+		schemeInformation.setTSLVersionIdentifier(BigInteger.valueOf(4));
 
 		/*
 		 * Scheme Information - TSL sequence number

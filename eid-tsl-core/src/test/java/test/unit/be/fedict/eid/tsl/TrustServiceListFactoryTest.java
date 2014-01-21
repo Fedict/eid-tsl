@@ -245,7 +245,7 @@ public class TrustServiceListFactoryTest {
 				"tsl:TrustServiceStatusList/@TSLTag");
 		assertNotNull(tslTagNode);
 		LOG.debug("tsl tag node: " + tslTagNode.getNodeValue());
-		assertEquals("http://uri.etsi.org/02231/TSLTag", tslTagNode
+		assertEquals("http://uri.etsi.org/19612/TSLTag", tslTagNode
 				.getNodeValue());
 
 		// verify: version
@@ -253,7 +253,7 @@ public class TrustServiceListFactoryTest {
 				.selectSingleNode(document,
 						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLVersionIdentifier");
 		assertNotNull(versionNode);
-		assertEquals("3", versionNode.getTextContent());
+		assertEquals("4", versionNode.getTextContent());
 
 		// verify: sequence number
 		Node sequenceNumberNode = XPathAPI
@@ -270,7 +270,7 @@ public class TrustServiceListFactoryTest {
 				"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:TSLType");
 		assertNotNull(typeNode);
 		assertEquals(
-				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic",
+				"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric",
 				typeNode.getTextContent());
 	}
 

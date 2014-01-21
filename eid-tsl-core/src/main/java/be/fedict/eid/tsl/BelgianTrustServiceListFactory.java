@@ -37,6 +37,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.w3c.dom.Document;
 
+import be.fedict.eid.tsl.jaxb.tsl.ElectronicAddressType;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 
 /**
@@ -468,9 +469,11 @@ public class BelgianTrustServiceListFactory {
 		// scheme operator electronic address
 		List<String> electronicAddresses = new LinkedList<String>();
 		electronicAddresses.add("http://economie.fgov.be");
+	
 		electronicAddresses.add("mailto:be.sign@economie.fgov.be");
 		trustServiceList
 				.setSchemeOperatorElectronicAddresses(electronicAddresses);
+	
 
 		// scheme name
 		trustServiceList
@@ -523,7 +526,7 @@ public class BelgianTrustServiceListFactory {
 		 * bijzonder om een certificatiebewijs te kunnen voorleggen bij
 		 * gerechtelijke procedures.
 		 */
-		trustServiceList.setHistoricalInformationPeriod(3653 * 3);
+		trustServiceList.setHistoricalInformationPeriod(21845 * 3);
 
 		// next update
 		int operationalOverlapWeeks = 2;

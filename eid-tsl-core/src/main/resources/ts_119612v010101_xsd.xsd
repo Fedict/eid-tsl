@@ -3,6 +3,8 @@
 This document is part of ETSI TS 119 612. In the event that any
 part of this document in conflict with the text of TS 119 612 
 then that text shall prevail as the authoritative source
+
+This is a review done in October 2013 as a result of mismatches between the XML Schema and the specification of some data types within TS 119 612,
 -->
 <xsd:schema targetNamespace="http://uri.etsi.org/02231/v2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tsl="http://uri.etsi.org/02231/v2#" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- Imports -->
@@ -66,10 +68,12 @@ then that text shall prevail as the authoritative source
 		<xsd:attribute ref="xml:lang" use="required"/>
 	</xsd:complexType>
 	<!--ElectronicAddressType-->
+	<!-- 2013-10. XML Schema CHANGE-->
+	<!-- ElectronicAddress changed to include MultilLan URIs for e-mails and web sites URIs as specified in TS 119 612-->
 	<xsd:element name="ElectronicAddress" type="tsl:ElectronicAddressType"/>
 	<xsd:complexType name="ElectronicAddressType">
 		<xsd:sequence>
-			<xsd:element name="URI" type="tsl:NonEmptyURIType" maxOccurs="unbounded"/>
+			<xsd:element name="URI" type="tsl:NonEmptyMultiLangURIType" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<!-- Types for extensions in TSL -->
@@ -121,21 +125,20 @@ then that text shall prevail as the authoritative source
 	<!-- ROOT Element -->
 	<xsd:element name="TrustServiceStatusList" type="tsl:TrustStatusListType"/>
 	<!-- Trust Status List Type Definition -->
+	<!-- 2013-10. XML Schema CHANGE-->
+	<!-- Attribute TSLTag declared as xsd:anyURI -->
 	<xsd:complexType name="TrustStatusListType">
 		<xsd:sequence>
 			<xsd:element ref="tsl:SchemeInformation"/>
 			<xsd:element ref="tsl:TrustServiceProviderList" minOccurs="0"/>
 			<xsd:element ref="ds:Signature" minOccurs="0"/>
 		</xsd:sequence>
-		<xsd:attribute name="TSLTag" type="tsl:TSLTagType" use="required"/>
+		<xsd:attribute name="TSLTag" type="xsd:anyURI" use="required"/>
 		<xsd:attribute name="Id" type="xsd:ID" use="optional"/>
 	</xsd:complexType>
-	<!-- TSLTagType -->
-	<xsd:simpleType name="TSLTagType">
-		<xsd:restriction base="xsd:anyURI">
-			<xsd:enumeration value="http://uri.etsi.org/02231/TSLTag"/>
-		</xsd:restriction>
-	</xsd:simpleType>
+	<!-- 2013-10. XML Schema CHANGE-->
+	<!-- Supressed the type TSLTagType that served to restrict the value of TSLTag by XML Schema-->
+	<!-- In this way, the XML Schema is independent of the TSLTag value and this may change from version to version-->
 	<!-- TrustServiceProviderListType-->
 	<xsd:element name="TrustServiceProviderList" type="tsl:TrustServiceProviderListType"/>
 	<xsd:complexType name="TrustServiceProviderListType">
@@ -170,7 +173,9 @@ then that text shall prevail as the authoritative source
 	<xsd:element name="SchemeOperatorName" type="tsl:InternationalNamesType"/>
 	<xsd:element name="SchemeName" type="tsl:InternationalNamesType"/>
 	<xsd:element name="SchemeInformationURI" type="tsl:NonEmptyMultiLangURIListType"/>
-	<xsd:element name="SchemeTypeCommunityRules" type="tsl:NonEmptyURIListType"/>
+	<!-- 2013-10. XML Schema CHANGE-->
+	<!-- SchemeTypeCommunityRules changed to include MultilLang URIs for e-mails and web sites URIs as specified in TS 119 612-->
+	<xsd:element name="SchemeTypeCommunityRules" type="tsl:NonEmptyMultiLangURIListType"/>
 	<!-- SchemeTerritory -->
 	<xsd:element name="SchemeTerritory" type="tsl:SchemeTerritoryType"/>
 	<xsd:simpleType name="SchemeTerritoryType">
@@ -221,7 +226,10 @@ then that text shall prevail as the authoritative source
 		</xsd:choice>
 	</xsd:complexType>
 	<!--DistributionPoints element-->
-	<xsd:element name="DistributionPoints" type="tsl:ElectronicAddressType"/>
+	<!-- 2013-10. XML Schema CHANGE-->
+	<!-- DistributionPointschanged from ElectronicAddress to nonEmptyURIListType as ElectronicAddress does
+	now contain a list of multilang URIs, which is not required for distribution points-->
+	<xsd:element name="DistributionPoints" type="tsl:NonEmptyURIListType"/>
 	<!-- TSPType -->
 	<xsd:element name="TrustServiceProvider" type="tsl:TSPType"/>
 	<xsd:complexType name="TSPType">
@@ -329,3 +337,4 @@ then that text shall prevail as the authoritative source
 		</xsd:sequence>
 	</xsd:complexType>
 </xsd:schema>
+
