@@ -26,7 +26,7 @@
 		<jxb:schemaBindings>
 			<jxb:package name="be.fedict.eid.tsl.jaxb.tslx" />
 		</jxb:schemaBindings>
-		<jxb:bindings schemaLocation="http://uri.etsi.org/02231/v3.1.2/tsl.xsd"
+		<jxb:bindings schemaLocation="ts_119612v010101_xsd.xsd"
 			node="/xs:schema">
 			<jxb:schemaBindings>
 				<jxb:package name="be.fedict.eid.tsl.jaxb.tsl" />

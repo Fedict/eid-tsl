@@ -209,10 +209,16 @@ public class Tsl2PdfExporter {
 			addItemRow("Scheme status determination approach", substringAfter(
 					tsl.getStatusDeterminationApproach(), "StatusDetn/"),
 					informationTable);
-
+			/*
 			final List<String> schemeTypes = new ArrayList<String>();
 			for (final String schemeType : tsl.getSchemeTypes()) {
 				schemeTypes.add(schemeType);
+			}
+			*/
+			final List<String>schemeTypes = new ArrayList<String>();
+			List<NonEmptyMultiLangURIType> uris = tsl.getSchemeTypes();
+			for (NonEmptyMultiLangURIType uri : uris){
+				schemeTypes.add(uri.getValue());
 			}
 			addItemRow("Scheme type community rules", schemeTypes,
 					informationTable);

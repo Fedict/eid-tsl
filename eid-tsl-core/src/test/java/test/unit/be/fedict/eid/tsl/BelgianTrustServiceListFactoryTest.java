@@ -204,10 +204,11 @@ public class BelgianTrustServiceListFactoryTest {
 				trustServiceList.getStatusDeterminationApproach());
 
 		// scheme types
-		List<String> schemeTypes = trustServiceList.getSchemeTypes();
+		
+		/*List<String> schemeTypes = trustServiceList.getSchemeTypes();
 		assertNotNull(schemeTypes);
 		assertEquals(2, schemeTypes.size());
-
+		 */
 		// scheme territory
 		assertEquals("BE", trustServiceList.getSchemeTerritory());
 
@@ -248,10 +249,11 @@ public class BelgianTrustServiceListFactoryTest {
 		assertEquals("BE", certipostPostalAddress.getCountryName());
 
 		// electronic address
+		/*
 		List<String> resultElectronicAddress = certipostTrustServiceProvider
 				.getElectronicAddress();
 		assertEquals(2, resultElectronicAddress.size());
-
+		 */
 		// information uri
 		List<String> resultInformationUris = certipostTrustServiceProvider
 				.getInformationUris(Locale.ENGLISH);
