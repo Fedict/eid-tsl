@@ -117,6 +117,7 @@ import be.fedict.eid.tsl.jaxb.tsl.PostalAddressListType;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 import be.fedict.eid.tsl.jaxb.tsl.ServiceDigitalIdentityListType;
 import be.fedict.eid.tsl.jaxb.tsl.TSLSchemeInformationType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPInformationType;
 import be.fedict.eid.tsl.jaxb.tsl.TSPType;
 import be.fedict.eid.tsl.jaxb.tsl.TrustServiceProviderListType;
 import be.fedict.eid.tsl.jaxb.tsl.TrustStatusListType;
@@ -383,7 +384,12 @@ public class TrustServiceList {
 		}
 	}
 
-	public List<String> getSchemeOperatorElectronicAddresses() {
+	public List <String> getSchemeOperatorElectronicAddresses(){
+		return getSchemeOperatorElectronicAddresses(Locale.ENGLISH);
+	}
+	
+	public List<String> getSchemeOperatorElectronicAddresses(Locale locale) {
+		List<String> results = new LinkedList<String>();
 		if (null == this.trustStatusList) {
 			return null;
 		}
@@ -401,10 +407,22 @@ public class TrustServiceList {
 		if (null == electronicAddress) {
 			return null;
 		}
-		return electronicAddress.getURI();
+		List<NonEmptyMultiLangURIType> uris = electronicAddress.getURI();
+		
+		for (NonEmptyMultiLangURIType uri : uris){
+			String lang = uri.getLang();
+			if (0 != locale.getLanguage().compareToIgnoreCase(lang)){
+				continue;
+			}
+			results.add(uri.getValue());
+		}
+		return results;
 	}
 
-	public void setSchemeOperatorElectronicAddresses(List<String> addresses) {
+	
+	
+	
+	public void setSchemeOperatorElectronicAddresses(Locale local, String electronicAddres) {
 		AddressType schemeOperatorAddress = getSchemeOperatorAddress();
 		ElectronicAddressType electronicAddress = schemeOperatorAddress
 				.getElectronicAddress();
@@ -413,11 +431,12 @@ public class TrustServiceList {
 					.createElectronicAddressType();
 			schemeOperatorAddress.setElectronicAddress(electronicAddress);
 		}
-		List<String> electronicAddresses = electronicAddress.getURI();
-		electronicAddresses.clear();
-		for (String address : addresses) {
-			electronicAddresses.add(address);
-		}
+		List<NonEmptyMultiLangURIType> electronicAddresses = electronicAddress.getURI();
+		NonEmptyMultiLangURIType uri = this.objectFactory.
+				createNonEmptyMultiLangURIType();
+		uri.setLang(local.getLanguage());
+		uri.setValue(electronicAddres);
+		electronicAddresses.add(uri);
 	}
 
 	public String getSchemeName(Locale locale) {
@@ -1049,18 +1068,19 @@ public class TrustServiceList {
 		return null;
 	}
 
-	public void addSchemeType(String schemeType) {
+	public void addSchemeType(NonEmptyMultiLangURIType schemeType) {
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
-		NonEmptyURIListType schemeTypeList = schemeInformation
+		NonEmptyMultiLangURIListType schemeTypeList = schemeInformation
 				.getSchemeTypeCommunityRules();
+		
 		if (null == schemeTypeList) {
-			schemeTypeList = this.objectFactory.createNonEmptyURIListType();
+			schemeTypeList = this.objectFactory.createNonEmptyMultiLangURIListType();
 			schemeInformation.setSchemeTypeCommunityRules(schemeTypeList);
 		}
 		schemeTypeList.getURI().add(schemeType);
 	}
 
-	public List<String> getSchemeTypes() {
+	public List<NonEmptyMultiLangURIType> getSchemeTypes() {
 		if (null == this.trustStatusList) {
 			return null;
 		}
@@ -1069,12 +1089,12 @@ public class TrustServiceList {
 		if (null == schemeInformation) {
 			return null;
 		}
-		NonEmptyURIListType schemeTypeList = schemeInformation
+		NonEmptyMultiLangURIListType schemeTypeList = schemeInformation
 				.getSchemeTypeCommunityRules();
 		if (null == schemeTypeList) {
 			return null;
 		}
-		List<String> schemeTypes = schemeTypeList.getURI();
+		List<NonEmptyMultiLangURIType> schemeTypes = schemeTypeList.getURI();
 		return schemeTypes;
 	}
 
@@ -1261,11 +1281,11 @@ public class TrustServiceList {
 
 	public void addDistributionPoint(String distributionPointUri) {
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
-		ElectronicAddressType distributionPoints = schemeInformation
+		NonEmptyURIListType distributionPoints = schemeInformation
 				.getDistributionPoints();
 		if (null == distributionPoints) {
 			distributionPoints = this.objectFactory
-					.createElectronicAddressType();
+					.createNonEmptyURIListType();					
 			schemeInformation.setDistributionPoints(distributionPoints);
 		}
 		List<String> uris = distributionPoints.getURI();
@@ -1336,14 +1356,14 @@ public class TrustServiceList {
 
 	public void addOtherTSLPointer(String location, String mimeType,
 			String tslType, String schemeTerritory, String schemeOperatorName,
-			String schemeTypeCommunityRuleUri) {
+			NonEmptyMultiLangURIType schemeTypeCommunityRuleUri) {
 		addOtherTSLPointer(location, mimeType, tslType, schemeTerritory,
 				schemeOperatorName, schemeTypeCommunityRuleUri, null);
 	}
 
 	public void addOtherTSLPointer(String location, String mimeType,
 			String tslType, String schemeTerritory, String schemeOperatorName,
-			String schemeTypeCommunityRuleUri,
+			NonEmptyMultiLangURIType schemeTypeCommunityRuleUri,
 			X509Certificate digitalIdentityCertificate) {
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
 		OtherTSLPointersType otherTSLPointers = schemeInformation
@@ -1401,10 +1421,10 @@ public class TrustServiceList {
 			objects.add(anyType);
 		}
 		{
-			NonEmptyURIListType uriList = this.objectFactory
-					.createNonEmptyURIListType();
+			NonEmptyMultiLangURIListType uriList = this.objectFactory
+					.createNonEmptyMultiLangURIListType();
 			uriList.getURI().add(schemeTypeCommunityRuleUri);
-			JAXBElement<NonEmptyURIListType> schemeTypeCommunityRulesElement = this.objectFactory
+			JAXBElement<NonEmptyMultiLangURIListType> schemeTypeCommunityRulesElement = this.objectFactory
 					.createSchemeTypeCommunityRules(uriList);
 			AnyType anyType = this.objectFactory.createAnyType();
 			anyType.getContent().add(schemeTypeCommunityRulesElement);

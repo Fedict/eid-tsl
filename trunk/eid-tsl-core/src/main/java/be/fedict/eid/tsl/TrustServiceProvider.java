@@ -128,7 +128,7 @@ public class TrustServiceProvider {
 		return null;
 	}
 
-	public void addElectronicAddress(String... electronicAddressUris) {
+	public void addElectronicAddress(Locale local, String electronicAddres) {
 		TSPInformationType tspInformation = getTSPInformation();
 		AddressType address = tspInformation.getTSPAddress();
 		if (null == address) {
@@ -142,14 +142,17 @@ public class TrustServiceProvider {
 					.createElectronicAddressType();
 			address.setElectronicAddress(electronicAddress);
 		}
-		List<String> uris = electronicAddress.getURI();
-		for (String electronicAddressUri : electronicAddressUris) {
-			uris.add(electronicAddressUri);
-		}
+		List<NonEmptyMultiLangURIType> uris = electronicAddress.getURI();
+		NonEmptyMultiLangURIType uri = this.objectFactory.
+				createNonEmptyMultiLangURIType();
+		uri.setLang(local.getLanguage());
+		uri.setValue(electronicAddres);
+		uris.add(uri);
 	}
 
-	public List<String> getElectronicAddress() {
-		List<String> resultElectronicAddress = new LinkedList<String>();
+	public NonEmptyMultiLangURIListType getElectronicAddress() {
+		NonEmptyMultiLangURIListType resultElectronicAddress = this.objectFactory
+				.createNonEmptyMultiLangURIListType();
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
 		if (null == tspInformation) {
 			return resultElectronicAddress;
@@ -163,9 +166,9 @@ public class TrustServiceProvider {
 		if (null == electronicAddress) {
 			return resultElectronicAddress;
 		}
-		List<String> uris = electronicAddress.getURI();
-		for (String uri : uris) {
-			resultElectronicAddress.add(uri);
+		List<NonEmptyMultiLangURIType> uris = electronicAddress.getURI();
+		for (NonEmptyMultiLangURIType uri : uris) {
+			resultElectronicAddress.getURI().add(uri);
 		}
 		return resultElectronicAddress;
 	}
@@ -199,7 +202,7 @@ public class TrustServiceProvider {
 	public List<String> getInformationUris() {
 		return getInformationUris(Locale.ENGLISH);
 	}
-
+	
 	public List<String> getInformationUris(Locale locale) {
 		List<String> results = new LinkedList<String>();
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
