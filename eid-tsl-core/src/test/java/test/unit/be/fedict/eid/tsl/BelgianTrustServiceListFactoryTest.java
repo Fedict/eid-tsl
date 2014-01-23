@@ -115,6 +115,7 @@ public class BelgianTrustServiceListFactoryTest {
 		Source tslSchemaSource = new StreamSource(tslSchemaInputStream);
 		Schema tslSchema = factory.newSchema(tslSchemaSource);
 		Validator tslValidator = tslSchema.newValidator();
+		LOG.debug("Starting validate");
 		tslValidator.validate(new DOMSource(document));
 
 		Validator eccValidator = factory.newSchema(
@@ -200,7 +201,7 @@ public class BelgianTrustServiceListFactoryTest {
 
 		// status determination approach
 		assertEquals(
-				"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate",
+				"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/StatusDetn/EUappropriate",
 				trustServiceList.getStatusDeterminationApproach());
 
 		// scheme types
@@ -220,7 +221,7 @@ public class BelgianTrustServiceListFactoryTest {
 		assertTrue(resultLegalNotice.indexOf("Belgium") != -1);
 
 		// historical information period
-		assertEquals(new Integer(3653 * 3),
+		assertEquals(new Integer(21845 * 3),
 				trustServiceList.getHistoricalInformationPeriod());
 
 		// list issue date time

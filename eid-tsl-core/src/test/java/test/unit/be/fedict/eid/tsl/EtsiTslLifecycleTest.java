@@ -114,20 +114,15 @@ public class EtsiTslLifecycleTest {
 		 * The Scheme Type URIs can actually be visited. We should provide some
 		 * information to ETSI for the BE schemerules.
 		 */
-		NonEmptyMultiLangURIType uri = new NonEmptyMultiLangURIType();
-		uri.setLang(Locale.ENGLISH.getLanguage());
-		uri.setValue(TrustServiceList.SCHEME_RULE_COMMON);
-		trustServiceList.addSchemeType(uri);
+		trustServiceList
+			.addSchemeType(TrustServiceList.SCHEME_RULE_COMMON, Locale.ENGLISH);
 		/*
 		 * The BE schemerules MUSH be provided. We can add extra paths for
 		 * language. For example: http://
 		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
 		 */
-		NonEmptyMultiLangURIType uri2 = new NonEmptyMultiLangURIType();
-		uri2.setLang(Locale.ENGLISH.getLanguage());
-		uri2.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
 		trustServiceList
-				.addSchemeType(uri2);
+				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE", Locale.ENGLISH);
 
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
@@ -243,22 +238,15 @@ public class EtsiTslLifecycleTest {
 		 * The Scheme Type URIs can actually be visited. We should provide some
 		 * information to ETSI for the BE schemerules.
 		 */
-		
-		NonEmptyMultiLangURIType uri = new NonEmptyMultiLangURIType();
-		uri.setLang(Locale.ENGLISH.getLanguage());
-		uri.setValue(TrustServiceList.SCHEME_RULE_COMMON);
-		trustServiceList.addSchemeType(uri);
+		trustServiceList
+			.addSchemeType(TrustServiceList.SCHEME_RULE_COMMON, Locale.ENGLISH );
 		/*
 		 * The BE schemerules MUSH be provided. We can add extra paths for
 		 * language. For example: http://
 		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
 		 */
-		
-		NonEmptyMultiLangURIType uri2 = new NonEmptyMultiLangURIType();
-		uri2.setLang(Locale.ENGLISH.getLanguage());
-		uri2.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
 		trustServiceList
-				.addSchemeType(uri2);
+				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE", Locale.ENGLISH);
 
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
