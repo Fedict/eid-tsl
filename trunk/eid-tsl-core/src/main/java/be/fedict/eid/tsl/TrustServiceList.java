@@ -1068,7 +1068,12 @@ public class TrustServiceList {
 		return null;
 	}
 
-	public void addSchemeType(NonEmptyMultiLangURIType schemeType) {
+	public void addSchemeType(String schemeType, Locale locale) {
+		NonEmptyMultiLangURIType uri = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		uri.setLang(locale.getLanguage());
+		uri.setValue(schemeType);
+		
 		TSLSchemeInformationType schemeInformation = getSchemeInformation();
 		NonEmptyMultiLangURIListType schemeTypeList = schemeInformation
 				.getSchemeTypeCommunityRules();
@@ -1077,7 +1082,7 @@ public class TrustServiceList {
 			schemeTypeList = this.objectFactory.createNonEmptyMultiLangURIListType();
 			schemeInformation.setSchemeTypeCommunityRules(schemeTypeList);
 		}
-		schemeTypeList.getURI().add(schemeType);
+		schemeTypeList.getURI().add(uri);
 	}
 
 	public List<NonEmptyMultiLangURIType> getSchemeTypes() {
@@ -1286,12 +1291,18 @@ public class TrustServiceList {
 		if (null == distributionPoints) {
 			distributionPoints = this.objectFactory
 					.createNonEmptyURIListType();					
-			schemeInformation.setDistributionPoints(distributionPoints);
+			schemeInformation.
+				setDistributionPoints(distributionPoints);
 		}
+		/*NonEmptyMultiLangURIType uri = this.objectFactory.
+				createNonEmptyMultiLangURIType();
+		uri.setLang(locale.getLanguage());
+		uri.setValue(distributionPointUri);	*/	
 		List<String> uris = distributionPoints.getURI();
-		uris.add(distributionPointUri);
+        uris.add(distributionPointUri);
+		
 	}
-
+	
 	public String getSha1Fingerprint() {
 		String fingerprint = DigestUtils.shaHex(toByteArray());
 		return fingerprint;
@@ -1354,131 +1365,136 @@ public class TrustServiceList {
 		return otherTSLpointer;
 	}
 
-	public void addOtherTSLPointer(String location, String mimeType,
-			String tslType, String schemeTerritory, String schemeOperatorName,
-			NonEmptyMultiLangURIType schemeTypeCommunityRuleUri) {
-		addOtherTSLPointer(location, mimeType, tslType, schemeTerritory,
-				schemeOperatorName, schemeTypeCommunityRuleUri, null);
-	}
+	 public void addOtherTSLPointer(String location, String mimeType,
+             String tslType, String schemeTerritory, String schemeOperatorName,
+             String schemeTypeCommunityRuleUri, Locale schemeTypeCommunityRuleUriLocale) {
+     addOtherTSLPointer(location, mimeType, tslType, schemeTerritory,
+                     schemeOperatorName, schemeTypeCommunityRuleUri, schemeTypeCommunityRuleUriLocale, null);
+}
 
 	public void addOtherTSLPointer(String location, String mimeType,
-			String tslType, String schemeTerritory, String schemeOperatorName,
-			NonEmptyMultiLangURIType schemeTypeCommunityRuleUri,
-			X509Certificate digitalIdentityCertificate) {
-		TSLSchemeInformationType schemeInformation = getSchemeInformation();
-		OtherTSLPointersType otherTSLPointers = schemeInformation
-				.getPointersToOtherTSL();
-		if (null == otherTSLPointers) {
-			otherTSLPointers = this.objectFactory.createOtherTSLPointersType();
-			schemeInformation.setPointersToOtherTSL(otherTSLPointers);
-		}
-		List<OtherTSLPointerType> pointerList = otherTSLPointers
-				.getOtherTSLPointer();
-		OtherTSLPointerType otherTSLPointer = this.objectFactory
-				.createOtherTSLPointerType();
-		pointerList.add(otherTSLPointer);
-
-		otherTSLPointer.setTSLLocation(location);
-		AdditionalInformationType additionalInformation = this.objectFactory
-				.createAdditionalInformationType();
-		otherTSLPointer.setAdditionalInformation(additionalInformation);
-
-		List<Object> objects = additionalInformation
-				.getTextualInformationOrOtherInformation();
-		{
-			JAXBElement<String> mimeTypeElement = this.tslxObjectFactory
-					.createMimeType(mimeType);
-			AnyType anyType = this.objectFactory.createAnyType();
-			anyType.getContent().add(mimeTypeElement);
-			objects.add(anyType);
-		}
-		{
-			JAXBElement<String> tslTypeElement = this.objectFactory
-					.createTSLType(tslType);
-			AnyType anyType = this.objectFactory.createAnyType();
-			anyType.getContent().add(tslTypeElement);
-			objects.add(anyType);
-		}
-		{
-			JAXBElement<String> schemeTerritoryElement = this.objectFactory
-					.createSchemeTerritory(schemeTerritory);
-			AnyType anyType = this.objectFactory.createAnyType();
-			anyType.getContent().add(schemeTerritoryElement);
-			objects.add(anyType);
-		}
-		{
-			InternationalNamesType i18nNames = this.objectFactory
-					.createInternationalNamesType();
-			MultiLangNormStringType i18nName = this.objectFactory
-					.createMultiLangNormStringType();
-			i18nName.setLang("en");
-			i18nName.setValue(schemeOperatorName);
-			i18nNames.getName().add(i18nName);
-			JAXBElement<InternationalNamesType> schemeOperatorNameElement = this.objectFactory
-					.createSchemeOperatorName(i18nNames);
-			AnyType anyType = this.objectFactory.createAnyType();
-			anyType.getContent().add(schemeOperatorNameElement);
-			objects.add(anyType);
-		}
-		{
-			NonEmptyMultiLangURIListType uriList = this.objectFactory
-					.createNonEmptyMultiLangURIListType();
-			uriList.getURI().add(schemeTypeCommunityRuleUri);
-			JAXBElement<NonEmptyMultiLangURIListType> schemeTypeCommunityRulesElement = this.objectFactory
-					.createSchemeTypeCommunityRules(uriList);
-			AnyType anyType = this.objectFactory.createAnyType();
-			anyType.getContent().add(schemeTypeCommunityRulesElement);
-			objects.add(anyType);
-		}
-		if (null != digitalIdentityCertificate) {
-			ServiceDigitalIdentityListType serviceDigitalIdentityList = this.objectFactory
-					.createServiceDigitalIdentityListType();
-			DigitalIdentityListType digitalIdentityList = this.objectFactory
-					.createDigitalIdentityListType();
-			List<DigitalIdentityType> digitalIdentities = digitalIdentityList
-					.getDigitalId();
-			DigitalIdentityType digitalIdentity = this.objectFactory
-					.createDigitalIdentityType();
-
-			try {
-				digitalIdentity.setX509Certificate(digitalIdentityCertificate
-						.getEncoded());
-			} catch (CertificateEncodingException e) {
-				throw new RuntimeException("X509 encoding error: "
-						+ e.getMessage(), e);
-			}
-			digitalIdentities.add(digitalIdentity);
-
-			digitalIdentity = this.objectFactory.createDigitalIdentityType();
-			digitalIdentity.setX509SubjectName(digitalIdentityCertificate
-					.getSubjectX500Principal().getName());
-			digitalIdentities.add(digitalIdentity);
-
-			byte[] skiValue = digitalIdentityCertificate
-					.getExtensionValue(X509Extensions.SubjectKeyIdentifier
-							.getId());
-			if (null != skiValue) {
-				digitalIdentity = this.objectFactory
-						.createDigitalIdentityType();
-				SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
-				try {
-					subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
-							skiValue);
-				} catch (IOException e) {
-					throw new RuntimeException("X509 SKI decoding error: "
-							+ e.getMessage(), e);
-				}
-				digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
-						.getKeyIdentifier());
-				digitalIdentities.add(digitalIdentity);
-			}
-
-			List<DigitalIdentityListType> digitalIdentityListList = serviceDigitalIdentityList
-					.getServiceDigitalIdentity();
-			digitalIdentityListList.add(digitalIdentityList);
-
-			otherTSLPointer
-					.setServiceDigitalIdentities(serviceDigitalIdentityList);
-		}
+	             String tslType, String schemeTerritory, String schemeOperatorName,
+	             String schemeTypeCommunityRuleUri,
+	             Locale schemeTypeCommunityRuleUriLocale,
+	             X509Certificate digitalIdentityCertificate) {
+	     TSLSchemeInformationType schemeInformation = getSchemeInformation();
+	     OtherTSLPointersType otherTSLPointers = schemeInformation
+	                     .getPointersToOtherTSL();
+	     if (null == otherTSLPointers) {
+	             otherTSLPointers = this.objectFactory.createOtherTSLPointersType();
+	             schemeInformation.setPointersToOtherTSL(otherTSLPointers);
+	     }
+	     List<OtherTSLPointerType> pointerList = otherTSLPointers
+	                     .getOtherTSLPointer();
+	     OtherTSLPointerType otherTSLPointer = this.objectFactory
+	                     .createOtherTSLPointerType();
+	     pointerList.add(otherTSLPointer);
+	
+	     otherTSLPointer.setTSLLocation(location);
+	     AdditionalInformationType additionalInformation = this.objectFactory
+	                     .createAdditionalInformationType();
+	     otherTSLPointer.setAdditionalInformation(additionalInformation);
+	
+	     List<Object> objects = additionalInformation
+	                     .getTextualInformationOrOtherInformation();
+	     {
+	             JAXBElement<String> mimeTypeElement = this.tslxObjectFactory
+	                             .createMimeType(mimeType);
+	             AnyType anyType = this.objectFactory.createAnyType();
+	             anyType.getContent().add(mimeTypeElement);
+	             objects.add(anyType);
+	     }
+	     {
+	             JAXBElement<String> tslTypeElement = this.objectFactory
+	                             .createTSLType(tslType);
+	             AnyType anyType = this.objectFactory.createAnyType();
+	             anyType.getContent().add(tslTypeElement);
+	             objects.add(anyType);
+	     }
+	     {
+	             JAXBElement<String> schemeTerritoryElement = this.objectFactory
+	                             .createSchemeTerritory(schemeTerritory);
+	             AnyType anyType = this.objectFactory.createAnyType();
+	             anyType.getContent().add(schemeTerritoryElement);
+	             objects.add(anyType);
+	     }
+	     {
+	             InternationalNamesType i18nNames = this.objectFactory
+	                             .createInternationalNamesType();
+	             MultiLangNormStringType i18nName = this.objectFactory
+	                             .createMultiLangNormStringType();
+	             i18nName.setLang("en");
+	             i18nName.setValue(schemeOperatorName);
+	             i18nNames.getName().add(i18nName);
+	             JAXBElement<InternationalNamesType> schemeOperatorNameElement = this.objectFactory
+	                             .createSchemeOperatorName(i18nNames);
+	             AnyType anyType = this.objectFactory.createAnyType();
+	             anyType.getContent().add(schemeOperatorNameElement);
+	             objects.add(anyType);
+	     }
+	     {
+	    	 NonEmptyMultiLangURIListType uriList = this.objectFactory
+	                             .createNonEmptyMultiLangURIListType();
+	    	 	NonEmptyMultiLangURIType uri = this.objectFactory
+	    	 			.createNonEmptyMultiLangURIType();
+    	 		uri.setLang(schemeTypeCommunityRuleUriLocale.getLanguage());
+	    	 	uri.setValue(schemeTypeCommunityRuleUri);
+	            uriList.getURI().add(uri);
+	            JAXBElement<NonEmptyMultiLangURIListType> schemeTypeCommunityRulesElement = this.objectFactory
+	                             .createSchemeTypeCommunityRules(uriList);
+	             AnyType anyType = this.objectFactory.createAnyType();
+	             anyType.getContent().add(schemeTypeCommunityRulesElement);
+	             objects.add(anyType);
+	     }
+	     if (null != digitalIdentityCertificate) {
+	             ServiceDigitalIdentityListType serviceDigitalIdentityList = this.objectFactory
+	                             .createServiceDigitalIdentityListType();
+	             DigitalIdentityListType digitalIdentityList = this.objectFactory
+	                             .createDigitalIdentityListType();
+	             List<DigitalIdentityType> digitalIdentities = digitalIdentityList
+	                             .getDigitalId();
+	             DigitalIdentityType digitalIdentity = this.objectFactory
+	                             .createDigitalIdentityType();
+	
+	             try {
+	                     digitalIdentity.setX509Certificate(digitalIdentityCertificate
+	                                     .getEncoded());
+	             } catch (CertificateEncodingException e) {
+	                     throw new RuntimeException("X509 encoding error: "
+	                                     + e.getMessage(), e);
+	             }
+	             digitalIdentities.add(digitalIdentity);
+	
+	             digitalIdentity = this.objectFactory.createDigitalIdentityType();
+	             digitalIdentity.setX509SubjectName(digitalIdentityCertificate
+	                             .getSubjectX500Principal().getName());
+	             digitalIdentities.add(digitalIdentity);
+	
+	             byte[] skiValue = digitalIdentityCertificate
+	                             .getExtensionValue(X509Extensions.SubjectKeyIdentifier
+	                                             .getId());
+	             if (null != skiValue) {
+	                     digitalIdentity = this.objectFactory
+	                                     .createDigitalIdentityType();
+	                     SubjectKeyIdentifierStructure subjectKeyIdentifierStructure;
+	                     try {
+	                             subjectKeyIdentifierStructure = new SubjectKeyIdentifierStructure(
+	                                             skiValue);
+	                     } catch (IOException e) {
+	                             throw new RuntimeException("X509 SKI decoding error: "
+	                                             + e.getMessage(), e);
+	                     }
+	                     digitalIdentity.setX509SKI(subjectKeyIdentifierStructure
+	                                     .getKeyIdentifier());
+	                     digitalIdentities.add(digitalIdentity);
+	             }
+	
+	             List<DigitalIdentityListType> digitalIdentityListList = serviceDigitalIdentityList
+	                             .getServiceDigitalIdentity();
+	             digitalIdentityListList.add(digitalIdentityList);
+	
+	             otherTSLPointer
+	                             .setServiceDigitalIdentities(serviceDigitalIdentityList);
+	     }
 	}
 }

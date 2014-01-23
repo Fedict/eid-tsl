@@ -505,21 +505,15 @@ public class BelgianTrustServiceListFactory {
 		 * The Scheme Type URIs can actually be visited. We should provide some
 		 * information to ETSI for the BE schemerules.
 		 */
-		NonEmptyMultiLangURIType schemeTypeUri = new NonEmptyMultiLangURIType();
-		schemeTypeUri.setLang(Locale.ENGLISH.getLanguage());
-		schemeTypeUri.setValue(TrustServiceList.SCHEME_RULE_COMMON);
-		trustServiceList.addSchemeType(schemeTypeUri);
+		trustServiceList
+			.addSchemeType(TrustServiceList.SCHEME_RULE_COMMON, Locale.ENGLISH);
 		/*
 		 * The BE schemerules MUSH be provided. We can add extra paths for
 		 * language. For example: http://
 		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
 		 */
-		schemeTypeUri = new NonEmptyMultiLangURIType();
-		schemeTypeUri.setLang(Locale.ENGLISH.getLanguage());
-		schemeTypeUri.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE");
-		trustServiceList.addSchemeType(schemeTypeUri); 
 		trustServiceList
-				.addSchemeType(schemeTypeUri);
+				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE", Locale.ENGLISH);
 
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
@@ -550,9 +544,7 @@ public class BelgianTrustServiceListFactory {
 
 		trustServiceList
 				.addDistributionPoint("http://tsl.belgium.be/tsl-be.xml");
-		NonEmptyMultiLangURIType uri = new NonEmptyMultiLangURIType();
-		uri.setLang(Locale.ENGLISH.getLanguage());
-		uri.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+		
 		trustServiceList
 				.addOtherTSLPointer(
 						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-hr.pdf",
@@ -560,7 +552,8 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
 						"EU",
 						"European Commission",
-						uri,
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						Locale.ENGLISH,
 						euSSLCertificate);
 
 		TrustServiceList euTSL;
@@ -573,8 +566,7 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate euCertificate = euTSL.verifySignature();
 		LOG.debug("EU certificate: " + euCertificate);
 		NonEmptyMultiLangURIType uri2 = new NonEmptyMultiLangURIType();
-		uri.setLang(Locale.ENGLISH.getLanguage());
-		uri.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList");
+		
 		trustServiceList
 				.addOtherTSLPointer(
 						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
@@ -582,7 +574,8 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
 						"EU",
 						"European Commission",
-						uri2,
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						Locale.ENGLISH,
 						euCertificate);
 
 		// Certipost eTrust trust services
