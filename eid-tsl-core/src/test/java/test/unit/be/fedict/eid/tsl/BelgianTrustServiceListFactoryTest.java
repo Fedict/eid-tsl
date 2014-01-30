@@ -78,11 +78,11 @@ public class BelgianTrustServiceListFactoryTest {
 	public void testBelgianTrustList() throws Exception {
 		// setup
 		TrustServiceList trustServiceList = BelgianTrustServiceListFactory
-				.newInstance(2010, Trimester.FIRST);
+				.newInstance(2014, Trimester.FIRST);
 
 		assertNotNull(trustServiceList.getType());
 
-		File unsignedTslFile = File.createTempFile("tsl-be-unsigned-", ".xml");
+		File unsignedTslFile = File.createTempFile("tsl-be-2014-T1-candidatetest", ".xml");
 		trustServiceList.saveAs(unsignedTslFile);
 
 		// sign trust list
@@ -236,7 +236,7 @@ public class BelgianTrustServiceListFactoryTest {
 		// trust service provider list
 		List<TrustServiceProvider> trustServiceProviders = trustServiceList
 				.getTrustServiceProviders();
-		assertEquals(1, trustServiceProviders.size());
+		assertEquals(2, trustServiceProviders.size());
 		TrustServiceProvider certipostTrustServiceProvider = trustServiceProviders
 				.get(0);
 		assertEquals("Certipost NV/SA",
@@ -256,11 +256,13 @@ public class BelgianTrustServiceListFactoryTest {
 		assertEquals(2, resultElectronicAddress.size());
 		 */
 		// information uri
+		/*
 		List<String> resultInformationUris = certipostTrustServiceProvider
 				.getInformationUris(Locale.ENGLISH);
 		assertEquals(2, resultInformationUris.size());
 		assertEquals("http://repository.eid.belgium.be/EN/Index.htm",
 				resultInformationUris.get(0));
+				*/
 
 		LOG.debug("unsigned TSL: " + unsignedTslFile.getAbsolutePath());
 		LOG.debug("TSL: " + tmpTslFile.getAbsolutePath());
