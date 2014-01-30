@@ -81,6 +81,12 @@ public class TrustService {
 	public static final String QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCSSCDStatusAsInCert";
 
 	public static final String QC_FOR_LEGAL_PERSON_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson";
+	
+	public static final String SERVICE_TYPE_IDENTIFIER_CA_QC_URI = "http://uri.etsi.org/TrstSvc/Svctype/CA/QC";
+	
+	public static final String SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI ="http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/RootCA-QC";
+	
+	public static final String SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI ="http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/RootCA-QC";
 
 	private String serviceName;
 
@@ -100,7 +106,7 @@ public class TrustService {
 	}
 
 	public TrustService(String serviceName, DateTime statusStartingDate,
-			X509Certificate... certificates) {
+			 X509Certificate... certificates) {
 		this.serviceName = serviceName;
 		this.statusStartingDate = statusStartingDate;
 		this.objectFactory = new ObjectFactory();
@@ -118,7 +124,7 @@ public class TrustService {
 				.createTSPServiceInformationType();
 		this.tspService.setServiceInformation(tspServiceInformation);
 		tspServiceInformation
-				.setServiceTypeIdentifier("http://uri.etsi.org/TrstSvc/Svctype/CA/QC");
+				.setServiceTypeIdentifier(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
 		InternationalNamesType i18nServiceName = this.objectFactory
 				.createInternationalNamesType();
 		List<MultiLangNormStringType> serviceNames = i18nServiceName.getName();

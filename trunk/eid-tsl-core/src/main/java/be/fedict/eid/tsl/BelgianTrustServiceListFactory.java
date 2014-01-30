@@ -24,6 +24,9 @@ import java.math.BigInteger;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.CollationKey;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +45,10 @@ import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 
-
+/*
+ * TODO http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC
+ * Clause 5.5.1: Service type identifier
+ * /
 
 /**
  * Factory for the Belgian Trust Service List.
@@ -82,48 +88,30 @@ public class BelgianTrustServiceListFactory {
 					+ year + " trimester " + trimester);
 		}
 		
-		// setup
-		TrustServiceList trustServiceList = TrustServiceListFactory
-				.newInstance();
-		String certipostInformationUri = "http://repository.eid.belgium.be/EN/Index.htm";
-
-		// trust service provider list: certipost
-		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost NV/SA",
-						"Certipost NV/SA");
-		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
-		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
-		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
-				"http://www.certipost.be/");
-		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
-				"mailto:eid.csp@certipost.be");
-
-		// Certipost trust services: Root CA and Root CA2
-		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
-		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate);
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
-				"urn:be:qc:natural:citizen");
-		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
-				"urn:be:qc:natural:foreigner");
-		certipostTrustServiceProvider.addTrustService(rootCaTrustService);
-
-		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
-		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate);
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
-				"urn:be:qc:natural:citizen");
-		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
-				"urn:be:qc:natural:foreigner");
-		certipostTrustServiceProvider.addTrustService(rootCa2TrustService);
-
 		BigInteger tslSequenceNumber;
 		DateTime listIssueDateTime;
 		Document euTSLDocument;
 		X509Certificate euSSLCertificate = null;
-		List<TrustService> additionalCertipostTrustServices = new LinkedList<TrustService>();
 		
+
+		// setup
+		TrustServiceList trustServiceList = TrustServiceListFactory
+				.newInstance();
+		setupTSL(trustServiceList);
+		
+		// trust service provider list: certipost
+		LOG.debug("Create TSP: Certipost");
+		TrustServiceProvider certipostTrustServiceProvider = createTSP_certipost();
+		LOG.debug("Add TSP_certipost to Trustlist");
+		trustServiceList.addTrustServiceProvider(certipostTrustServiceProvider);
+		
+		// Certipost trust services: Root CA and Root CA2
+		LOG.debug("Add Trustservice BRCA1 to TSP_Certipost");
+		certipostTrustServiceProvider
+			.addTrustService(createTSPService_BRCA1());
+		LOG.debug("Add Trustservice BRCA2 to TSP_Certipost");
+		certipostTrustServiceProvider
+			.addTrustService(createTSPService_BRCA2());
 		
 		
 		if (2010 == year) {
@@ -192,12 +180,8 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
 				break;
 			}
 			case THIRD: {
@@ -206,12 +190,8 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
+
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
 				break;
 			}
 			default:
@@ -225,12 +205,8 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
+
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
 				break;
 			}
 			case SECOND: {
@@ -239,12 +215,8 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
+
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
 				break;
 			}
 			case THIRD: {
@@ -253,77 +225,25 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
-
-				certipostInformationUri = "http://repository.eid.belgium.be";
-
-				{
-					// Belgian Root CA 3
-					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
-					TrustService rootCa3TrustService = TrustServiceListFactory
-							.createTrustService(rootCa3Certificate);
-					rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
-							"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
-					rootCa3TrustService
-							.addOIDForQCSSCDStatusAsInCert(
-									"2.16.56.10.1.1.7.1",
-									"urn:be:qc:natural:foreigner");
-					certipostTrustServiceProvider
-							.addTrustService(rootCa3TrustService);
-				}
-
-				{
-					// Belgian Root CA 4
-					X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
-					TrustService rootCa4TrustService = TrustServiceListFactory
-							.createTrustService(rootCa4Certificate);
-					rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
-							"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
-					rootCa4TrustService
-							.addOIDForQCSSCDStatusAsInCert(
-									"2.16.56.12.1.1.7.1",
-									"urn:be:qc:natural:foreigner");
-					certipostTrustServiceProvider
-							.addTrustService(rootCa4TrustService);
-				}
-
-				{
-					// SWIFT
-					TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
-							.createTrustServiceProvider(
-									"Society for Worldwide Interbank Financial Telecommunication SCRL",
-									"S.W.I.F.T. SCRL");
-					trustServiceList
-							.addTrustServiceProvider(swiftTrustServiceProvider);
-					swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-							"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
-							"BE");
-					swiftTrustServiceProvider.addElectronicAddress(
-							Locale.ENGLISH, "http://www.swift.com/");
-					swiftTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
-							"mailto:swift-pma@swift.com");
-					swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-							"http://www.swift.com/pkirepository");
-
-					{
-						X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
-						TrustService swiftTrustService = TrustServiceListFactory
-								.createTrustService(
-										"SWIFTNet PKI Certification Authority",
-										new DateTime(2013, 5, 15, 0, 0, 0, 0,
-												DateTimeZone.UTC),
-										swiftRootCertificate);
-						swiftTrustService.addOIDForQCForLegalPerson(
-								"1.3.21.6.3.10.200.3", true);
-						swiftTrustServiceProvider
-								.addTrustService(swiftTrustService);
-					}
-				}
+				
+				// BRCA 3 en BRCA 4
+				LOG.debug("Add Trustservice BRCA3 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA3());
+				LOG.debug("Add Trustservice BRCA4 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA4());
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
+				
+				// SWIFT
+				LOG.debug("Create TSP: Swift");	
+				TrustServiceProvider swiftTrustServiceProvider = createTSP_swift();
+				LOG.debug("Add TSP_swift to Trustlist");
+				trustServiceList
+						.addTrustServiceProvider(swiftTrustServiceProvider);
+				LOG.debug("Add Trustservice SwiftNetPKI to TSP_Swift");
+				swiftTrustServiceProvider
+					.addTrustService(createTSPService_SWIFTNetPKI());
+				
 				break;
 			}
 			default:
@@ -337,78 +257,24 @@ public class BelgianTrustServiceListFactory {
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
-				certipostInformationUri = "http://repository.eid.belgium.be/";
-				X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
-				X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
-				TrustService caQS_TrustService = TrustServiceListFactory
-						.createTrustService(caQS_VG, caQS_BCT);
-				additionalCertipostTrustServices.add(caQS_TrustService);
-
-				certipostInformationUri = "http://repository.eid.belgium.be";
-
-				{
-					// Belgian Root CA 3
-					X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
-					TrustService rootCa3TrustService = TrustServiceListFactory
-							.createTrustService(rootCa3Certificate);
-					rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
-							"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
-					rootCa3TrustService
-							.addOIDForQCSSCDStatusAsInCert(
-									"2.16.56.10.1.1.7.1",
-									"urn:be:qc:natural:foreigner");
-					certipostTrustServiceProvider
-							.addTrustService(rootCa3TrustService);
-				}
-
-				{
-					// Belgian Root CA 4
-					X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
-					TrustService rootCa4TrustService = TrustServiceListFactory
-							.createTrustService(rootCa4Certificate);
-					rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
-							"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
-					rootCa4TrustService
-							.addOIDForQCSSCDStatusAsInCert(
-									"2.16.56.12.1.1.7.1",
-									"urn:be:qc:natural:foreigner");
-					certipostTrustServiceProvider
-							.addTrustService(rootCa4TrustService);
-				}
-
-				{
-					// SWIFT
-					TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
-							.createTrustServiceProvider(
-									"Society for Worldwide Interbank Financial Telecommunication SCRL",
-									"S.W.I.F.T. SCRL");
-					trustServiceList
-							.addTrustServiceProvider(swiftTrustServiceProvider);
-					swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-							"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
-							"BE");
-					swiftTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
-							"http://www.swift.com/");
-					swiftTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
-							"mailto:swift-pma@swift.com");
-
-					swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-							"http://www.swift.com/pkirepository");
-
-					{
-						X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
-						TrustService swiftTrustService = TrustServiceListFactory
-								.createTrustService(
-										"SWIFTNet PKI Certification Authority",
-										new DateTime(2013, 5, 15, 0, 0, 0, 0,
-												DateTimeZone.UTC),
-										swiftRootCertificate);
-						swiftTrustService.addOIDForQCForLegalPerson(
-								"1.3.21.6.3.10.200.3", true);
-						swiftTrustServiceProvider
-								.addTrustService(swiftTrustService);
-					}
-				}
+		
+				// BRCA 3 en BRCA 4
+				LOG.debug("Add Trustservice BRCA3 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA3());
+				LOG.debug("Add Trustservice BRCA4 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA4());
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
+				
+				// SWIFT
+				LOG.debug("Create TSP: Swift");	
+				TrustServiceProvider swiftTrustServiceProvider = createTSP_swift();
+				LOG.debug("Add TSP_swift to Trustlist");
+				trustServiceList
+						.addTrustServiceProvider(swiftTrustServiceProvider);
+				LOG.debug("Add Trustservice SwiftNetPKI to TSP_Swift");
+				swiftTrustServiceProvider
+					.addTrustService(createTSPService_SWIFTNetPKI());
 				break;
 			}
 			default:
@@ -419,21 +285,57 @@ public class BelgianTrustServiceListFactory {
 		}
 		
 		
-		
-		
-		
-		
+		//set sequencenumber
 		trustServiceList.setTSLSequenceNumber(tslSequenceNumber);
-
-		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				certipostInformationUri);
-		certipostTrustServiceProvider
-				.addInformationUri(Locale.ENGLISH,
-						"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
-
-		// list issue date time
+		//set issuedate
 		trustServiceList.setListIssueDateTime(listIssueDateTime);
+		// next update
+		int operationalOverlapWeeks = 2;
+		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(12 / 3)
+				.plusWeeks(operationalOverlapWeeks);
+		trustServiceList.setNextUpdate(nextUpdateDateTime);
+		
+		trustServiceList
+				.addOtherTSLPointer(
+						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-hr.pdf",
+						"application/pdf",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"EU",
+						"European Commission",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						Locale.ENGLISH,
+						euSSLCertificate);
 
+		TrustServiceList euTSL;
+		try {
+			euTSL = TrustServiceListFactory.newInstance(euTSLDocument);
+		} catch (IOException e) {
+			throw new RuntimeException("could not load EU trust list: "
+					+ e.getMessage(), e);
+		}
+		X509Certificate euCertificate = euTSL.verifySignature();
+		LOG.debug("EU certificate: " + euCertificate);
+
+		
+		trustServiceList
+				.addOtherTSLPointer(
+						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
+						"application/vnd.etsi.tsl+xml",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"EU",
+						"European Commission",
+						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						Locale.ENGLISH,
+						euCertificate);
+		
+		/*
+		Collections.sort(certipostTrustServiceProvider.getTrustServices(),new TrustServiceComparer());
+		Collections.sort(trustServiceList.getTrustServiceProviders(), new TrustServiceProviderComparer());
+		*/
+		return trustServiceList;
+	}
+	
+	private static void setupTSL(TrustServiceList trustServiceList){
 		// scheme operator name
 		trustServiceList
 				.setSchemeOperatorName(
@@ -485,7 +387,7 @@ public class BelgianTrustServiceListFactory {
 		// scheme name
 		trustServiceList
 				.setSchemeName(
-						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC and its implementation in the referenced Member State's laws.",
+						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator’s Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures.",
 						Locale.ENGLISH);
 
 		// scheme information URIs
@@ -513,7 +415,7 @@ public class BelgianTrustServiceListFactory {
 		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
 		 */
 		trustServiceList
-				.addSchemeType("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE", Locale.ENGLISH);
+				.addSchemeType("http://http://uri.etsi.org/TrstSvc/TrustedList/schemerules/BE", Locale.ENGLISH);
 
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
@@ -521,94 +423,156 @@ public class BelgianTrustServiceListFactory {
 		// legal notice
 		trustServiceList
 				.addLegalNotice(
-						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is the Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgian laws. The applicable legal national framework is the Belgian CSP act of 9 July 2001 to create a legal framework for the usage of electronic signatures and certification services.",
+						"The applicable legal framework for the present TSL implementation of the Trusted List of supervised/accredited Certification Service Providers for Belgium is Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures and its implementation in Belgian laws. The applicable legal national framework is the Belgian CSP act of 9 July 2001 to create a legal framework for the usage of electronic signatures and certification services.",
 						Locale.ENGLISH);
-
+		
 		// historical information period
-		/*
-		 * Volgens de wet van 9 JULI 2001. — Wet houdende vaststelling van
-		 * bepaalde regels in verband met het juridisch kader voor elektronische
-		 * handtekeningen en certificatiediensten: Bijlage II - punt i) alle
-		 * relevante informatie over een gekwalificeerd certificaat te
-		 * registreren gedurende de nuttige termijn van dertig jaar, in het
-		 * bijzonder om een certificatiebewijs te kunnen voorleggen bij
-		 * gerechtelijke procedures.
-		 */
+				/*
+				 * Volgens de wet van 9 JULI 2001. — Wet houdende vaststelling van
+				 * bepaalde regels in verband met het juridisch kader voor elektronische
+				 * handtekeningen en certificatiediensten: Bijlage II - punt i) alle
+				 * relevante informatie over een gekwalificeerd certificaat te
+				 * registreren gedurende de nuttige termijn van dertig jaar, in het
+				 * bijzonder om een certificatiebewijs te kunnen voorleggen bij
+				 * gerechtelijke procedures.
+				 */
 		trustServiceList.setHistoricalInformationPeriod(21845 * 3);
-
-		// next update
-		int operationalOverlapWeeks = 2;
-		DateTime nextUpdateDateTime = listIssueDateTime.plusMonths(12 / 3)
-				.plusWeeks(operationalOverlapWeeks);
-		trustServiceList.setNextUpdate(nextUpdateDateTime);
-
-		trustServiceList
-				.addDistributionPoint("http://tsl.belgium.be/tsl-be.xml");
 		
 		trustServiceList
-				.addOtherTSLPointer(
-						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-hr.pdf",
-						"application/pdf",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
-						"EU",
-						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
-						Locale.ENGLISH,
-						euSSLCertificate);
-
-		TrustServiceList euTSL;
-		try {
-			euTSL = TrustServiceListFactory.newInstance(euTSLDocument);
-		} catch (IOException e) {
-			throw new RuntimeException("could not load EU trust list: "
-					+ e.getMessage(), e);
-		}
-		X509Certificate euCertificate = euTSL.verifySignature();
-		LOG.debug("EU certificate: " + euCertificate);
-		NonEmptyMultiLangURIType uri2 = new NonEmptyMultiLangURIType();
+			.addDistributionPoint("http://tsl.belgium.be/tsl-be.xml");
+	}
+	
+	private static TrustServiceProvider createTSP_certipost(){
+		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
+				.createTrustServiceProvider("Certipost NV/SA",
+						"VATBE-0475396406");
 		
-		trustServiceList
-				.addOtherTSLPointer(
-						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
-						"application/vnd.etsi.tsl+xml",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
-						"EU",
-						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
-						Locale.ENGLISH,
-						euCertificate);
+		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
+		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
+				"http://www.certipost.be/");
+		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
+				"mailto:eid.csp@certipost.be");
+		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH, 
+				"http://repository.eid.belgium.be");
+		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				"http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html");
+		return certipostTrustServiceProvider;
+	}
+	
+	private static TrustServiceProvider createTSP_swift(){
+		TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
+				.createTrustServiceProvider(
+						"Society for Worldwide Interbank Financial Telecommunication SCRL",
+						"VATBE-0413330856");
+		swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+				"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
+				"BE");
+		swiftTrustServiceProvider.addElectronicAddress(
+				Locale.ENGLISH, "http://www.swift.com/");
+		swiftTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
+				"mailto:swift-pma@swift.com");
+		swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				"http://www.swift.com/pkirepository");
+		
+		return swiftTrustServiceProvider;		
+	}
+	
+	private static TrustService createTSPService_BRCA1(){
+		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
+		TrustService rootCaTrustService = TrustServiceListFactory
+				.createTrustService(rootCaCertificate);
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
+				"urn:be:qc:natural:citizen");
+		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
+				"urn:be:qc:natural:foreigner");
+		
+		return rootCaTrustService;
+		
+	}
+	
+	private static TrustService createTSPService_BRCA2(){
+		
+		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
+		TrustService rootCa2TrustService = TrustServiceListFactory
+				.createTrustService(rootCa2Certificate);
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
+				"urn:be:qc:natural:citizen");
+		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
+				"urn:be:qc:natural:foreigner");
+	
+		return rootCa2TrustService;
+	}
+	
+	private static TrustService createTSPService_BRCA3(){
+		
+		X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
+		TrustService rootCa3TrustService = TrustServiceListFactory
+				.createTrustService(rootCa3Certificate);
+		rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
+				"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
+		rootCa3TrustService
+				.addOIDForQCSSCDStatusAsInCert(
+						"2.16.56.10.1.1.7.1",
+						"urn:be:qc:natural:foreigner");
+	
+		return rootCa3TrustService;
+	}
+	
+	private static TrustService createTSPService_BRCA4(){
+		
+		// Belgian Root CA 4
+		X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
+		TrustService rootCa4TrustService = TrustServiceListFactory
+				.createTrustService(rootCa4Certificate);
+		rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
+				"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
+		rootCa4TrustService
+				.addOIDForQCSSCDStatusAsInCert(
+						"2.16.56.12.1.1.7.1",
+						"urn:be:qc:natural:foreigner");
 
-		// Certipost eTrust trust services
+		return rootCa4TrustService;
+	}
+	
+	
+	private static void createTSPService_AdditionelServices_Certipost(TrustServiceProvider certipost){
+		List<TrustService> additionalCertipostTrustServices = new LinkedList<TrustService>();
+		
+		X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
+		X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
+		TrustService caQS_TrustService = TrustServiceListFactory
+				.createTrustService(caQS_VG, caQS_BCT);
+		additionalCertipostTrustServices.add(caQS_TrustService);
+		
+		
 		X509Certificate eTrustQCaCertificate = loadCertificateFromResource("eu/be/etrust/QCA_Self_Signed.crt");
 		TrustService eTrustQCaTrustService = TrustServiceListFactory
 				.createTrustService(eTrustQCaCertificate);
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.112.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.140.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.111.1");
-
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.101.1");
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.121.1");
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.131.1");
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.102.1");
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.122.1");
-		// eTrustQCaTrustService
-		// .addOIDForQCSSCDStatusAsInCert("0.3.2062.7.1.1.132.1");
-
-		certipostTrustServiceProvider.addTrustService(eTrustQCaTrustService);
-
+		additionalCertipostTrustServices.add(eTrustQCaTrustService);
+		
 		for (TrustService additionalCertipostTrustService : additionalCertipostTrustServices) {
-			certipostTrustServiceProvider
+			certipost
 					.addTrustService(additionalCertipostTrustService);
 		}
-
-		return trustServiceList;
+	} 
+	
+	private static TrustService createTSPService_SWIFTNetPKI(){
+		X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
+		TrustService swiftTrustService = TrustServiceListFactory
+				.createTrustService(
+						"SWIFTNet PKI Certification Authority",
+						new DateTime(2013, 5, 15, 0, 0, 0, 0,
+								DateTimeZone.UTC),
+						swiftRootCertificate);
+		swiftTrustService.addOIDForQCForLegalPerson(
+				"1.3.21.6.3.10.200.3", true);
+		return swiftTrustService;
 	}
-
+	 
 	private static Document loadDocumentFromResource(String resourceName) {
 		Thread currentThread = Thread.currentThread();
 		ClassLoader classLoader = currentThread.getContextClassLoader();
