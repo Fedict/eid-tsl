@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryType;
 import be.fedict.eid.tsl.jaxb.tsl.TrustStatusListType;
 
 /**
@@ -146,15 +147,16 @@ public class TrustServiceListFactory {
 		return trustServiceProvider;
 	}
 
+	/*
 	public static TrustService createTrustService(
 			X509Certificate... certificates) {
 		TrustService trustService = new TrustService(certificates);
 		return trustService;
 	}
-
-	public static TrustService createTrustService(String serviceName,
+*/
+	public static TrustService createTrustService(String serviceName, String serviceTypeIdentifier, String serviceStatus, 
 			DateTime statusStartingDate, X509Certificate... certificates) {
-		TrustService trustService = new TrustService(serviceName,
+		TrustService trustService = new TrustService(serviceName, serviceTypeIdentifier, serviceStatus,
 				statusStartingDate, certificates);
 		return trustService;
 	}

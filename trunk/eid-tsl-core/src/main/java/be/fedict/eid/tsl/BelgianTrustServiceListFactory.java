@@ -479,14 +479,16 @@ public class BelgianTrustServiceListFactory {
 	}
 	
 	private static TrustService createTSPService_BRCA1(){
+		
 		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(rootCaCertificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCaCertificate);
 		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
 				"urn:be:qc:natural:citizen");
 		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
 				"urn:be:qc:natural:foreigner");
 		
+		rootCaTrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCaCertificate);
 		return rootCaTrustService;
 		
 	}
@@ -495,12 +497,14 @@ public class BelgianTrustServiceListFactory {
 		
 		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(rootCa2Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa2Certificate);
 		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
 				"urn:be:qc:natural:citizen");
 		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
 				"urn:be:qc:natural:foreigner");
-	
+		
+		rootCa2TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa2Certificate);
+		
 		return rootCa2TrustService;
 	}
 	
@@ -508,14 +512,17 @@ public class BelgianTrustServiceListFactory {
 		
 		X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
 		TrustService rootCa3TrustService = TrustServiceListFactory
-				.createTrustService(rootCa3Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa3Certificate);
 		rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
 				"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
 		rootCa3TrustService
 				.addOIDForQCSSCDStatusAsInCert(
 						"2.16.56.10.1.1.7.1",
 						"urn:be:qc:natural:foreigner");
-	
+		
+		rootCa3TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa3Certificate);
+		
+		
 		return rootCa3TrustService;
 	}
 	
@@ -524,14 +531,16 @@ public class BelgianTrustServiceListFactory {
 		// Belgian Root CA 4
 		X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
 		TrustService rootCa4TrustService = TrustServiceListFactory
-				.createTrustService(rootCa4Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa4Certificate);
 		rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
 				"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
 		rootCa4TrustService
 				.addOIDForQCSSCDStatusAsInCert(
 						"2.16.56.12.1.1.7.1",
 						"urn:be:qc:natural:foreigner");
-
+		
+		rootCa4TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa4Certificate);
+		
 		return rootCa4TrustService;
 	}
 	
@@ -542,13 +551,13 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate caQS_BCT = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - BCT root signed.cer");
 		X509Certificate caQS_VG = loadCertificateFromResource("eu/be/certipost/Certipost Public CA for Qualified Signatures - VG root signed.cer");
 		TrustService caQS_TrustService = TrustServiceListFactory
-				.createTrustService(caQS_VG, caQS_BCT);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION,  null, caQS_VG, caQS_BCT);
 		additionalCertipostTrustServices.add(caQS_TrustService);
 		
 		
 		X509Certificate eTrustQCaCertificate = loadCertificateFromResource("eu/be/etrust/QCA_Self_Signed.crt");
 		TrustService eTrustQCaTrustService = TrustServiceListFactory
-				.createTrustService(eTrustQCaCertificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION,  null, eTrustQCaCertificate);
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.112.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.140.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.111.1");
@@ -564,7 +573,7 @@ public class BelgianTrustServiceListFactory {
 		X509Certificate swiftRootCertificate = loadCertificateFromResource("eu/be/swift/swiftnet_root.pem");
 		TrustService swiftTrustService = TrustServiceListFactory
 				.createTrustService(
-						"SWIFTNet PKI Certification Authority",
+						"SWIFTNet PKI Certification Authority",TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION,
 						new DateTime(2013, 5, 15, 0, 0, 0, 0,
 								DateTimeZone.UTC),
 						swiftRootCertificate);
