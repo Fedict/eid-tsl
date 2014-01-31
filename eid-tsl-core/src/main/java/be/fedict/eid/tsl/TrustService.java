@@ -57,6 +57,8 @@ import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
 import be.fedict.eid.tsl.jaxb.tsl.MultiLangNormStringType;
 import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryInstanceType;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryType;
 import be.fedict.eid.tsl.jaxb.tsl.TSPServiceInformationType;
 import be.fedict.eid.tsl.jaxb.tsl.TSPServiceType;
 import be.fedict.eid.tsl.jaxb.xades.IdentifierType;
@@ -86,8 +88,28 @@ public class TrustService {
 	
 	public static final String SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI ="http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/RootCA-QC";
 	
-	public static final String SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI ="http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/RootCA-QC";
-
+	public static final String SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI ="http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC";
+	
+	public static final String SERVICE_STATUS_UNDER_SUPERVISION = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/undersupervision";
+	
+	public static final String SERVICE_STATUS_UNDER_SUPERVISION_IN_CESSATION = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/supervisionincessation";
+	
+	public static final String SERVICE_STATUS_CEASED = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/supervisionceased";
+	
+	public static final String SERVICE_STATUS_SUPERVISION_REVOKED = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/supervisionrevoked"; 
+	
+	public static final String SERVICE_STATUS_ACCREDITED = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/accredited";
+	
+	public static final String SERVICE_STATUS_ACCREDITATION_CEASED = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/accreditationceased";
+	
+	public static final String SERVICE_STATUS_ACCREDITATION_REVOKED = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/accreditationrevoked";
+	
+	public static final String SERVICE_STATUS_SET_BY_NATIONAL_LAW = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/setbynationallaw";
+	
+	public static final String SERVICE_STATUS_DEPRECATED_BY_NATIONAL_LAW = "http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/deprecatedbynationallaw";
+	
+	
+	
 	private String serviceName;
 
 	private DateTime statusStartingDate;
@@ -105,7 +127,7 @@ public class TrustService {
 		this.xadesObjectFactory = new be.fedict.eid.tsl.jaxb.xades.ObjectFactory();
 	}
 
-	public TrustService(String serviceName, DateTime statusStartingDate,
+	public TrustService(String serviceName, String serviceTypeIdentifier, String serviceStatus, DateTime statusStartingDate,
 			 X509Certificate... certificates) {
 		this.serviceName = serviceName;
 		this.statusStartingDate = statusStartingDate;
@@ -124,7 +146,7 @@ public class TrustService {
 				.createTSPServiceInformationType();
 		this.tspService.setServiceInformation(tspServiceInformation);
 		tspServiceInformation
-				.setServiceTypeIdentifier(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
+				.setServiceTypeIdentifier(serviceTypeIdentifier);
 		InternationalNamesType i18nServiceName = this.objectFactory
 				.createInternationalNamesType();
 		List<MultiLangNormStringType> serviceNames = i18nServiceName.getName();
@@ -145,7 +167,7 @@ public class TrustService {
 		tspServiceInformation.setServiceDigitalIdentity(digitalIdentityList);
 
 		tspServiceInformation
-				.setServiceStatus("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision");
+				.setServiceStatus(serviceStatus);
 
 		GregorianCalendar statusStartingCalendar;
 		if (null == this.statusStartingDate) {
@@ -159,12 +181,72 @@ public class TrustService {
 		XMLGregorianCalendar statusStartingTime = this.datatypeFactory
 				.newXMLGregorianCalendar(statusStartingCalendar);
 		tspServiceInformation.setStatusStartingTime(statusStartingTime);
+		/*
+		if (null != serviceHistoryStatus){
+			this.tspService.setServiceHistory(serviceHistoryStatus);
+		}
+		*/
 	}
-
+	public void addServiceHistory(String serviceTypeIdentifier, String serviceName, String servicePreviousStatus, DateTime statusPreviousStartingDate,
+			 X509Certificate... certificates){
+		
+		ServiceHistoryType serviceHistoryType;
+		ServiceHistoryInstanceType serviceHistoryInstanceType;
+		
+		if (this.tspService.getServiceHistory() == null){
+			serviceHistoryType = this.objectFactory
+					.createServiceHistoryType();
+			this.tspService.setServiceHistory(serviceHistoryType);
+		}else{
+			serviceHistoryType = this.tspService.getServiceHistory();
+		}
+		
+		serviceHistoryInstanceType = this.objectFactory
+				.createServiceHistoryInstanceType();
+		
+		InternationalNamesType i18nServiceName = this.objectFactory
+				.createInternationalNamesType();
+		List<MultiLangNormStringType> serviceNames = i18nServiceName.getName();
+		MultiLangNormStringType serviceNameJaxb = this.objectFactory
+				.createMultiLangNormStringType();
+		serviceNames.add(serviceNameJaxb);
+		serviceNameJaxb.setLang(Locale.ENGLISH.getLanguage());
+		X509Certificate certificate = certificates[0];
+		if (null == serviceName) {
+			serviceNameJaxb.setValue(certificate.getSubjectX500Principal()
+					.toString());
+		} else {
+			serviceNameJaxb.setValue(serviceName);
+		}
+		serviceHistoryInstanceType.setServiceName(i18nServiceName);
+		
+		DigitalIdentityListType digitalIdentityList = createDigitalIdentityList(certificates);
+		serviceHistoryInstanceType.setServiceDigitalIdentity(digitalIdentityList);
+		
+		serviceHistoryInstanceType.setServiceStatus(servicePreviousStatus);
+		
+		GregorianCalendar statusStartingCalendar;
+		if (null == this.statusStartingDate) {
+			statusStartingCalendar = new DateTime(certificate.getNotBefore())
+					.toGregorianCalendar();
+		} else {
+			statusStartingCalendar = this.statusStartingDate
+					.toGregorianCalendar();
+		}
+		statusStartingCalendar.setTimeZone(TimeZone.getTimeZone("Z"));
+		XMLGregorianCalendar statusStartingTime = this.datatypeFactory
+				.newXMLGregorianCalendar(statusStartingCalendar);
+		serviceHistoryInstanceType.setStatusStartingTime(statusStartingTime);
+		
+		serviceHistoryType.getServiceHistoryInstance().add(serviceHistoryInstanceType);	
+		
+	}
+	/*
 	public TrustService(X509Certificate... certificates) {
-		this(null, null, certificates);
+		this(null, null, null, null,certificates);
 	}
-
+	*/
+	
 	private DigitalIdentityListType createDigitalIdentityList(
 			X509Certificate... certificates) {
 		DigitalIdentityListType digitalIdentityList = this.objectFactory
