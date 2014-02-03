@@ -299,7 +299,7 @@ public class BelgianTrustServiceListFactory {
 				.addOtherTSLPointer(
 						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-hr.pdf",
 						"application/pdf",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists",
 						"EU",
 						"European Commission",
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
@@ -321,7 +321,7 @@ public class BelgianTrustServiceListFactory {
 				.addOtherTSLPointer(
 						"https://ec.europa.eu/information_society/policy/esignature/trusted-list/tl-mp.xml",
 						"application/vnd.etsi.tsl+xml",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/schemes",
+						"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists",
 						"EU",
 						"European Commission",
 						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
