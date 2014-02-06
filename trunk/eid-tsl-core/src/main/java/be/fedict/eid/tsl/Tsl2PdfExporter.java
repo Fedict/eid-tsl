@@ -58,6 +58,7 @@ import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.openssl.PEMWriter;
+import org.joda.time.DateTime;
 import org.w3c.dom.Element;
 
 import be.fedict.eid.tsl.jaxb.ecc.CriteriaListType;
@@ -68,8 +69,13 @@ import be.fedict.eid.tsl.jaxb.ecc.QualifierType;
 import be.fedict.eid.tsl.jaxb.ecc.QualifiersType;
 import be.fedict.eid.tsl.jaxb.tsl.AdditionalServiceInformationType;
 import be.fedict.eid.tsl.jaxb.tsl.ExtensionType;
+import be.fedict.eid.tsl.jaxb.tsl.ExtensionsListType;
+import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
 import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryInstanceType;
+import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryType;
+import be.fedict.eid.tsl.jaxb.tsl.TSPServiceInformationType;
 import be.fedict.eid.tsl.jaxb.xades.ObjectIdentifierType;
 
 import com.lowagie.text.Document;
@@ -365,6 +371,116 @@ public class Tsl2PdfExporter {
 							.toString(), document);
 					addLongMonoItem("The certificate in PEM format:",
 							toPem(certificate), document);
+				
+				
+					ServiceHistoryType serviceHistoryType = trustService
+							.getServiceHistoryInstanceType();
+					
+					if(null != serviceHistoryType){
+						
+						for (ServiceHistoryInstanceType serviceHistoryInstanceType : serviceHistoryType.getServiceHistoryInstance()){
+							PdfPTable serviceHistoryTable = createInfoTable();
+							
+							//Service approval history information
+							addTitle("Service approval history information", title3Font, 
+									Paragraph.ALIGN_LEFT, 10, 2, document);
+							
+							/*
+							 * 
+							 * TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		InternationalNamesType i18nServiceName = tspServiceInformation
+				.getServiceName();
+		String serviceName = TrustServiceListUtils.getValue(i18nServiceName,
+				locale);
+		return serviceName;
+							 */
+							
+							// service type identifier
+							//5.6.2 Service name
+							InternationalNamesType i18nServiceName = serviceHistoryInstanceType.getServiceName();
+							String servName = TrustServiceListUtils.getValue(i18nServiceName, Locale.ENGLISH);
+							addItemRow("Name", servName, serviceHistoryTable);
+							//5.6.1 Service type identifier
+							addItemRow("Type", substringAfter(serviceHistoryInstanceType
+									.getServiceTypeIdentifier(),"Svctype/"),serviceHistoryTable);
+							addItemRow("Status", serviceHistoryInstanceType
+									.getServiceStatus(),serviceHistoryTable);
+							//5.6.4 Service previous status
+							addItemRow("Previous status", serviceHistoryInstanceType
+									.getServiceStatus(), serviceHistoryTable);
+							//5.6.5 Previous status starting date and time
+							addItemRow("Previous starting time", new DateTime(serviceHistoryInstanceType
+									.getStatusStartingTime().toGregorianCalendar()).toString(), serviceHistoryTable);
+							//5.6.3 Service digital identity
+							final X509Certificate previousCertificate = trustService.getServiceDigitalIdentity(serviceHistoryInstanceType
+									.getServiceDigitalIdentity());
+							
+							document.add(serviceHistoryTable);
+							
+							addTitle("Service digital identity (X509)", title4Font,
+									Paragraph.ALIGN_LEFT, 2, 0, document);
+							
+	
+							final PdfPTable serviceIdentityTableHistory = createInfoTable();
+							addItemRow("Version", Integer.toString(previousCertificate
+									.getVersion()), serviceIdentityTableHistory);
+							addItemRow("Serial number", previousCertificate.getSerialNumber()
+									.toString(), serviceIdentityTableHistory);
+							addItemRow("Signature algorithm", previousCertificate
+									.getSigAlgName(), serviceIdentityTableHistory);
+							addItemRow("Issuer", previousCertificate.getIssuerX500Principal()
+									.toString(), serviceIdentityTableHistory);
+							addItemRow("Valid from", previousCertificate.getNotBefore()
+									.toString(), serviceIdentityTableHistory);
+							addItemRow("Valid to",
+									previousCertificate.getNotAfter().toString(),
+									serviceIdentityTableHistory);
+							addItemRow("Subject", previousCertificate.getSubjectX500Principal()
+									.toString(), serviceIdentityTableHistory);
+							addItemRow("Public key", previousCertificate.getPublicKey()
+									.toString(), serviceIdentityTableHistory);
+							// TODO certificate policies
+							addItemRow("Subject key identifier",
+									toHex(getSKId(previousCertificate)), serviceIdentityTableHistory);
+							addItemRow("CRL distribution points",
+									getCrlDistributionPoints(previousCertificate),
+									serviceIdentityTableHistory);
+							addItemRow("Authority key identifier",
+									toHex(getAKId(previousCertificate)), serviceIdentityTableHistory);
+							addItemRow("Key usage", getKeyUsage(previousCertificate),
+									serviceIdentityTableHistory);
+							addItemRow("Basic constraints",
+									getBasicConstraints(previousCertificate),
+									serviceIdentityTableHistory);
+							
+							byte[] encodedHistoryCertificate;
+							try {
+								encodedHistoryCertificate = previousCertificate.getEncoded();
+							} catch (CertificateEncodingException e) {
+								throw new RuntimeException("cert: " + e.getMessage(), e);
+							}
+							addItemRow("SHA1 Thumbprint", DigestUtils
+									.shaHex(encodedHistoryCertificate), serviceIdentityTableHistory);
+							addItemRow("SHA256 Thumbprint", DigestUtils
+									.sha256Hex(encodedHistoryCertificate),
+									serviceIdentityTableHistory);
+							document.add(serviceIdentityTableHistory);
+							
+							ExtensionsListType previousExtensions = serviceHistoryInstanceType
+									.getServiceInformationExtensions();
+							if (null != previousExtensions){
+								for (ExtensionType extension : previousExtensions.getExtension()) {
+								printExtension(extension, document);
+								}
+							}
+	
+							addLongMonoItem("The decoded certificate:", previousCertificate
+									.toString(), document);
+							addLongMonoItem("The certificate in PEM format:",
+									toPem(previousCertificate), document);
+						}
+					}			
 				}
 			}
 

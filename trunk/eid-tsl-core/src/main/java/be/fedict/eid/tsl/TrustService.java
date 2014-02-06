@@ -187,6 +187,7 @@ public class TrustService {
 		}
 		*/
 	}
+	
 	public void addServiceHistory(String serviceTypeIdentifier, String serviceName, String servicePreviousStatus, DateTime statusPreviousStartingDate,
 			 X509Certificate... certificates){
 		
@@ -203,6 +204,8 @@ public class TrustService {
 		
 		serviceHistoryInstanceType = this.objectFactory
 				.createServiceHistoryInstanceType();
+		
+		serviceHistoryInstanceType.setServiceTypeIdentifier(serviceTypeIdentifier);
 		
 		InternationalNamesType i18nServiceName = this.objectFactory
 				.createInternationalNamesType();
@@ -375,6 +378,32 @@ public class TrustService {
 			throw new RuntimeException("X509 error: " + e.getMessage(), e);
 		}
 	}
+	public X509Certificate getServiceDigitalIdentity(DigitalIdentityListType digitalIdentityList) {
+	
+		try {
+			final CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			for (final DigitalIdentityType digitalIdentity : digitalIdentityList
+					.getDigitalId()) {
+				byte[] x509CertificateData = digitalIdentity
+						.getX509Certificate();
+				if (x509CertificateData != null) {
+					try {
+						X509Certificate certificate = (X509Certificate) certificateFactory
+								.generateCertificate(new ByteArrayInputStream(
+										x509CertificateData));
+						return certificate;
+					} catch (CertificateException e) {
+						throw new RuntimeException("X509 error: "
+								+ e.getMessage(), e);
+					}
+				}
+			}
+			throw new RuntimeException("No X509Certificate identity specified");
+		} catch (CertificateException e) {
+			throw new RuntimeException("X509 error: " + e.getMessage(), e);
+		}
+	}
 
 	public byte[] getServiceDigitalIdentityData() {
 		TSPServiceInformationType tspServiceInformation = this.tspService
@@ -406,6 +435,11 @@ public class TrustService {
 		}
 	}
 
+	public ServiceHistoryType getServiceHistoryInstanceType(){
+		return this.tspService.getServiceHistory();
+		
+	} 
+	
 	@Override
 	public String toString() {
 		return getName();
