@@ -45,10 +45,6 @@ import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
 import be.fedict.eid.tsl.jaxb.tsl.PostalAddressType;
 
-/*
- * TODO http://uri.etsi.org/TrstSvc/Svctype/NationalRootCA-QC
- * Clause 5.5.1: Service type identifier
- * /
 
 /**
  * Factory for the Belgian Trust Service List.
@@ -302,7 +298,7 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists",
 						"EU",
 						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUlistofthelists",
 						Locale.ENGLISH,
 						euSSLCertificate);
 
@@ -324,7 +320,7 @@ public class BelgianTrustServiceListFactory {
 						"http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists",
 						"EU",
 						"European Commission",
-						"http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/CompiledList",
+						"http://uri.etsi.org/TrstSvc/TrustedList/schemerules/EUlistofthelists",
 						Locale.ENGLISH,
 						euCertificate);
 		
@@ -339,19 +335,19 @@ public class BelgianTrustServiceListFactory {
 		// scheme operator name
 		trustServiceList
 				.setSchemeOperatorName(
-						"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+						"FPS Economy, SMEs, Self-employed and Energy - Quality and Safety",
 						Locale.ENGLISH);
 		trustServiceList
 				.setSchemeOperatorName(
-						"FOD Economie, KMO, Middenstand en Energie - Kwaliteit en Veiligheid - Information Management",
+						"FOD Economie, KMO, Middenstand en Energie - Kwaliteit en Veiligheid",
 						new Locale("nl"));
 		trustServiceList
 				.setSchemeOperatorName(
-						"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité - Information Management",
+						"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité",
 						Locale.FRENCH);
 		trustServiceList
 				.setSchemeOperatorName(
-						"FÖD Wirtschaft, KMU, Mittelstand und Energie - Qualität und Sicherheit - Informationsmanagement",
+						"FÖD Wirtschaft, KMU, Mittelstand und Energie - Qualität und Sicherheit",
 						Locale.GERMAN);
 
 		// scheme operator postal address
@@ -415,7 +411,7 @@ public class BelgianTrustServiceListFactory {
 		 * uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/schemerules/BE/nl
 		 */
 		trustServiceList
-				.addSchemeType("http://http://uri.etsi.org/TrstSvc/TrustedList/schemerules/BE", Locale.ENGLISH);
+				.addSchemeType("http://uri.etsi.org/TrstSvc/TrustedList/schemerules/BE", Locale.ENGLISH);
 
 		// scheme territory
 		trustServiceList.setSchemeTerritory("BE");
@@ -444,13 +440,13 @@ public class BelgianTrustServiceListFactory {
 	
 	private static TrustServiceProvider createTSP_certipost(){
 		TrustServiceProvider certipostTrustServiceProvider = TrustServiceListFactory
-				.createTrustServiceProvider("Certipost NV/SA",
-						"VATBE-0475396406");
+				.createTrustServiceProvider("Certipost n.v./s.a.",
+						"VATBE-0475396406", "Certipost s.a./n.v.");
 		
 		certipostTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
 				"Muntcentrum", "Brussels", "Brussels", "1000", "BE");
 		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
-				"http://www.certipost.be/");
+				"http://www.certipost.com/index.php?lang=en");
 		certipostTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
 				"mailto:eid.csp@certipost.be");
 		certipostTrustServiceProvider.addInformationUri(Locale.ENGLISH, 
@@ -464,7 +460,7 @@ public class BelgianTrustServiceListFactory {
 		TrustServiceProvider swiftTrustServiceProvider = TrustServiceListFactory
 				.createTrustServiceProvider(
 						"Society for Worldwide Interbank Financial Telecommunication SCRL",
-						"VATBE-0413330856");
+						"VATBE-0413330856", "SWIFT");
 		swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
 				"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
 				"BE");
@@ -473,7 +469,7 @@ public class BelgianTrustServiceListFactory {
 		swiftTrustServiceProvider.addElectronicAddress(Locale.ENGLISH,
 				"mailto:swift-pma@swift.com");
 		swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-				"http://www.swift.com/pkirepository");
+				"http://www.swift.com/index.page?lang=en");
 		
 		return swiftTrustServiceProvider;		
 	}
@@ -482,13 +478,13 @@ public class BelgianTrustServiceListFactory {
 		
 		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
 		TrustService rootCaTrustService = TrustServiceListFactory
-				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCaCertificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI , TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCaCertificate);
 		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.2.1",
 				"urn:be:qc:natural:citizen");
 		rootCaTrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.1.1.1.7.1",
 				"urn:be:qc:natural:foreigner");
-		
-		rootCaTrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCaCertificate);
+		rootCaTrustService.addAdditionalServiceInformationUri(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
+		rootCaTrustService.addSchemeServiceDefinitionURI("http://tsl.belgium.be/pages/SchemeServiceDefinition");
 		return rootCaTrustService;
 		
 	}
@@ -497,14 +493,13 @@ public class BelgianTrustServiceListFactory {
 		
 		X509Certificate rootCa2Certificate = loadCertificateFromResource("eu/be/belgiumrca2.crt");
 		TrustService rootCa2TrustService = TrustServiceListFactory
-				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa2Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa2Certificate);
 		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.2.1",
 				"urn:be:qc:natural:citizen");
 		rootCa2TrustService.addOIDForQCSSCDStatusAsInCert("2.16.56.9.1.1.7.1",
 				"urn:be:qc:natural:foreigner");
-		
-		rootCa2TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa2Certificate);
-		
+		rootCa2TrustService.addAdditionalServiceInformationUri(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
+		rootCa2TrustService.addSchemeServiceDefinitionURI("http://tsl.belgium.be/pages/SchemeServiceDefinition");
 		return rootCa2TrustService;
 	}
 	
@@ -512,7 +507,7 @@ public class BelgianTrustServiceListFactory {
 		
 		X509Certificate rootCa3Certificate = loadCertificateFromResource("eu/be/belgiumrca3.crt");
 		TrustService rootCa3TrustService = TrustServiceListFactory
-				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa3Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa3Certificate);
 		rootCa3TrustService.addOIDForQCSSCDStatusAsInCert(
 				"2.16.56.10.1.1.2.1", "urn:be:qc:natural:citizen");
 		rootCa3TrustService
@@ -520,8 +515,8 @@ public class BelgianTrustServiceListFactory {
 						"2.16.56.10.1.1.7.1",
 						"urn:be:qc:natural:foreigner");
 		
-		rootCa3TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa3Certificate);
-		
+		rootCa3TrustService.addAdditionalServiceInformationUri(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
+		rootCa3TrustService.addSchemeServiceDefinitionURI("http://tsl.belgium.be/pages/SchemeServiceDefinition");
 		
 		return rootCa3TrustService;
 	}
@@ -531,16 +526,15 @@ public class BelgianTrustServiceListFactory {
 		// Belgian Root CA 4
 		X509Certificate rootCa4Certificate = loadCertificateFromResource("eu/be/belgiumrca4.crt");
 		TrustService rootCa4TrustService = TrustServiceListFactory
-				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_NATIONALROOTCA_QC_URI, TrustService.SERVICE_STATUS_SET_BY_NATIONAL_LAW, null, rootCa4Certificate);
+				.createTrustService(null, TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa4Certificate);
 		rootCa4TrustService.addOIDForQCSSCDStatusAsInCert(
 				"2.16.56.12.1.1.2.1", "urn:be:qc:natural:citizen");
 		rootCa4TrustService
 				.addOIDForQCSSCDStatusAsInCert(
 						"2.16.56.12.1.1.7.1",
 						"urn:be:qc:natural:foreigner");
-		
-		rootCa4TrustService.addServiceHistory(TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, null, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, rootCa4Certificate);
-		
+		rootCa4TrustService.addAdditionalServiceInformationUri(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
+		rootCa4TrustService.addSchemeServiceDefinitionURI("http://tsl.belgium.be/pages/SchemeServiceDefinition");
 		return rootCa4TrustService;
 	}
 	
@@ -561,6 +555,7 @@ public class BelgianTrustServiceListFactory {
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.112.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.140.1");
 		eTrustQCaTrustService.addOIDForQCForLegalPerson("0.3.2062.7.1.1.111.1");
+		eTrustQCaTrustService.addAdditionalServiceInformationUri(TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI);
 		additionalCertipostTrustServices.add(eTrustQCaTrustService);
 		
 		for (TrustService additionalCertipostTrustService : additionalCertipostTrustServices) {

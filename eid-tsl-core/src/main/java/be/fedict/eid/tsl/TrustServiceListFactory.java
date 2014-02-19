@@ -141,7 +141,7 @@ public class TrustServiceListFactory {
 	}
 
 	public static TrustServiceProvider createTrustServiceProvider(String name,
-			String tradeName) {
+			String... tradeName) {
 		TrustServiceProvider trustServiceProvider = new TrustServiceProvider(
 				name, tradeName);
 		return trustServiceProvider;

@@ -281,7 +281,7 @@ public class Tsl2PdfExporter {
 
 				PdfPTable providerTable = createInfoTable();
 				addItemRow("Service provider trade name", trustServiceProvider
-						.getTradeName(), providerTable);
+						.getTradeNames(), providerTable);
 				addItemRow("Information URI", trustServiceProvider
 						.getInformationUris(), providerTable);
 				PostalAddressType postalAddress = trustServiceProvider
@@ -360,7 +360,18 @@ public class Tsl2PdfExporter {
 							.sha256Hex(encodedCertificate),
 							serviceIdentityTable);
 					document.add(serviceIdentityTable);
-
+					
+					//add Scheme service definition 
+					if (null != trustService.getSchemeServiceDefinitionURI()){
+						addTitle("Scheme Service Definition URI", title3Font,
+								Paragraph.ALIGN_LEFT, 2, 0, document);
+						final PdfPTable schemeServiceDefinitionURITabel = createInfoTable();
+						for (NonEmptyMultiLangURIType uri :trustService.getSchemeServiceDefinitionURI().getURI()){
+							addItemRow(uri.getLang(), uri.getValue(), schemeServiceDefinitionURITabel);
+						}
+						document.add(schemeServiceDefinitionURITabel);
+					}
+					
 					List<ExtensionType> extensions = trustService
 							.getExtensions();
 					for (ExtensionType extension : extensions) {
@@ -384,17 +395,6 @@ public class Tsl2PdfExporter {
 							//Service approval history information
 							addTitle("Service approval history information", title3Font, 
 									Paragraph.ALIGN_LEFT, 10, 2, document);
-							
-							/*
-							 * 
-							 * TSPServiceInformationType tspServiceInformation = this.tspService
-				.getServiceInformation();
-		InternationalNamesType i18nServiceName = tspServiceInformation
-				.getServiceName();
-		String serviceName = TrustServiceListUtils.getValue(i18nServiceName,
-				locale);
-		return serviceName;
-							 */
 							
 							// service type identifier
 							//5.6.2 Service name
@@ -530,96 +530,154 @@ public class Tsl2PdfExporter {
 	}
 
 	private static final QName ADDITIONAL_SERVICE_INFORMATION_QNAME = new QName(
-			"http://uri.etsi.org/02231/v2#", "AdditionalServiceInformation");
+            "http://uri.etsi.org/02231/v2#", "AdditionalServiceInformation");
 
 	private void printExtension(ExtensionType extension, Document document)
-			throws DocumentException {
-		addTitle("Extension (critical: " + extension.isCritical() + ")",
-				title3Font, Paragraph.ALIGN_LEFT, 0, 0, document);
-		List<Object> contentList = extension.getContent();
-		for (Object content : contentList) {
-			LOG.debug("extension content: " + content.getClass().getName());
-			if (content instanceof JAXBElement<?>) {
-				JAXBElement<?> element = (JAXBElement<?>) content;
-				LOG.debug("QName: " + element.getName());
-				if (false == ADDITIONAL_SERVICE_INFORMATION_QNAME
-						.equals(element.getName())) {
-					continue;
-				}
-				addTitle("Additional service information", title4Font,
-						Paragraph.ALIGN_LEFT, 0, 0, document);
-				AdditionalServiceInformationType additionalServiceInformation = (AdditionalServiceInformationType) element
-						.getValue();
-				LOG.debug("information value: "
-						+ additionalServiceInformation.getInformationValue());
-				NonEmptyMultiLangURIType multiLangUri = additionalServiceInformation
-						.getURI();
-				LOG.debug("URI : " + multiLangUri.getValue() + " (language: "
-						+ multiLangUri.getLang() + ")");
-				document.add(new Paragraph(multiLangUri.getValue().substring(
-						multiLangUri.getValue().indexOf("SvcInfoExt/")
-								+ "SvcInfoExt/".length()), this.valueFont));
-			} else if (content instanceof Element) {
-				addTitle("Qualifications", title4Font, Paragraph.ALIGN_LEFT, 0,
-						0, document);
-				Element element = (Element) content;
-				LOG.debug("element namespace: " + element.getNamespaceURI());
-				LOG.debug("element name: " + element.getLocalName());
-				if ("http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#"
-						.equals(element.getNamespaceURI())
-						&& "Qualifications".equals(element.getLocalName())) {
-					try {
-						QualificationsType qualifications = unmarshallQualifications(element);
-						List<QualificationElementType> qualificationElements = qualifications
-								.getQualificationElement();
-						for (QualificationElementType qualificationElement : qualificationElements) {
-							QualifiersType qualifiers = qualificationElement
-									.getQualifiers();
-							List<QualifierType> qualifierList = qualifiers
-									.getQualifier();
-							for (QualifierType qualifier : qualifierList) {
-								document.add(new Paragraph("Qualifier: "
-										+ qualifier.getUri().substring(
-												qualifier.getUri().indexOf(
-														"SvcInfoExt/")
-														+ "SvcInfoExt/"
-																.length()),
-										this.valueFont));
-							}
+            throws DocumentException {
+    
+    List<Object> contentList = extension.getContent();
+    for (Object content : contentList) {
+            LOG.debug("extension content: " + content.getClass().getName());
+            if (content instanceof JAXBElement<?>) {
+                    JAXBElement<?> element = (JAXBElement<?>) content;
+                    LOG.debug("QName: " + element.getName());
+                    if (true == ADDITIONAL_SERVICE_INFORMATION_QNAME
+                                    .equals(element.getName())) {
+                    	addTitle("Extension (critical: " + extension.isCritical() + ")",
+                                title3Font, Paragraph.ALIGN_LEFT, 0, 0, document);
+                    	 addTitle("Additional service information", title4Font,
+                                 Paragraph.ALIGN_LEFT, 0, 0, document);
+		                 AdditionalServiceInformationType additionalServiceInformation = (AdditionalServiceInformationType) element
+		                                 .getValue();
+		                 LOG.debug("information value: "
+		                                 + additionalServiceInformation.getInformationValue());
+		                 NonEmptyMultiLangURIType multiLangUri = additionalServiceInformation
+		                                 .getURI();
+		                 LOG.debug("URI : " + multiLangUri.getValue() + " (language: "
+		                                 + multiLangUri.getLang() + ")");
+		                 document.add(new Paragraph(multiLangUri.getValue().substring(
+		                                 multiLangUri.getValue().indexOf("SvcInfoExt/")
+		                                                 + "SvcInfoExt/".length()), this.valueFont));
+                    }else{
+                    	addTitle("Extension (critical: " + extension.isCritical() + ")",
+                                title3Font, Paragraph.ALIGN_LEFT, 0, 0, document);
+                        addTitle("Qualifications", title4Font, Paragraph.ALIGN_LEFT, 0,
+                                        0, document);
+                 
+                        LOG.debug("element namespace: " + element.getName());
+                        LOG.debug("element name: " + element.getScope());
+                        if ("http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#"
+                                        .equals(element.getName().getNamespaceURI())
+                                        && "Qualifications".equals(element.getName().getLocalPart())) {
+                                QualificationsType qualifications = (QualificationsType) element.getValue() ;
+								List<QualificationElementType> qualificationElements = qualifications
+								                .getQualificationElement();
+								for (QualificationElementType qualificationElement : qualificationElements) {
+								        QualifiersType qualifiers = qualificationElement
+								                        .getQualifiers();
+								        List<QualifierType> qualifierList = qualifiers
+								                        .getQualifier();
+								        for (QualifierType qualifier : qualifierList) {
+								                document.add(new Paragraph("Qualifier: "
+								                                + qualifier.getUri().substring(
+								                                                qualifier.getUri().indexOf(
+								                                                                "SvcInfoExt/")
+								                                                                + "SvcInfoExt/"
+								                                                                                .length()),
+								                                this.valueFont));
+								        }
 
-							CriteriaListType criteriaList = qualificationElement
-									.getCriteriaList();
-							String description = criteriaList.getDescription();
-							if (null != description) {
-								document.add(new Paragraph(
-										"Criterial List Description",
-										this.labelFont));
-								document.add(new Paragraph(description,
-										this.valueFont));
-							}
-							document
-									.add(new Paragraph("Assert: "
-											+ criteriaList.getAssert(),
-											this.valueFont));
-							List<PoliciesListType> policySet = criteriaList
-									.getPolicySet();
-							for (PoliciesListType policiesList : policySet) {
-								List<ObjectIdentifierType> oids = policiesList
-										.getPolicyIdentifier();
-								for (ObjectIdentifierType oid : oids) {
-									document.add(new Paragraph("Policy OID: "
-											+ oid.getIdentifier().getValue(),
-											this.valueFont));
+								        CriteriaListType criteriaList = qualificationElement
+								                        .getCriteriaList();
+								        String description = criteriaList.getDescription();
+								        if (null != description) {
+								                document.add(new Paragraph(
+								                                "Criterial List Description",
+								                                this.labelFont));
+								                document.add(new Paragraph(description,
+								                                this.valueFont));
+								        }
+								        document
+								                        .add(new Paragraph("Assert: "
+								                                        + criteriaList.getAssert(),
+								                                        this.valueFont));
+								        List<PoliciesListType> policySet = criteriaList
+								                        .getPolicySet();
+								        for (PoliciesListType policiesList : policySet) {
+								                List<ObjectIdentifierType> oids = policiesList
+								                                .getPolicyIdentifier();
+								                for (ObjectIdentifierType oid : oids) {
+								                        document.add(new Paragraph("Policy OID: "
+								                                        + oid.getIdentifier().getValue(),
+								                                        this.valueFont));
+								                }
+								        }
 								}
-							}
-						}
-					} catch (JAXBException e) {
-						LOG.error("JAXB error: " + e.getMessage(), e);
-					}
-				}
-			}
-		}
-	}
+                        }
+                
+                    }
+                   
+            } else if (content instanceof Element) {
+                    addTitle("Qualifications", title4Font, Paragraph.ALIGN_LEFT, 0,
+                                    0, document);
+                    Element element = (Element) content;
+                    LOG.debug("element namespace: " + element.getNamespaceURI());
+                    LOG.debug("element name: " + element.getLocalName());
+                    if ("http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#"
+                                    .equals(element.getNamespaceURI())
+                                    && "Qualifications".equals(element.getLocalName())) {
+                            try {
+                                    QualificationsType qualifications = unmarshallQualifications(element);
+                                    List<QualificationElementType> qualificationElements = qualifications
+                                                    .getQualificationElement();
+                                    for (QualificationElementType qualificationElement : qualificationElements) {
+                                            QualifiersType qualifiers = qualificationElement
+                                                            .getQualifiers();
+                                            List<QualifierType> qualifierList = qualifiers
+                                                            .getQualifier();
+                                            for (QualifierType qualifier : qualifierList) {
+                                                    document.add(new Paragraph("Qualifier: "
+                                                                    + qualifier.getUri().substring(
+                                                                                    qualifier.getUri().indexOf(
+                                                                                                    "SvcInfoExt/")
+                                                                                                    + "SvcInfoExt/"
+                                                                                                                    .length()),
+                                                                    this.valueFont));
+                                            }
+
+                                            CriteriaListType criteriaList = qualificationElement
+                                                            .getCriteriaList();
+                                            String description = criteriaList.getDescription();
+                                            if (null != description) {
+                                                    document.add(new Paragraph(
+                                                                    "Criterial List Description",
+                                                                    this.labelFont));
+                                                    document.add(new Paragraph(description,
+                                                                    this.valueFont));
+                                            }
+                                            document
+                                                            .add(new Paragraph("Assert: "
+                                                                            + criteriaList.getAssert(),
+                                                                            this.valueFont));
+                                            List<PoliciesListType> policySet = criteriaList
+                                                            .getPolicySet();
+                                            for (PoliciesListType policiesList : policySet) {
+                                                    List<ObjectIdentifierType> oids = policiesList
+                                                                    .getPolicyIdentifier();
+                                                    for (ObjectIdentifierType oid : oids) {
+                                                            document.add(new Paragraph("Policy OID: "
+                                                                            + oid.getIdentifier().getValue(),
+                                                                            this.valueFont));
+                                                    }
+                                            }
+                                    }
+                            } catch (JAXBException e) {
+                                    LOG.error("JAXB error: " + e.getMessage(), e);
+                            }
+                    }
+            }
+    }
+}
 
 	private QualificationsType unmarshallQualifications(Element element)
 			throws JAXBException {
