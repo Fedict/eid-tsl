@@ -25,6 +25,7 @@ import java.util.Locale;
 import be.fedict.eid.tsl.jaxb.tsl.AddressType;
 import be.fedict.eid.tsl.jaxb.tsl.ElectronicAddressType;
 import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
+import be.fedict.eid.tsl.jaxb.tsl.MultiLangNormStringType;
 import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIListType;
 import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
@@ -48,13 +49,13 @@ public class TrustServiceProvider {
 		this.objectFactory = new ObjectFactory();
 	}
 
-	public TrustServiceProvider(String name, String tradeName) {
+	public TrustServiceProvider(String name, String[] tradeNames) {
 		this.objectFactory = new ObjectFactory();
 		this.tsp = this.objectFactory.createTSPType();
 		TSPInformationType tspInformation = this.objectFactory
 				.createTSPInformationType();
 		this.tsp.setTSPInformation(tspInformation);
-
+		
 		InternationalNamesType tspNames = this.objectFactory
 				.createInternationalNamesType();
 		TrustServiceListUtils.setValue(name, Locale.ENGLISH, tspNames);
@@ -62,11 +63,23 @@ public class TrustServiceProvider {
 
 		InternationalNamesType tspTradeNames = this.objectFactory
 				.createInternationalNamesType();
-		TrustServiceListUtils
-				.setValue(tradeName, Locale.ENGLISH, tspTradeNames);
 		tspInformation.setTSPTradeName(tspTradeNames);
+		
+		for (String tradeName : tradeNames){
+			
+			MultiLangNormStringType multiLangNormStringType =  this.objectFactory
+				.createMultiLangNormStringType();
+			multiLangNormStringType.setLang(Locale.ENGLISH.getLanguage());
+			multiLangNormStringType.setValue(tradeName);
+			
+			tspTradeNames.getName().add(multiLangNormStringType);
+			
+		}
+		
+		
+		
 	}
-
+	
 	TSPType getTSP() {
 		return this.tsp;
 	}
@@ -232,17 +245,34 @@ public class TrustServiceProvider {
 		return tspName;
 	}
 
-	public String getTradeName(Locale locale) {
+	public List<String> getTradeNames(Locale locale) {
+		List<String> results = new LinkedList<String>();
 		TSPInformationType tspInformation = this.tsp.getTSPInformation();
-		InternationalNamesType i18nTspTradeName = tspInformation
+		if (null == tspInformation) {
+			return results;
+		}
+		
+		InternationalNamesType tspTradeNames = tspInformation
 				.getTSPTradeName();
-		String tspTradeName = TrustServiceListUtils.getValue(i18nTspTradeName,
-				locale);
-		return tspTradeName;
+		if (null == tspTradeNames) {
+			return results;
+		}
+		
+		List<MultiLangNormStringType> uris = tspTradeNames.getName();
+		for (MultiLangNormStringType uri : uris) {
+			String lang = uri.getLang();
+			if (0 != locale.getLanguage().compareToIgnoreCase(lang)) {
+				continue;
+			}
+			results.add(uri.getValue());
+		}
+		return results;
 	}
-
-	public String getTradeName() {
-		return getTradeName(Locale.ENGLISH);
+	
+	
+	
+	public List<String> getTradeNames() {
+		return getTradeNames(Locale.ENGLISH);
 	}
 
 	public String getName() {

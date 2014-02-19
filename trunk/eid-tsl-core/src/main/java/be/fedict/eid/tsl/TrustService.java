@@ -55,6 +55,7 @@ import be.fedict.eid.tsl.jaxb.tsl.ExtensionType;
 import be.fedict.eid.tsl.jaxb.tsl.ExtensionsListType;
 import be.fedict.eid.tsl.jaxb.tsl.InternationalNamesType;
 import be.fedict.eid.tsl.jaxb.tsl.MultiLangNormStringType;
+import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIListType;
 import be.fedict.eid.tsl.jaxb.tsl.NonEmptyMultiLangURIType;
 import be.fedict.eid.tsl.jaxb.tsl.ObjectFactory;
 import be.fedict.eid.tsl.jaxb.tsl.ServiceHistoryInstanceType;
@@ -186,6 +187,22 @@ public class TrustService {
 			this.tspService.setServiceHistory(serviceHistoryStatus);
 		}
 		*/
+	}
+	
+	public void addSchemeServiceDefinitionURI (String schemeServiceDefinitionURI){
+		NonEmptyMultiLangURIListType listschemeServiceDefinitionURI;
+		listschemeServiceDefinitionURI = this.tspService.getServiceInformation().getSchemeServiceDefinitionURI();
+		if (null == listschemeServiceDefinitionURI){
+			listschemeServiceDefinitionURI = this.objectFactory.createNonEmptyMultiLangURIListType();
+			this.tspService.getServiceInformation().setSchemeServiceDefinitionURI(listschemeServiceDefinitionURI);
+		}
+		
+		NonEmptyMultiLangURIType xSchemeServiceDefinitionURI = this.objectFactory
+				.createNonEmptyMultiLangURIType();
+		xSchemeServiceDefinitionURI.setLang(Locale.ENGLISH.getLanguage());
+		xSchemeServiceDefinitionURI.setValue(schemeServiceDefinitionURI);
+		listschemeServiceDefinitionURI.getURI().add(xSchemeServiceDefinitionURI);	
+		
 	}
 	
 	public void addServiceHistory(String serviceTypeIdentifier, String serviceName, String servicePreviousStatus, DateTime statusPreviousStartingDate,
@@ -435,6 +452,15 @@ public class TrustService {
 		}
 	}
 
+	public NonEmptyMultiLangURIListType getSchemeServiceDefinitionURI(){
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+	return tspServiceInformation
+				.getSchemeServiceDefinitionURI();
+		
+	
+	}
+	
 	public ServiceHistoryType getServiceHistoryInstanceType(){
 		return this.tspService.getServiceHistory();
 		
@@ -448,7 +474,7 @@ public class TrustService {
 	private static final QName qualifiersName = new QName(
 			"http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#",
 			"Qualifications");
-
+//http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/
 	public void addOIDForQCSSCDStatusAsInCert(String oid) {
 		addOIDForQCSSCDStatusAsInCert(oid, null);
 	}
@@ -561,19 +587,38 @@ public class TrustService {
 		objectIdentifier.setIdentifier(identifier);
 		policiesList.getPolicyIdentifier().add(objectIdentifier);
 
+		
+
+	}
+	public void addAdditionalServiceInformationUri(String additionalServiceInformationString){
+		TSPServiceInformationType tspServiceInformation = this.tspService
+				.getServiceInformation();
+		ExtensionsListType extensionsList = tspServiceInformation
+				.getServiceInformationExtensions();
+		if (null == extensionsList) {
+			extensionsList = this.objectFactory.createExtensionsListType();
+			tspServiceInformation
+					.setServiceInformationExtensions(extensionsList);
+		}
+		List<ExtensionType> extensions = extensionsList.getExtension();
+		ExtensionType extension = this.objectFactory.createExtensionType();
+		extension.setCritical(true);
+		extensions.add(extension);
+		
 		AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
 				.createAdditionalServiceInformationType();
 		NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
 				.createNonEmptyMultiLangURIType();
 		additionalServiceInformationUri.setLang("en");
 		additionalServiceInformationUri
-				.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+				.setValue(additionalServiceInformationString);
 		additionalServiceInformation.setURI(additionalServiceInformationUri);
+		
 		extension
 				.getContent()
 				.add(this.objectFactory
 						.createAdditionalServiceInformation(additionalServiceInformation));
-
+		
 	}
 
 	public void addOIDForQCForLegalPerson(String oid) {
@@ -679,20 +724,21 @@ public class TrustService {
 		objectIdentifier.setIdentifier(identifier);
 		policiesList.getPolicyIdentifier().add(objectIdentifier);
 
-		if (noRoot == false) {
+		
+		/*if (noRoot == false) {
 			AdditionalServiceInformationType additionalServiceInformation = this.objectFactory
 					.createAdditionalServiceInformationType();
 			NonEmptyMultiLangURIType additionalServiceInformationUri = this.objectFactory
 					.createNonEmptyMultiLangURIType();
 			additionalServiceInformationUri.setLang("en");
 			additionalServiceInformationUri
-					.setValue("http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC");
+					.setValue("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/RootCA-QC");
 			additionalServiceInformation
 					.setURI(additionalServiceInformationUri);
 			extension
 					.getContent()
 					.add(this.objectFactory
 							.createAdditionalServiceInformation(additionalServiceInformation));
-		}
+		}*/
 	}
 }
