@@ -248,7 +248,7 @@ public class BelgianTrustServiceListFactory {
 		} else if (2014 == year){
 			switch (trimester){
 			case FIRST:{
-				tslSequenceNumber = BigInteger.valueOf(15);
+				tslSequenceNumber = BigInteger.valueOf(16);
 				listIssueDateTime = new DateTime(2014, 2, 14, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");

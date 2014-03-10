@@ -156,11 +156,11 @@ public class BelgianTrustServiceListFactoryTest {
 		String schemeOperatorNameEn = trustServiceList
 				.getSchemeOperatorName(Locale.ENGLISH);
 		assertEquals(
-				"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+				"FPS Economy, SMEs, Self-employed and Energy - Quality and Safety",
 				schemeOperatorNameEn);
 		LOG.debug("Locale.ENGLISH: " + Locale.ENGLISH.getLanguage());
 		assertEquals(
-				"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité - Information Management",
+				"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité",
 				trustServiceList.getSchemeOperatorName(Locale.FRENCH));
 
 		Node schemeOperatorNameEnNode = XPathAPI
@@ -169,7 +169,7 @@ public class BelgianTrustServiceListFactoryTest {
 						"tsl:TrustServiceStatusList/tsl:SchemeInformation/tsl:SchemeOperatorName/tsl:Name[@xml:lang='en']");
 		assertNotNull(schemeOperatorNameEnNode);
 		assertEquals(
-				"FPS Economy, SMEs, Self-employed and Energy - Quality and Security - Information Management",
+				"FPS Economy, SMEs, Self-employed and Energy - Quality and Safety",
 				schemeOperatorNameEnNode.getTextContent());
 
 		// scheme operator postal address
