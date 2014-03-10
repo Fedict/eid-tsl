@@ -83,7 +83,7 @@ public class TrustService {
 
 	public static final String QC_SSCD_STATUS_AS_IN_CERT_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCSSCDStatusAsInCert";
 
-	public static final String QC_FOR_LEGAL_PERSON_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/TrustedList//SvcInfoExt/QCForLegalPerson";
+	public static final String QC_FOR_LEGAL_PERSON_QUALIFIER_URI = "http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCForLegalPerson";
 	
 	public static final String SERVICE_TYPE_IDENTIFIER_CA_QC_URI = "http://uri.etsi.org/TrstSvc/Svctype/CA/QC";
 	
