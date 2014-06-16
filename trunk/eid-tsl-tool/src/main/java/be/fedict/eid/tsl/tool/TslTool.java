@@ -199,6 +199,8 @@ public class TslTool extends JFrame implements ActionListener {
 
 		addActionMenuItem("Trimester 1", KeyEvent.VK_1, "TSL-BE-2014-T1",
 				_2014BelgiumMenu, true);
+		addActionMenuItem("Trimester 2", KeyEvent.VK_1, "TSL-BE-2014-T2",
+				_2014BelgiumMenu, true);
 
 		
 	}
@@ -405,6 +407,11 @@ public class TslTool extends JFrame implements ActionListener {
 			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
 					.newInstance(2014, Trimester.FIRST);
 			displayTsl("*TSL-BE-2014-T1.xml", trustServiceList);
+			this.saveMenuItem.setEnabled(false);
+		}else if ("TSL-BE-2014-T2".equals(command)) {
+			TrustServiceList trustServiceList = BelgianTrustServiceListFactory
+					.newInstance(2014, Trimester.SECOND);
+			displayTsl("*TSL-BE-2014-T2.xml", trustServiceList);
 			this.saveMenuItem.setEnabled(false);
 		}
 	}

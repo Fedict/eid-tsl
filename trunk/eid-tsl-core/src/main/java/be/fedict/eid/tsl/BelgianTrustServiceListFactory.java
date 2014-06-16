@@ -272,6 +272,31 @@ public class BelgianTrustServiceListFactory {
 				swiftTrustServiceProvider
 					.addTrustService(createTSPService_SWIFTNetPKI());
 				break;
+			}case SECOND:{
+				tslSequenceNumber = BigInteger.valueOf(17);
+				listIssueDateTime = new DateTime(2014, 6, 20, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
+		
+				// BRCA 3 en BRCA 4
+				LOG.debug("Add Trustservice BRCA3 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA3());
+				LOG.debug("Add Trustservice BRCA4 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA4());
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
+				
+				// SWIFT
+				LOG.debug("Create TSP: Swift");	
+				TrustServiceProvider swiftTrustServiceProvider = createTSP_swift();
+				LOG.debug("Add TSP_swift to Trustlist");
+				trustServiceList
+						.addTrustServiceProvider(swiftTrustServiceProvider);
+				LOG.debug("Add Trustservice SwiftNetPKI to TSP_Swift");
+				swiftTrustServiceProvider
+					.addTrustService(createTSPService_SWIFTNetPKI());
+				break;
 			}
 			default:
 				throw new IllegalArgumentException(trimester.toString());
