@@ -297,6 +297,40 @@ public class BelgianTrustServiceListFactory {
 				swiftTrustServiceProvider
 					.addTrustService(createTSPService_SWIFTNetPKI());
 				break;
+			}case THIRD:{
+				tslSequenceNumber = BigInteger.valueOf(18);
+				listIssueDateTime = new DateTime(2014, 8, 12, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
+		
+				// BRCA 3 en BRCA 4
+				LOG.debug("Add Trustservice BRCA3 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA3());
+				LOG.debug("Add Trustservice BRCA4 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA4());
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
+				
+				// SWIFT
+				LOG.debug("Create TSP: Swift");	
+				TrustServiceProvider swiftTrustServiceProvider = createTSP_swift();
+				LOG.debug("Add TSP_swift to Trustlist");
+				trustServiceList
+						.addTrustServiceProvider(swiftTrustServiceProvider);
+				LOG.debug("Add Trustservice SwiftNetPKI to TSP_Swift");
+				swiftTrustServiceProvider
+					.addTrustService(createTSPService_SWIFTNetPKI());
+                                
+                                //Quovadis
+                                LOG.debug("Create TSP Qua Vadis");
+                                TrustServiceProvider quovadisTrustServiceProvider = createTSP_Quovadis();
+                                LOG.debug("Add TSP_Quo Vadis to Trustlist");
+                                trustServiceList
+                                        .addTrustServiceProvider(quovadisTrustServiceProvider);
+                                LOG.debug("Add ");
+                                
+				break;
 			}
 			default:
 				throw new IllegalArgumentException(trimester.toString());
@@ -499,6 +533,24 @@ public class BelgianTrustServiceListFactory {
 		return swiftTrustServiceProvider;		
 	}
 	
+        private static TrustServiceProvider createTSP_Quovadis(){
+            TrustServiceProvider quovadisTrustServiceProvider = TrustServiceListFactory
+                    .createTrustServiceProvider(
+                            "Quo Vadis Trustlink BVBA",
+                            "VATBE-0537698318", 
+                            "Quo Vadis");
+            quovadisTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
+                   "Steenbergen 8", "Beringen", "Limburg",  "3583", "BE");
+            quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
+                    "http://www.quovadisglobal.be/");
+            quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
+                    null);
+            quovadisTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+                    null);
+
+            return quovadisTrustServiceProvider;
+        }
+        
 	private static TrustService createTSPService_BRCA1(){
 		
 		X509Certificate rootCaCertificate = loadCertificateFromResource("eu/be/belgiumrca.crt");
@@ -601,6 +653,15 @@ public class BelgianTrustServiceListFactory {
 				"1.3.21.6.3.10.200.3", true);
 		return swiftTrustService;
 	}
+        
+        private static TrustService createTSPService_QuoVadisBEPKICertificationAuthority(){
+            X509Certificate quoVadisCertificate = loadCertificateFromResource("eu/be/quovadis/qvbecag1.cer");
+            TrustService quoaVadisTrustService = TrustServiceListFactory
+                    .createTrustService("Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, quoVadisCertificate);
+            
+            return quoaVadisTrustService;
+                    
+        }
 	 
 	private static Document loadDocumentFromResource(String resourceName) {
 		Thread currentThread = Thread.currentThread();
