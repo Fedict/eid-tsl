@@ -328,7 +328,9 @@ public class BelgianTrustServiceListFactory {
                                 LOG.debug("Add TSP_Quo Vadis to Trustlist");
                                 trustServiceList
                                         .addTrustServiceProvider(quovadisTrustServiceProvider);
-                                LOG.debug("Add ");
+                                LOG.debug("Add Quo Vadis BE PKI CertificationAuthority");
+                                quovadisTrustServiceProvider
+                                        .addTrustService(createTSPService_QuoVadisBEPKICertificationAuthority());
                                 
 				break;
 			}
