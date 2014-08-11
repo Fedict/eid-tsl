@@ -299,7 +299,7 @@ public class BelgianTrustServiceListFactory {
 				break;
 			}case THIRD:{
 				tslSequenceNumber = BigInteger.valueOf(18);
-				listIssueDateTime = new DateTime(2014, 8, 12, 0, 0, 0, 0,
+				listIssueDateTime = new DateTime(2014, 8, 14, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
@@ -533,7 +533,7 @@ public class BelgianTrustServiceListFactory {
 		return swiftTrustServiceProvider;		
 	}
 	
-        private static TrustServiceProvider createTSP_Quovadis(){
+      private static TrustServiceProvider createTSP_Quovadis(){
             TrustServiceProvider quovadisTrustServiceProvider = TrustServiceListFactory
                     .createTrustServiceProvider(
                             "Quo Vadis Trustlink BVBA",
@@ -544,9 +544,9 @@ public class BelgianTrustServiceListFactory {
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
                     "http://www.quovadisglobal.be/");
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
-                    null);
+                    "info.be@quovadisglobal.com");
             quovadisTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-                    null);
+                    "https://www.quovadisglobal.com/en-GB/QVRepository.aspx");
 
             return quovadisTrustServiceProvider;
         }
