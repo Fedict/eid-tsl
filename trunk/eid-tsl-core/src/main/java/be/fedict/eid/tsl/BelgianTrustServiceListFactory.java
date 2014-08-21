@@ -663,7 +663,7 @@ public class BelgianTrustServiceListFactory {
         private static TrustService createTSPService_QuoVadisBEPKICertificationAuthority(){
             X509Certificate quoVadisCertificate = loadCertificateFromResource("eu/be/quovadis/qvbecag1.cer");
             TrustService quoaVadisTrustService = TrustServiceListFactory
-                    .createTrustService("Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_ROOTCA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, quoVadisCertificate);
+                    .createTrustService("Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, quoVadisCertificate);
             
             return quoaVadisTrustService;
                     
