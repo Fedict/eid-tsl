@@ -531,6 +531,10 @@ public class BelgianTrustServiceListFactory {
 				"mailto:swift-pma@swift.com");
 		swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
 				"http://www.swift.com/index.page?lang=en");
+                swiftTrustServiceProvider.addInformationUri(Locale.ENGLISH,
+				"http://www.swift.com/pkirepository");
+                
+                
 		
 		return swiftTrustServiceProvider;		
 	}
