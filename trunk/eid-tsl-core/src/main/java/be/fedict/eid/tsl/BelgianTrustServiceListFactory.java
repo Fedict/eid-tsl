@@ -542,7 +542,7 @@ public class BelgianTrustServiceListFactory {
       private static TrustServiceProvider createTSP_Quovadis(){
             TrustServiceProvider quovadisTrustServiceProvider = TrustServiceListFactory
                     .createTrustServiceProvider(
-                            "Quo Vadis Trustlink BVBA",
+                            "QuoVadis Trustlink BVBA",
                             "VATBE-0537698318", 
                             "Quo Vadis");
             quovadisTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
