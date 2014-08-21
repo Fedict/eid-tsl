@@ -550,7 +550,7 @@ public class BelgianTrustServiceListFactory {
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
                     "http://www.quovadisglobal.be/");
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
-                    "info.be@quovadisglobal.com");
+                    "mailto:info.be@quovadisglobal.com");
             quovadisTrustServiceProvider.addInformationUri(Locale.ENGLISH,
                     "https://www.quovadisglobal.com/en-GB/QVRepository.aspx");
 
