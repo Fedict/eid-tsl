@@ -544,7 +544,7 @@ public class BelgianTrustServiceListFactory {
                     .createTrustServiceProvider(
                             "QuoVadis Trustlink BVBA",
                             "VATBE-0537698318", 
-                            "Quo Vadis");
+                            "QuoVadis");
             quovadisTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
                    "Steenbergen 8", "Beringen", "Limburg",  "3583", "BE");
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
@@ -552,7 +552,7 @@ public class BelgianTrustServiceListFactory {
             quovadisTrustServiceProvider.addElectronicAddress(Locale.ENGLISH, 
                     "mailto:info.be@quovadisglobal.com");
             quovadisTrustServiceProvider.addInformationUri(Locale.ENGLISH,
-                    "https://www.quovadisglobal.com/en-GB/QVRepository.aspx");
+                    "https://www.quovadisglobal.be/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_16.ashx");
 
             return quovadisTrustServiceProvider;
         }
@@ -663,7 +663,9 @@ public class BelgianTrustServiceListFactory {
         private static TrustService createTSPService_QuoVadisBEPKICertificationAuthority(){
             X509Certificate quoVadisCertificate = loadCertificateFromResource("eu/be/quovadis/qvbecag1.cer");
             TrustService quoaVadisTrustService = TrustServiceListFactory
-                    .createTrustService("Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, null, quoVadisCertificate);
+                    .createTrustService(
+                            "Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, 
+                            new DateTime(2014, 5, 20, 0, 0, 0, 0, DateTimeZone.UTC), quoVadisCertificate);
             
             return quoaVadisTrustService;
                     
