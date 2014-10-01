@@ -404,11 +404,11 @@ public class BelgianTrustServiceListFactory {
 						new Locale("nl"));
 		trustServiceList
 				.setSchemeOperatorName(
-						"SPF Economie, PME, Classes moyennes et Energie - QualitÃ© et SÃ©curitÃ©",
+						"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité",
 						Locale.FRENCH);
 		trustServiceList
 				.setSchemeOperatorName(
-						"FÃ–D Wirtschaft, KMU, Mittelstand und Energie - QualitÃ¤t und Sicherheit",
+						"FÖD Wirtschaft, KMU, Mittelstand und Energie - Qualität und Sicherheit",
 						Locale.GERMAN);
 
 		// scheme operator postal address
@@ -444,7 +444,7 @@ public class BelgianTrustServiceListFactory {
 		// scheme name
 		trustServiceList
 				.setSchemeName(
-						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operatorâ€™s Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures.",
+						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator's Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures.",
 						Locale.ENGLISH);
 
 		// scheme information URIs
@@ -485,7 +485,7 @@ public class BelgianTrustServiceListFactory {
 		
 		// historical information period
 				/*
-				 * Volgens de wet van 9 JULI 2001. â€” Wet houdende vaststelling van
+				 * Volgens de wet van 9 JULI 2001. — Wet houdende vaststelling van
 				 * bepaalde regels in verband met het juridisch kader voor elektronische
 				 * handtekeningen en certificatiediensten: Bijlage II - punt i) alle
 				 * relevante informatie over een gekwalificeerd certificaat te
@@ -523,7 +523,7 @@ public class BelgianTrustServiceListFactory {
 						"Society for Worldwide Interbank Financial Telecommunication SCRL",
 						"VATBE-0413330856", "SWIFT");
 		swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Avenue AdÃ¨le 1", "La Hulpe", "Brussels", "1310",
+				"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
 				"BE");
 		swiftTrustServiceProvider.addElectronicAddress(
 				Locale.ENGLISH, "http://www.swift.com/");
