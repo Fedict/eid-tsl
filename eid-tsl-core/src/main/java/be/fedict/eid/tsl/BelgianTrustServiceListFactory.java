@@ -298,8 +298,8 @@ public class BelgianTrustServiceListFactory {
 					.addTrustService(createTSPService_SWIFTNetPKI());
 				break;
 			}case THIRD:{
-				tslSequenceNumber = BigInteger.valueOf(18);
-				listIssueDateTime = new DateTime(2014, 8, 14, 0, 0, 0, 0,
+				tslSequenceNumber = BigInteger.valueOf(19);
+				listIssueDateTime = new DateTime(2014, 10, 9, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
@@ -325,10 +325,10 @@ public class BelgianTrustServiceListFactory {
                                 //Quovadis
                                 LOG.debug("Create TSP Qua Vadis");
                                 TrustServiceProvider quovadisTrustServiceProvider = createTSP_Quovadis();
-                                LOG.debug("Add TSP_Quo Vadis to Trustlist");
+                                LOG.debug("Add TSP_QuoVadis to Trustlist");
                                 trustServiceList
                                         .addTrustServiceProvider(quovadisTrustServiceProvider);
-                                LOG.debug("Add Quo Vadis BE PKI CertificationAuthority");
+                                LOG.debug("Add QuoVadis BE PKI CertificationAuthority");
                                 quovadisTrustServiceProvider
                                         .addTrustService(createTSPService_QuoVadisBEPKICertificationAuthority());
                                 
@@ -404,11 +404,11 @@ public class BelgianTrustServiceListFactory {
 						new Locale("nl"));
 		trustServiceList
 				.setSchemeOperatorName(
-						"SPF Economie, PME, Classes moyennes et Energie - Qualité et Sécurité",
+						"SPF Economie, PME, Classes moyennes et Energie - QualitÃ© et SÃ©curitÃ©",
 						Locale.FRENCH);
 		trustServiceList
 				.setSchemeOperatorName(
-						"FÖD Wirtschaft, KMU, Mittelstand und Energie - Qualität und Sicherheit",
+						"FÃ–D Wirtschaft, KMU, Mittelstand und Energie - QualitÃ¤t und Sicherheit",
 						Locale.GERMAN);
 
 		// scheme operator postal address
@@ -444,7 +444,7 @@ public class BelgianTrustServiceListFactory {
 		// scheme name
 		trustServiceList
 				.setSchemeName(
-						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operator’s Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures.",
+						"BE:Supervision/Accreditation Status List of certification services from Certification Service Providers, which are supervised/accredited by the referenced Scheme Operatorâ€™s Member State for compliance with the relevant provisions laid down in Directive 1999/93/EC of the European Parliament and of the Council of 13 December 1999 on a Community framework for electronic signatures.",
 						Locale.ENGLISH);
 
 		// scheme information URIs
@@ -485,7 +485,7 @@ public class BelgianTrustServiceListFactory {
 		
 		// historical information period
 				/*
-				 * Volgens de wet van 9 JULI 2001. — Wet houdende vaststelling van
+				 * Volgens de wet van 9 JULI 2001. â€” Wet houdende vaststelling van
 				 * bepaalde regels in verband met het juridisch kader voor elektronische
 				 * handtekeningen en certificatiediensten: Bijlage II - punt i) alle
 				 * relevante informatie over een gekwalificeerd certificaat te
@@ -523,7 +523,7 @@ public class BelgianTrustServiceListFactory {
 						"Society for Worldwide Interbank Financial Telecommunication SCRL",
 						"VATBE-0413330856", "SWIFT");
 		swiftTrustServiceProvider.addPostalAddress(Locale.ENGLISH,
-				"Avenue Adèle 1", "La Hulpe", "Brussels", "1310",
+				"Avenue AdÃ¨le 1", "La Hulpe", "Brussels", "1310",
 				"BE");
 		swiftTrustServiceProvider.addElectronicAddress(
 				Locale.ENGLISH, "http://www.swift.com/");
@@ -664,7 +664,7 @@ public class BelgianTrustServiceListFactory {
             X509Certificate quoVadisCertificate = loadCertificateFromResource("eu/be/quovadis/qvbecag1.cer");
             TrustService quoaVadisTrustService = TrustServiceListFactory
                     .createTrustService(
-                            "Quo Vadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, 
+                            "QuoVadis BE PKI Certification Authority", TrustService.SERVICE_TYPE_IDENTIFIER_CA_QC_URI, TrustService.SERVICE_STATUS_UNDER_SUPERVISION, 
                             new DateTime(2014, 5, 20, 0, 0, 0, 0, DateTimeZone.UTC), quoVadisCertificate);
             
             return quoaVadisTrustService;
