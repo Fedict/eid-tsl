@@ -79,8 +79,8 @@ public class BelgianTrustServiceListFactory {
 	 * @return the trust service list object.
 	 */
 	public static TrustServiceList newInstance(int year, Trimester trimester) {
-		if (2010 != year && 2011 != year && 2012 != year && 2013 != year && 2014 != year) {
-			throw new IllegalArgumentException("cannot create a TSL for year: "
+		if (2010 != year && 2011 != year && 2012 != year && 2013 != year && 2014 != year && 2015 != year) {
+			throw new IllegalArgumentException("cannot create a TSL for year (NEW): "
 					+ year + " trimester " + trimester);
 		}
 		
@@ -300,6 +300,48 @@ public class BelgianTrustServiceListFactory {
 			}case THIRD:{
 				tslSequenceNumber = BigInteger.valueOf(19);
 				listIssueDateTime = new DateTime(2014, 10, 9, 0, 0, 0, 0,
+						DateTimeZone.UTC);
+				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
+				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
+		
+				// BRCA 3 en BRCA 4
+				LOG.debug("Add Trustservice BRCA3 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA3());
+				LOG.debug("Add Trustservice BRCA4 to TSP_Certipost");
+				certipostTrustServiceProvider.addTrustService(createTSPService_BRCA4());
+				
+				createTSPService_AdditionelServices_Certipost(certipostTrustServiceProvider);
+				
+				// SWIFT
+				LOG.debug("Create TSP: Swift");	
+				TrustServiceProvider swiftTrustServiceProvider = createTSP_swift();
+				LOG.debug("Add TSP_swift to Trustlist");
+				trustServiceList
+						.addTrustServiceProvider(swiftTrustServiceProvider);
+				LOG.debug("Add Trustservice SwiftNetPKI to TSP_Swift");
+				swiftTrustServiceProvider
+					.addTrustService(createTSPService_SWIFTNetPKI());
+                                
+                                //Quovadis
+                                LOG.debug("Create TSP Qua Vadis");
+                                TrustServiceProvider quovadisTrustServiceProvider = createTSP_Quovadis();
+                                LOG.debug("Add TSP_QuoVadis to Trustlist");
+                                trustServiceList
+                                        .addTrustServiceProvider(quovadisTrustServiceProvider);
+                                LOG.debug("Add QuoVadis BE PKI CertificationAuthority");
+                                quovadisTrustServiceProvider
+                                        .addTrustService(createTSPService_QuoVadisBEPKICertificationAuthority());
+                                
+				break;
+			}
+			default:
+				throw new IllegalArgumentException(trimester.toString());
+			}
+		}else if (2015 == year){
+			switch (trimester){
+			case FIRST:{
+				tslSequenceNumber = BigInteger.valueOf(20);
+				listIssueDateTime = new DateTime(2015, 2, 5, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
