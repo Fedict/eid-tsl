@@ -341,7 +341,7 @@ public class BelgianTrustServiceListFactory {
 			switch (trimester){
 			case FIRST:{
 				tslSequenceNumber = BigInteger.valueOf(20);
-				listIssueDateTime = new DateTime(2015, 2, 5, 0, 0, 0, 0,
+				listIssueDateTime = new DateTime(2015, 2, 19, 0, 0, 0, 0,
 						DateTimeZone.UTC);
 				euTSLDocument = loadDocumentFromResource("eu/tl-mp-33.xml");
 				euSSLCertificate = loadCertificateFromResource("eu/ec.europa.eu.2013-2015.der");
