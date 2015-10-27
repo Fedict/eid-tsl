@@ -1,0 +1,1 @@
+The eID Trust Service List offers a Java tool for constructing TSLs according to the Service Directive recommentations.
